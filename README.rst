@@ -25,6 +25,10 @@ test inject: curl -v -H "X-Auth-Token: $TOKEN" -H "Content-Type: application/jso
 
 check user/policy management
 
+code/test PUT for VM extend
+
+add worker listening to nova notif on vm create/delete
+
 
 Development
 -----------
@@ -33,8 +37,8 @@ Configuration
 ~~~~~~~~~~~~~
 
 .. code:: bash
-    oslo-config-generator --namespace oslo.messaging --namespace osvmexpire.common.config --namespace keystonemiddleware.auth_token > etc/oslo-config-generator/osvmexpire.conf
-    oslopolicy-sample-generator --config-file etc/oslo-config-generator/policy.conf --format json
+  oslo-config-generator --namespace oslo.messaging --namespace osvmexpire.common.config --namespace keystonemiddleware.auth_token > etc/oslo-config-generator/osvmexpire.conf
+  oslopolicy-sample-generator --config-file etc/oslo-config-generator/policy.conf --format json
 
 Create/Upgrade DB
 ~~~~~~~~~~~~~~~~~
@@ -42,7 +46,7 @@ Create/Upgrade DB
 (if using mysql need library MySQL-python)
 
 .. code:: bash
-    osvmexpire-db-manage upgrade
+  osvmexpire-db-manage upgrade
 
 
 Start API server
@@ -51,10 +55,10 @@ Start API server
 For dev (port 8000)
 
 .. code:: bash
-    osvmexpire-wsgi-api
+  osvmexpire-wsgi-api
 
 For prod
 
 .. code:: bash
-    # uwsgi --master --die-on-term --emperor /etc/os-vm-expire/vassals --logto /var/log/os-vm-expire/osvmexpire-api.log --stats localhost:9314
-    python bin/osvmexpire-api.py
+  # uwsgi --master --die-on-term --emperor /etc/os-vm-expire/vassals --logto /var/log/os-vm-expire/osvmexpire-api.log --stats localhost:9314
+  python bin/osvmexpire-api.py
