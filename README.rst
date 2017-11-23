@@ -37,6 +37,7 @@ Configuration
 ~~~~~~~~~~~~~
 
 .. code-block:: bash
+
   oslo-config-generator --namespace oslo.messaging --namespace osvmexpire.common.config --namespace keystonemiddleware.auth_token > etc/oslo-config-generator/osvmexpire.conf
   oslopolicy-sample-generator --config-file etc/oslo-config-generator/policy.conf --format json
 
@@ -46,6 +47,7 @@ Create/Upgrade DB
 (if using mysql need library MySQL-python)
 
 .. code-block:: bash
+
   osvmexpire-db-manage upgrade
 
 
@@ -55,10 +57,12 @@ Start API server
 For dev (port 8000)
 
 .. code-block:: bash
+
   osvmexpire-wsgi-api
 
 For prod
 
 .. code-block:: bash
+
   # uwsgi --master --die-on-term --emperor /etc/os-vm-expire/vassals --logto /var/log/os-vm-expire/osvmexpire-api.log --stats localhost:9314
   python bin/osvmexpire-api.py
