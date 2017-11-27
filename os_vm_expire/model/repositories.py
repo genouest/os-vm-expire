@@ -331,7 +331,7 @@ class BaseRepo(object):
             LOG.exception("Not found for %s", entity_id)
             entity = None
             _raise_entity_not_found(self._do_entity_name(), entity_id)
-        return None
+        return entity
 
     def create_from(self, entity, session=None):
         """Sub-class hook: create from entity."""

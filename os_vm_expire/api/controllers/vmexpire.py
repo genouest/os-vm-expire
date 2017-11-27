@@ -105,8 +105,10 @@ class VmExpireController(controllers.ACLMixin):
     def on_put(self, meta, instance_id):
         #body = api.load_body(pecan.request)
         instance = self.vmexpire_repo.extend_vm(entity_id=instance_id)
-
-        return {'vmexpire': [instance], 'project_id': self.project_id, 'instance_id': instance_id}
+        url = hrefs.convert_vmexpire_to_href(instance.id)
+        repo.commit()
+        pecan.response.status = 202
+        return str({'vmexpire_ref': str(url)})
 
     @index.when(method='DELETE')
     @utils.allow_all_content_types

@@ -32,6 +32,63 @@ import os_vm_expire.version
 MAX_VM_DURATION_DAYS=60
 MAX_VM_EXTEND_DAYS=30
 
+KS_NOTIFICATIONS_GRP_NAME="nova_notifications"
+
+queue_opt_group = cfg.OptGroup(name='queue',
+                               title='Queue Application Options')
+
+queue_opts = [
+    cfg.BoolOpt('enable', default=False,
+                help=u._('True enables queuing, False invokes '
+                         'workers synchronously')),
+    cfg.StrOpt('namespace', default='osvmexpire',
+               help=u._('Queue namespace')),
+    cfg.StrOpt('topic', default='osvmexpire.workers',
+               help=u._('Queue topic name')),
+    cfg.StrOpt('version', default='1.1',
+               help=u._('Version of tasks invoked via queue')),
+    cfg.StrOpt('server_name', default='osvmexpire.queue',
+               help=u._('Server name for RPC task processing server')),
+    cfg.IntOpt('asynchronous_workers', default=1,
+               help=u._('Number of asynchronous worker processes')),
+]
+
+
+ks_queue_opt_group = cfg.OptGroup(name=KS_NOTIFICATIONS_GRP_NAME,
+                                  title='Nova Notification Options')
+
+ks_queue_opts = [
+    cfg.BoolOpt('enable', default=False,
+                help=u._('True enables nova notification listener '
+                         ' functionality.')),
+    cfg.StrOpt('control_exchange', default='nova',
+               help=u._('The default exchange under which topics are scoped. '
+                        'May be overridden by an exchange name specified in '
+                        'the transport_url option.')),
+    cfg.StrOpt('topic', default='versioned_notifications',
+               help=u._("nova notification queue topic name. This name "
+                        "needs to match one of values mentioned in nova "
+                        "deployment's 'notification_topics' configuration "
+                        "e.g."
+                        "    notification_topics=notifications.info, "
+                        "    notifitions.error"
+                        "Multiple servers may listen on a topic and messages "
+                        "will be dispatched to one of the servers in a "
+                        "round-robin fashion. That's why os-vm-expire service "
+                        "should have its own dedicated notification queue so "
+                        "that it receives all of nova notifications.")),
+    cfg.BoolOpt('allow_requeue', default=False,
+                help=u._('True enables requeue feature in case of notification'
+                         ' processing error. Enable this only when underlying '
+                         'transport supports this feature.')),
+    cfg.StrOpt('version', default='1.0',
+               help=u._('Version of tasks invoked via notifications')),
+    cfg.IntOpt('thread_pool_size', default=10,
+               help=u._('Define the number of max threads to be used for '
+                        'notification server processing functionality.')),
+]
+
+
 context_opts = [
     cfg.StrOpt('admin_role', default='admin',
                help=u._('Role used to identify an authenticated user as '
@@ -139,6 +196,8 @@ def list_opts():
     yield None, host_opts
     yield None, db_opts
     yield None, _options.eventlet_backdoor_opts
+    yield queue_opt_group, queue_opts
+    yield ks_queue_opt_group, ks_queue_opts
 
 
 
@@ -186,6 +245,10 @@ def new_config():
     conf.register_opts(_options.periodic_opts)
 
     conf.register_opts(_options.ssl_opts, "ssl")
+    conf.register_group(queue_opt_group)
+    conf.register_opts(queue_opts, group=queue_opt_group)
+    conf.register_group(ks_queue_opt_group)
+    conf.register_opts(ks_queue_opts, group=ks_queue_opt_group)
 
 
     # Update default values from libraries that carry their own oslo.config

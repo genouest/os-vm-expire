@@ -29,6 +29,7 @@ code/test PUT for VM extend
 
 add worker listening to nova notif on vm create/delete
 
+manage alembic revisions for upgrades
 
 Development
 -----------
@@ -50,6 +51,12 @@ Create/Upgrade DB
 
   osvmexpire-db-manage upgrade
 
+Documentation
+~~~~~~~~~~~~~
+
+.. code-block:: bash
+
+  python setup.py build_sphinx
 
 Start API server
 ~~~~~~~~~~~~~~~~
@@ -66,3 +73,11 @@ For prod
 
   # uwsgi --master --die-on-term --emperor /etc/os-vm-expire/vassals --logto /var/log/os-vm-expire/osvmexpire-api.log --stats localhost:9314
   python bin/osvmexpire-api.py
+
+
+Start worker
+~~~~~~~~~~~~
+
+.. code-block:: bash
+
+  osvmexpire-worker --config-file etc/os-vm-expire/osvmexpire.conf
