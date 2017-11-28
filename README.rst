@@ -81,3 +81,14 @@ Start worker
 .. code-block:: bash
 
   osvmexpire-worker --config-file etc/os-vm-expire/osvmexpire.conf
+
+
+
+  CLI usage
+  ---------
+
+  .. code-block:: bash
+
+     osvmexpire-manage db -h
+     osvmexpire-manage vm extend -h
+     osvmexpire-manage vm remove -h

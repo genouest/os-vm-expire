@@ -69,6 +69,7 @@ class VmExpireController(controllers.ACLMixin):
         return {'vmexpire': instances, 'project_id': self.project_id, 'instance_id': str(instance_id)}
         #return hrefs.convert_to_hrefs(self.vmexpire.to_dict_fields())
 
+    '''
     @index.when(method='POST')
     @controllers.handle_exceptions(u._('VmExpire create'))
     @controllers.enforce_content_types(['application/json'])
@@ -97,6 +98,7 @@ class VmExpireController(controllers.ACLMixin):
             #return {'vmexpire': instance.to_dict_fields(), 'project_id': self.project_id, 'instance_id': None}
             # TODO check why str is ok but not dict, works on GET
             return str({'vmexpire_ref': str(url)})
+    '''
 
     @index.when(method='PUT')
     @controllers.handle_exceptions(u._('VmExpire extend'))
@@ -110,6 +112,7 @@ class VmExpireController(controllers.ACLMixin):
         pecan.response.status = 202
         return str({'vmexpire_ref': str(url)})
 
+    '''
     @index.when(method='DELETE')
     @utils.allow_all_content_types
     @controllers.handle_exceptions(u._('VmExpire deletion'))
@@ -118,6 +121,7 @@ class VmExpireController(controllers.ACLMixin):
         # TODO
         self.vmexpire_repo.delete_entity_by_id(
             entity_id=self.vmexpire.id)
+    '''
 
 class ProjectController(controllers.ACLMixin):
 

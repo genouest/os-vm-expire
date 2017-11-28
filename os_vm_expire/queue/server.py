@@ -108,6 +108,8 @@ class Tasks(object):
                 repo.delete_entity_by_id(entity_id=payload['nova_object.data']['uuid'])
             entity = models.VmExpire()
             entity.instance_id = payload['nova_object.data']['uuid']
+            if payload['nova_object.data']['display_name']:
+                entity.instance_name = payload['nova_object.data']['display_name']
             entity.project_id = payload['nova_object.data']['tenant_id']
             entity.user_id = payload['nova_object.data']['user_id']
             entity.expire = int(time.mktime(datetime.datetime.now().timetuple()) + CONF.max_vm_duration * 3600 * 24)
@@ -156,7 +158,16 @@ class TaskServer(Tasks, service.Service):
 
         # This property must be defined for the 'endpoints' specified below,
         #   as the oslo_messaging RPC server will ask for it.
+
+        # Listens to versioned_notification
+        # Pb is messages would be dispatched among the different listeners (ceilometer etc...)
+        # Solution is to use directly kombu with a routing_key
+        # Ex:
+        # nova_x = Exchange('nova', type='topic', durable=False)
+        # info_q = Queue('osvmexpire-worker', exchange=nova_x, durable=False,
+        #       routing_key='notifications.info')
         self.target = queue.get_notification_target()
+        #self.target = queue.get_target()
 
         # Create an oslo RPC server, that calls back on to this class
         #   instance to invoke tasks, such as 'process_order()' on the

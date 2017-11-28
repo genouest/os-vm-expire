@@ -204,6 +204,9 @@ class VmExpire(BASE, SoftDeleteMixIn, ModelBase):
     notified = sa.Column(
         sa.Boolean, index=False,
         nullable=False)
+    instance_name = sa.Column(
+        sa.String(255), index=False,
+        nullable=True)
 
     __table_args__ = (sa.UniqueConstraint('instance_id',
                                           name='_vmexpire_uc'),)
@@ -220,5 +223,6 @@ class VmExpire(BASE, SoftDeleteMixIn, ModelBase):
             'project_id': self.project_id,
             'expire': self.expire,
             'notified': self.notified,
-            'user_id': self.user_id
+            'user_id': self.user_id,
+            'instance_name': self.instance_name
         }
