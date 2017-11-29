@@ -64,6 +64,7 @@ For dev (port 8000)
 
 .. code-block:: bash
 
+  export OSVMEXPIRE_PORT=9311 # optional
   osvmexpire-wsgi-api
 
 For prod

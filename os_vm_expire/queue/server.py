@@ -99,7 +99,7 @@ class Tasks(object):
     @monitored
     @transactional
     def info(self, ctxt, publisher_id, event_type, payload, metadata):
-        if event_type == 'instance.created.end':
+        if event_type == 'instance.create.end':
             LOG.info(event_type + ':' + payload['nova_object.data']['uuid'])
             repo = repositories.get_vmexpire_repository()
             instance = self.vmexpire_repo.get(entity_id=str(payload['nova_object.data']['uuid']))
