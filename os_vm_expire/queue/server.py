@@ -102,7 +102,11 @@ class Tasks(object):
         if event_type == 'instance.create.end':
             LOG.info(event_type + ':' + payload['nova_object.data']['uuid'])
             repo = repositories.get_vmexpire_repository()
-            instance = self.vmexpire_repo.get(entity_id=str(payload['nova_object.data']['uuid']))
+            instance = None
+            try:
+                instance = repo.get(entity_id=str(payload['nova_object.data']['uuid']))
+            except Exception:
+                LOG.debug("Fine, instance does not already exists")
             if instance:
                 LOG.warn("InstanceAlreadyExists:" + payload['nova_object.data']['uuid']+ ", deleting first")
                 repo.delete_entity_by_id(entity_id=payload['nova_object.data']['uuid'])
@@ -114,7 +118,7 @@ class Tasks(object):
             entity.user_id = payload['nova_object.data']['user_id']
             entity.expire = int(time.mktime(datetime.datetime.now().timetuple()) + CONF.max_vm_duration * 3600 * 24)
             entity.notified = False
-            repo = repositories.get_vmexpire_repository()
+            #repo = repositories.get_vmexpire_repository()
             instance = repo.create_from(entity)
             repositories.commit();
             LOG.debug("NewInstanceExpiration:" + payload['nova_object.data']['uuid'])
