@@ -18,16 +18,15 @@ Features
 
 * TODO
 
-remove def on_post(self, meta) in api.controllers.vmexpire.py (used to inject data for testing)
+
 
 test get: curl -v -H "X-Auth-Token: $TOKEN" http://localhost:9311/v1/project/123/vmexpire/09400330-3b40-4d10-b719-bb1955d0818f
 test inject: curl -v -H "X-Auth-Token: $TOKEN" -H "Content-Type: application/json" -X POST -d '{"instance_id": "1234"}'  http://localhost:9311/v1/project/123/vmexpire/
 
 check user/policy management
 
-code/test PUT for VM extend
 
-add worker listening to nova notif on vm create/delete
+add periodic service to delete VMs expired (need nova conf) (cmd.cleaner.py)
 
 manage alembic revisions for upgrades
 
@@ -39,7 +38,7 @@ Configuration
 
 .. code-block:: bash
 
-  oslo-config-generator --namespace oslo.messaging --namespace osvmexpire.common.config --namespace keystonemiddleware.auth_token > etc/oslo-config-generator/osvmexpire.conf
+  oslo-config-generator --namespace oslo.messaging --namespace osvmexpire.common.config --namespace keystonemiddleware.auth_token --namespace oslo.service.periodic_task --namespace oslo.service.service > etc/oslo-config-generator/osvmexpire.conf
   oslopolicy-sample-generator --config-file etc/oslo-config-generator/policy.conf --format json
 
 Create/Upgrade DB

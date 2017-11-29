@@ -55,9 +55,9 @@ class VmExpireController(controllers.ACLMixin):
 
     @index.when(method='GET', template='json')
     @controllers.handle_exceptions(u._('VmExpire retrieval'))
-    #@controllers.enforce_rbac('vmexpire:get')
+    @controllers.enforce_rbac('vmexpire:get')
     def on_get(self, meta, instance_id=None):
-        # TODO if null get all else get expiration for instance
+        # if null get all else get expiration for instance
         ctxt = controllers._get_vmexpire_context(pecan.request)
         instances = []
         if instance_id is None:
@@ -66,39 +66,9 @@ class VmExpireController(controllers.ACLMixin):
             instance = self.vmexpire_repo.get(entity_id=str(instance_id))
             if instance:
                 instances.append(instance)
-        return {'vmexpire': instances, 'project_id': self.project_id, 'instance_id': str(instance_id)}
+        return {'instances': instances, 'project_id': self.project_id, 'instance_id': str(instance_id)}
         #return hrefs.convert_to_hrefs(self.vmexpire.to_dict_fields())
 
-    '''
-    @index.when(method='POST')
-    @controllers.handle_exceptions(u._('VmExpire create'))
-    @controllers.enforce_content_types(['application/json'])
-    def on_post(self, meta):
-        # TODO FOR TEST ONLY
-
-        ctxt = controllers._get_vmexpire_context(pecan.request)
-        body = api.load_body(pecan.request)
-        entity = models.VmExpire()
-        entity.instance_id = str(body.get('instance_id'))
-        entity.project_id = self.project_id
-        entity.user_id = str(ctxt.user)
-        entity.expire = int(time.mktime(datetime.datetime.now().timetuple()) + CONF.max_vm_duration * 3600 * 24)
-        entity.notified = False
-        try:
-            instance = self.vmexpire_repo.create_from(entity)
-        except Exception as e:
-            LOG.exception(e)
-            pecan.abort(500, u._('Failed to create vmexpire object'))
-        else:
-            repo.commit()
-            LOG.debug(str({'vmexpire': instance.to_dict_fields(), 'project_id': self.project_id, 'instance_id': None}))
-            #return hrefs.convert_to_hrefs(instance.to_dict_fields())
-            url = hrefs.convert_vmexpire_to_href(instance.id)
-            pecan.response.status = 201
-            #return {'vmexpire': instance.to_dict_fields(), 'project_id': self.project_id, 'instance_id': None}
-            # TODO check why str is ok but not dict, works on GET
-            return str({'vmexpire_ref': str(url)})
-    '''
 
     @index.when(method='PUT')
     @controllers.handle_exceptions(u._('VmExpire extend'))
@@ -112,16 +82,6 @@ class VmExpireController(controllers.ACLMixin):
         pecan.response.status = 202
         return str({'vmexpire_ref': str(url)})
 
-    '''
-    @index.when(method='DELETE')
-    @utils.allow_all_content_types
-    @controllers.handle_exceptions(u._('VmExpire deletion'))
-    @controllers.enforce_rbac('vmexpire:delete')
-    def on_delete(self, meta, **kwargs):
-        # TODO
-        self.vmexpire_repo.delete_entity_by_id(
-            entity_id=self.vmexpire.id)
-    '''
 
 class ProjectController(controllers.ACLMixin):
 

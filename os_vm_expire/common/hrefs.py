@@ -26,7 +26,6 @@ def convert_vmexpire_to_href(vmexpire_id):
     return convert_resource_id_to_href('vmexpire', vmexpire_id)
 
 
-# TODO(hgedikli) handle list of fields in here
 def convert_to_hrefs(fields):
     """Convert id's within a fields dict to HATEOAS-style hrefs."""
     return fields

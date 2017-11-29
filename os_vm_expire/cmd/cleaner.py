@@ -20,6 +20,8 @@ Osvmexpire worker server.
 import eventlet
 import os
 import sys
+import time
+import datetime
 
 # Oslo messaging RPC server uses eventlet.
 eventlet.monkey_patch()
@@ -35,17 +37,62 @@ if os.path.exists(os.path.join(possible_topdir, 'os_vm_expire', '__init__.py')):
 
 
 from os_vm_expire.common import config
-from os_vm_expire import queue
-from os_vm_expire.queue import server
 from os_vm_expire import version
+from os_vm_expire.common import utils
+from os_vm_expire.model import repositories
 
 from oslo_log import log
 from oslo_service import service
+import futurist
+from futurist import periodics
 
+
+LOG = utils.getLogger(__name__)
 
 def fail(returncode, e):
     sys.stderr.write("ERROR: {0}\n".format(e))
     sys.exit(returncode)
+
+
+def delete_vm(instance_id):
+    ''' TODO
+    TODO TODO TODO
+    '''
+    # TODO
+    LOG.error('Not yet implemented')
+    None
+
+@periodics.periodic(60)
+def check(started_at):
+    LOG.info("check instances")
+    repo = repositories.get_vmexpire_repository()
+    now = int(time.mktime(datetime.datetime.now().timetuple()))
+    entities = repo.get_entities(expiration_filter=now)
+    for entity in entities:
+        res = delete_vm(entity.instance_id)
+        if res:
+            repo.delete_entity_by_id(entity_id=entity.instance_id)
+            repositories.commit();
+
+
+class CleanerServer(service.Service):
+
+    def __init__(self):
+        super(CleanerServer, self).__init__(config.CONF)
+        repositories.setup_database_engine_and_factory()
+        started_at = time.time()
+        callables = [(check,(started_at,),{})]
+        self.w = periodics.PeriodicWorker(callables)
+
+    def start(self):
+        LOG.info("Starting the CleanerServer")
+        self.w.start()
+        super(CleanerServer, self).start()
+
+    def stop(self):
+        LOG.info("Halting the CleanerServer")
+        self.w.stop()
+        super(CleanerServer, self).stop()
 
 
 def main():
@@ -57,16 +104,14 @@ def main():
         # Import and configure logging.
         log.setup(CONF, 'osvmexpire')
         LOG = log.getLogger(__name__)
-        LOG.debug("Booting up os-vm-expire worker node...")
-
-        # Queuing initialization
-        queue.init(CONF)
+        LOG.debug("Booting up os-vm-expire cleaner node...")
 
         service.launch(
             CONF,
-            server.TaskServer(),
-            workers=CONF.queue.asynchronous_workers
+            CleanerServer(),
+            workers=1
         ).wait()
+
     except RuntimeError as e:
         fail(1, e)
 

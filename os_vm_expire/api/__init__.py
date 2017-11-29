@@ -1,5 +1,4 @@
-# Copyright (c) 2013-2015 Rackspace, Inc.
-#
+
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -14,7 +13,7 @@
 # limitations under the License.
 
 """
-API handler for Barbican
+API handler for osvmexpire
 """
 import pkgutil
 import six
@@ -75,10 +74,7 @@ def load_body(req, resp=None, validator=None):
 
 def generate_safe_exception_message(operation_name, excep):
     """Generates an exception message that is 'safe' for clients to consume.
-    A 'safe' message is one that doesn't contain sensitive information that
-    could be used for (say) cryptographic attacks on Barbican. That generally
-    means that em.CryptoXxxx should be captured here and with a simple
-    message created on behalf of them.
+    A 'safe' message is one that doesn't contain sensitive information.
     :param operation_name: Name of attempted operation, with a 'Verb noun'
                            format (e.g. 'Create Secret).
     :param excep: The Exception instance that halted the operation.

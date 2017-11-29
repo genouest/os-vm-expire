@@ -85,12 +85,8 @@ class ContextMiddleware(BaseContextMiddleware):
         roles_header = req.headers.get('X-Roles', '')
         roles = [r.strip().lower() for r in roles_header.split(',')]
 
-        # NOTE(bcwaldon): This header is deprecated in favor of X-Auth-Token
-        # NOTE(mkbhanda): keeping this just-in-case for swift
-        deprecated_token = req.headers.get('X-Storage-Token')
-
         kwargs = {
-            'auth_token': req.headers.get('X-Auth-Token', deprecated_token),
+            'auth_token': req.headers.get('X-Auth-Token'),
             'user': req.headers.get('X-User-Id'),
             'project': req.headers.get('X-Project-Id'),
             'roles': roles,

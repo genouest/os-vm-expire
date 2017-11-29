@@ -449,6 +449,23 @@ class BaseRepo(object):
 
         session = self.get_session(session)
         query = self._build_get_project_entities_query(project_id, session)
+        if query:
+            return query.all()
+        else:
+            return []
+
+
+    def get_entities(self, expiration_filter=None, session=None):
+        """Get all entities
+        :param session: existing db session reference. If None, gets session.
+        :returns: list of matching entities found otherwise returns empty list
+                  if no entity exists for a given project.
+        """
+
+        session = self.get_session(session)
+        query = session.query(models.VmExpire)
+        if expiration_filter:
+            query = query.filter(models.VmExpire.expire > expiration_filter)
         LOG.debug(query)
         if query:
             return query.all()

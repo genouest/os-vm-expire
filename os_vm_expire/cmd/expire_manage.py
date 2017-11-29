@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2010-2015 OpenStack LLC.
-# All Rights Reserved.
-#
+
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -144,6 +142,7 @@ class VmExpireCommands(object):
     @args('--instance-id', metavar='<instance-id>', dest='instanceid', default=1,
           help='Instance id')
     def extend(self, instanceid):
+        repositories.setup_database_engine_and_factory()
         repo = repositories.get_vmexpire_repository()
         repo.extend_vm(entity_id=instance_id)
         repositories.commit();
@@ -154,6 +153,7 @@ class VmExpireCommands(object):
     @args('--instance-id', metavar='<instance-id>', dest='instanceid', default=1,
           help='Instance id')
     def remove(self, instanceid):
+        repositories.setup_database_engine_and_factory()
         repo = repositories.get_vmexpire_repository()
         repo.delete_entity_by_id(entity_id=instanceid)
         repositories.commit();
@@ -233,10 +233,10 @@ def main():
     try:
         logging.register_options(CONF)
         logging.setup(CONF, "osvmexpire-manage")
-        cfg_files = cfg.find_config_files(project='osvmexpire')
+        cfg_files = cfg.find_config_files(project='os-vm-expire')
 
         CONF(args=sys.argv[1:],
-             project='osvmexpire',
+             project='os-vm-expire',
              prog='os-vmexpire-manage',
              version=os_vm_expire.version.__version__,
              default_config_files=cfg_files)
