@@ -20,8 +20,8 @@ Features
 
 
 
-test get: curl -v -H "X-Auth-Token: $TOKEN" http://localhost:9311/v1/project/123/vmexpire/09400330-3b40-4d10-b719-bb1955d0818f
-test inject: curl -v -H "X-Auth-Token: $TOKEN" -H "Content-Type: application/json" -X POST -d '{"instance_id": "1234"}'  http://localhost:9311/v1/project/123/vmexpire/
+test get: curl -v -H "X-Auth-Token: $TOKEN" http://localhost:9311/v1/123/vmexpire/09400330-3b40-4d10-b719-bb1955d0818f
+test inject: curl -v -H "X-Auth-Token: $TOKEN" -H "Content-Type: application/json" -X POST -d '{"instance_id": "1234"}'  http://localhost:9311/v1/123/vmexpire/
 
 check user/policy management
 

@@ -83,11 +83,16 @@ class V1Controller(BaseVersionController):
 
     def __init__(self):
         LOG.debug('=== Creating V1Controller ===')
-        self.project = vmexpire.ProjectController()
 
     @pecan.expose(generic=True)
     def index(self):
         pecan.abort(405)  # HTTP 405 Method Not Allowed as default
+
+    @pecan.expose()
+    def _lookup(self, project_id, *remainder):
+        if not project_id:
+            return on_get()
+        return vmexpire.VmExpireController(project_id), remainder
 
     @index.when(method='GET', template='json')
     @utils.allow_certain_content_types(MIME_TYPE_JSON, MIME_TYPE_JSON_HOME)
@@ -112,6 +117,7 @@ class VersionsController(object):
     @pecan.expose(generic=True)
     def index(self, **kwargs):
         pecan.abort(405)  # HTTP 405 Method Not Allowed as default
+
 
     @index.when(method='GET', template='json')
     @utils.allow_certain_content_types(MIME_TYPE_JSON, MIME_TYPE_JSON_HOME)

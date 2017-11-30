@@ -63,16 +63,28 @@ class VmExpireController(controllers.ACLMixin):
         if instance_id is None:
             instances = self.vmexpire_repo.get_project_entities(str(self.project_id))
         else:
+            url = hrefs.convert_vmexpire_to_href(instance.id)
             instance = self.vmexpire_repo.get(entity_id=str(instance_id))
-            if instance:
-                instances.append(instance)
-        return {'instances': instances, 'project_id': self.project_id, 'instance_id': str(instance_id)}
-        #return hrefs.convert_to_hrefs(self.vmexpire.to_dict_fields())
+            return {'vmexpire_ref': str(url), 'instance': instance.to_dict_fields()}
+            #if instance:
+            #    instances.append(instance)
+        total = len(instances)
+        instances_resp = [
+                hrefs.convert_to_hrefs(o.to_dict_fields())
+                for o in instances
+            ]
+        instances_resp_overall = hrefs.add_nav_hrefs('instances',
+                                                      0, total, total,
+                                                      {'instances': instances_resp})
+        instances_resp_overall.update({'total': total})
+        #return {'instances': instances, 'project_id': self.project_id, 'instance_id': str(instance_id)}
+        return instances_resp_overall
 
 
-    @index.when(method='PUT')
+
+    @index.when(method='PUT', template='json')
     @controllers.handle_exceptions(u._('VmExpire extend'))
-    #@controllers.enforce_rbac('vmexpire:extend')
+    @controllers.enforce_rbac('vmexpire:extend')
     @controllers.enforce_content_types(['application/json'])
     def on_put(self, meta, instance_id):
         #body = api.load_body(pecan.request)
@@ -80,15 +92,4 @@ class VmExpireController(controllers.ACLMixin):
         url = hrefs.convert_vmexpire_to_href(instance.id)
         repo.commit()
         pecan.response.status = 202
-        return str({'vmexpire_ref': str(url)})
-
-
-class ProjectController(controllers.ACLMixin):
-
-    @pecan.expose(generic=True)
-    def index(self, **kwargs):
-        pecan.abort(405)  # HTTP 405 Method Not Allowed as default
-
-    @pecan.expose()
-    def _lookup(self, project_id, *remainder):
-        return VmExpireController(project_id), remainder
+        return {'vmexpire_ref': str(url), 'instance': instance.to_dict_fields()}

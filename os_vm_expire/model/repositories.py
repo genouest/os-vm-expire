@@ -23,6 +23,7 @@ import logging
 import re
 import sys
 import time
+import datetime
 
 from oslo_db import exception as db_exc
 from oslo_db.sqlalchemy import session
@@ -325,7 +326,7 @@ class BaseRepo(object):
                                              session)
 
             entity = query.one()
-            entity.expire += 3600 * 24 * CONF.max_vm_extend
+            entity.expire = int(time.mktime(datetime.datetime.now().timetuple()) + CONF.max_vm_extend * 3600 * 24)
             entity.save()
         except sa_orm.exc.NoResultFound:
             LOG.exception("Not found for %s", entity_id)

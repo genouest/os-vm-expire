@@ -47,11 +47,11 @@ def _do_enforce_rbac(inst, req, action_name, ctx, **kwargs):
         credentials = {
             'roles': ctx.roles,
             'user': ctx.user,
-            'project': ctx.project
+            'project_id': ctx.project
         }
 
         target_name, target_data = inst.get_acl_tuple(req, **kwargs)
-        policy_dict = {}
+        policy_dict = {'project_id': inst.project_id}
         if target_name and target_data:
             policy_dict['target'] = {target_name: target_data}
 
