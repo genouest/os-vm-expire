@@ -299,6 +299,16 @@ class BaseRepo(object):
         LOG.debug("Getting session...")
         return session or get_session()
 
+    def get_by(self, instance_id=None, project_id=None):
+        session = self.get_session()
+        query = session.query(models.VmExpire)
+        if instance_id:
+            query = query.filter_by(instance_id=instance_id)
+        if project_id:
+            query = query.filter_by(project_id=project_id)
+
+        return query.all()
+
     def get(self, entity_id,
             force_show_deleted=False,
             suppress_exception=False, session=None):
@@ -459,6 +469,7 @@ class BaseRepo(object):
     def get_entities(self, expiration_filter=None, session=None):
         """Get all entities
         :param session: existing db session reference. If None, gets session.
+        :param expiration_filter: timestamp to compare expiration date with
         :returns: list of matching entities found otherwise returns empty list
                   if no entity exists for a given project.
         """

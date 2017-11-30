@@ -21,6 +21,9 @@ from __future__ import print_function
 
 import argparse
 import sys
+import datetime
+
+from tabulate import tabulate
 
 from oslo_config import cfg
 from oslo_log import log as logging
@@ -133,29 +136,45 @@ class DbCommands(object):
 
 
 class VmExpireCommands(object):
-    """Class for managing HSM/pkcs11 plugin"""
+    """Class for managing VM expiration"""
 
     description = "Subcommands for managing VM expiration"
 
-    extend_description = "Extend a VM duration"
+    list_description = "Extend a VM duration"
 
-    @args('--instance-id', metavar='<instance-id>', dest='instanceid', default=1,
+    @args('--instance', metavar='<instance-id>', dest='instanceid', default=None,
           help='Instance id')
-    def extend(self, instanceid):
+    def list(self, instanceid=None):
         repositories.setup_database_engine_and_factory()
         repo = repositories.get_vmexpire_repository()
-        repo.extend_vm(entity_id=instance_id)
+        res = repo.get_by(instance_id=instanceid, project_id=None)
+        headers = ['id', 'expire', 'instance.name', 'instance.id', 'project.id']
+        data = []
+        for instance in res:
+            data.append([instance.id, datetime.datetime.fromtimestamp(instance.expire), instance.instance_name, instance.instance_id, instance.project_id])
+        print(tabulate(data, headers, tablefmt="grid"))
+
+        print("VM list successfully extended!")
+
+    extend_description = "Extend a VM duration"
+
+    @args('--id', metavar='<id>', dest='expirationid',
+          help='Expiration id')
+    def extend(self, expirationid):
+        repositories.setup_database_engine_and_factory()
+        repo = repositories.get_vmexpire_repository()
+        repo.extend_vm(entity_id=expirationid)
         repositories.commit();
         print("VM expiration successfully extended!")
 
     remove_description = "Deletes a VM expiration"
 
-    @args('--instance-id', metavar='<instance-id>', dest='instanceid', default=1,
-          help='Instance id')
+    @args('--id', metavar='<expiration-id>', dest='expirationid',
+          help='Expiration id')
     def remove(self, instanceid):
         repositories.setup_database_engine_and_factory()
         repo = repositories.get_vmexpire_repository()
-        repo.delete_entity_by_id(entity_id=instanceid)
+        repo.delete_entity_by_id(entity_id=expirationid)
         repositories.commit();
         print("VM expiration successfully generated!")
 
