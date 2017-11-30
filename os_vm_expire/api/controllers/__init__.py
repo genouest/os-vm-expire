@@ -79,7 +79,7 @@ def enforce_rbac(action_name='default'):
             _do_enforce_rbac(inst, pecan.request, action_name, ctx, **kwargs)
             # insert external_project_id as the first arg to the guarded method
             args = list(args)
-            args.insert(0, external_project_id)
+            
             # Execute guarded method now.
             return fn(inst, *args, **kwargs)
 
