@@ -109,7 +109,7 @@ class Tasks(object):
                 LOG.debug("Fine, instance does not already exists")
             if instance:
                 LOG.warn("InstanceAlreadyExists:" + payload['nova_object.data']['uuid']+ ", deleting first")
-                repo.delete_entity_by_id(entity_id=payload['nova_object.data']['uuid'])
+                repo.delete_entity_by_id(entity_id=instance.id)
             entity = models.VmExpire()
             entity.instance_id = payload['nova_object.data']['uuid']
             if payload['nova_object.data']['display_name']:
@@ -129,7 +129,7 @@ class Tasks(object):
                 instance = repo.get_by_instance(str(payload['nova_object.data']['uuid']))
                 repo.delete_entity_by_id(entity_id=instance.id)
                 repositories.commit();
-                LOG.debug("DeleteInstance:" + payload['nova_object.data']['uuid'])
+                LOG.debug("Delete id:" + instance.id)
             except Exception as e:
                 LOG.warn('Failed to delete: ' + payload['nova_object.data']['uuid'])
 

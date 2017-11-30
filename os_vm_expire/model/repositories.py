@@ -299,8 +299,8 @@ class BaseRepo(object):
         LOG.debug("Getting session...")
         return session or get_session()
 
-    def get_all_by(self, instance_id=None, project_id=None):
-        session = self.get_session()
+    def get_all_by(self, instance_id=None, project_id=None, session=None):
+        session = self.get_session(session)
         query = session.query(models.VmExpire)
         if instance_id:
             query = query.filter_by(instance_id=instance_id)
@@ -309,11 +309,11 @@ class BaseRepo(object):
 
         return query.all()
 
-    def get_by_instance(self, instance_id):
+    def get_by_instance(self, instance_id, session=None):
         session = self.get_session(session)
 
         try:
-            query = session.query(models.VmExpire).filter_by(instance_id=instance_id)    
+            query = session.query(models.VmExpire).filter_by(instance_id=instance_id)
             entity = query.one()
 
         except sa_orm.exc.NoResultFound:

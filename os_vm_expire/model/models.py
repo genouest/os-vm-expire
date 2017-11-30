@@ -184,7 +184,7 @@ class SoftDeleteMixIn(object):
         self._do_delete_children(session)
 
 
-class VmExpire(BASE, SoftDeleteMixIn, ModelBase):
+class VmExpire(BASE, ModelBase):
     """Represents a VM."""
 
     __tablename__ = 'vmexpire'
