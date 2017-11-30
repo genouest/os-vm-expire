@@ -299,7 +299,7 @@ class BaseRepo(object):
         LOG.debug("Getting session...")
         return session or get_session()
 
-    def get_by(self, instance_id=None, project_id=None):
+    def get_all_by(self, instance_id=None, project_id=None):
         session = self.get_session()
         query = session.query(models.VmExpire)
         if instance_id:
@@ -308,6 +308,20 @@ class BaseRepo(object):
             query = query.filter_by(project_id=project_id)
 
         return query.all()
+
+    def get_by_instance(self, instance_id):
+        session = self.get_session(session)
+
+        try:
+            query = session.query(models.VmExpire).filter_by(instance_id=instance_id)    
+            entity = query.one()
+
+        except sa_orm.exc.NoResultFound:
+            LOG.exception("Not found for %s", entity_id)
+            entity = None
+            _raise_entity_not_found(self._do_entity_name(), entity_id)
+
+        return entity
 
     def get(self, entity_id,
             force_show_deleted=False,

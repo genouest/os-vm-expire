@@ -104,7 +104,7 @@ class Tasks(object):
             repo = repositories.get_vmexpire_repository()
             instance = None
             try:
-                instance = repo.get(entity_id=str(payload['nova_object.data']['uuid']))
+                instance = repo.get_by_instance(str(payload['nova_object.data']['uuid']))
             except Exception:
                 LOG.debug("Fine, instance does not already exists")
             if instance:
@@ -126,7 +126,8 @@ class Tasks(object):
             LOG.info(event_type + ':' + payload['nova_object.data']['uuid'])
             repo = repositories.get_vmexpire_repository()
             try:
-                repo.delete_entity_by_id(entity_id=payload['nova_object.data']['uuid'])
+                instance = repo.get_by_instance(str(payload['nova_object.data']['uuid']))
+                repo.delete_entity_by_id(entity_id=instance.id)
                 repositories.commit();
                 LOG.debug("DeleteInstance:" + payload['nova_object.data']['uuid'])
             except Exception as e:

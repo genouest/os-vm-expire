@@ -147,7 +147,7 @@ class VmExpireCommands(object):
     def list(self, instanceid=None):
         repositories.setup_database_engine_and_factory()
         repo = repositories.get_vmexpire_repository()
-        res = repo.get_by(instance_id=instanceid, project_id=None)
+        res = repo.get_all_by(instance_id=instanceid, project_id=None)
         headers = ['id', 'expire', 'instance.name', 'instance.id', 'project.id']
         data = []
         for instance in res:
