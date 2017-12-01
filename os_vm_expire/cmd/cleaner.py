@@ -43,36 +43,94 @@ from os_vm_expire.model import repositories
 
 from oslo_log import log
 from oslo_service import service
+
+
 import futurist
 from futurist import periodics
-
+import requests
 
 LOG = utils.getLogger(__name__)
+
 
 def fail(returncode, e):
     sys.stderr.write("ERROR: {0}\n".format(e))
     sys.exit(returncode)
 
 
-def delete_vm(instance_id):
+def delete_vm(instance_id, project_id, token):
     ''' TODO
     TODO TODO TODO
+    conf in [DEFAULT]
+    nova_url = http://controller.genouest.org:8774/v2.1
     '''
     # TODO
     LOG.error('Not yet implemented')
-    None
+    nova_url = config.CONF.nova_url
+    LOG.debug('Nova URI:' + nova_url)
+    headers = {'X-Auth-Token': token, 'Content-Type': 'application/json', 'Accept': 'application/json'}
+    r = requests.delete(nova_url + '/' + project_id + '/servers/' + instance_id, headers=headers)
+    if r.status_code != 204:
+        LOG.error('Failed to delete instance ' + str(instance_id))
+        return False
+    else:
+        return True
+
+def get_identity_token():
+    '''
+    [keystone_authtoken]
+    auth_uri = http://controller:5000/v3.0
+    identity_uri = http://controller:35357
+    admin_tenant_name = service
+    admin_user = os_vm_expire
+    admin_password = XYZ
+    admin_user_domain_name = default
+    admin_project_domain_name = default
+    '''
+    ks_uri = config.CONF.cleaner.auth_uri
+
+    auth={"auth":
+             {"scope":
+                 {'project': {
+                    "name": config.CONF.cleaner.admin_service,
+                    "domain":
+                        {
+                          "name": config.CONF.cleaner.admin_project_domain_name
+                        }
+                    }
+                 },
+              "identity": {
+                  "password": {
+                        "user": {
+                              "domain": {"name": config.CONF.cleaner.admin_user_domain_name},
+                              "password": config.CONF.cleaner.admin_password,
+                              "name": config.CONF.cleaner.admin_user
+                        }
+                  },
+                  "methods": ["password"]
+                  }
+             }
+         }
+    r = requests.post(ks_uri + '/auth/tokens', json=auth)
+    if 'X-Subject-Token' not in r.headers:
+        LOG.error('Could not get authorization')
+        return None
+    token = r.headers['X-Subject-Token']
+    return token
+
+
 
 @periodics.periodic(60)
 def check(started_at):
+    token = get_identity_token()
     LOG.info("check instances")
     repo = repositories.get_vmexpire_repository()
     now = int(time.mktime(datetime.datetime.now().timetuple()))
     entities = repo.get_entities(expiration_filter=now)
     for entity in entities:
-        res = delete_vm(entity.instance_id)
+        res = delete_vm(entity.instance_id, entity.project_id, token)
         if res:
-            repo.delete_entity_by_id(entity_id=entity.instance_id)
-            repositories.commit();
+            repo.delete_entity_by_id(entity_id=entity.id)
+            repositories.commit()
 
 
 class CleanerServer(service.Service):
@@ -81,6 +139,7 @@ class CleanerServer(service.Service):
         super(CleanerServer, self).__init__(config.CONF)
         repositories.setup_database_engine_and_factory()
         started_at = time.time()
+        nova_url = ''
         callables = [(check,(started_at,),{})]
         self.w = periodics.PeriodicWorker(callables)
 
@@ -97,17 +156,16 @@ class CleanerServer(service.Service):
 
 def main():
     try:
-        CONF = config.CONF
-        CONF(sys.argv[1:], project='os-vm-expire',
+        config.CONF(sys.argv[1:], project='os-vm-expire',
              version=version.version_info.version_string)
 
         # Import and configure logging.
-        log.setup(CONF, 'osvmexpire')
+        log.setup(config.CONF, 'osvmexpire')
         LOG = log.getLogger(__name__)
         LOG.debug("Booting up os-vm-expire cleaner node...")
 
         service.launch(
-            CONF,
+            config.CONF,
             CleanerServer(),
             workers=1
         ).wait()
