@@ -124,6 +124,7 @@ def send_email(instance, token, delete=False):
     LOG.debug("Send expiration notification mail")
     # fetch user from identity to get user email
     headers = {'X-Auth-Token': token, 'Content-Type': 'application/json', 'Accept': 'application/json'}
+    ks_uri = config.CONF.cleaner.auth_uri
     r = requests.get(ks_uri + '/users/' + instance.user_id, headers=headers)
     if r.status_code != 200:
         return False
@@ -178,7 +179,7 @@ def check(started_at):
     entities = repo.get_entities(expiration_filter=now)
     for entity in entities:
         if entity.expire < check_time and entity.expire < now and not entity.notified:
-            res = send_email(entity.user_id, token, delete=False)
+            res = send_email(entity, token, delete=False)
             if res:
                 entity.notified = True
                 entity.save()
@@ -189,7 +190,7 @@ def check(started_at):
             if res:
                 repo.delete_entity_by_id(entity_id=entity.id)
                 repositories.commit()
-            send_email(entity.user_id, token, delete=True)
+            send_email(entity, token, delete=True)
 
 
 class CleanerServer(service.Service):

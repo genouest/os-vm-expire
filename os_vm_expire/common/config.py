@@ -97,7 +97,7 @@ cleaner_opts = [
     ),
     cfg.IntOpt('notify_before_days',
                default=10,
-               help=u._("send expiration notification before X days")
+               help=u._("os-vm-expire send expiration notification before X days")
     ),
 ]
 
