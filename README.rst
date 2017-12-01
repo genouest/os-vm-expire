@@ -78,12 +78,18 @@ For prod
 Start worker
 ~~~~~~~~~~~~
 
+Manage nova notifications on instance creation and deletion to create/delete expiration objects.
+
 .. code-block:: bash
 
   osvmexpire-worker --config-file etc/os-vm-expire/osvmexpire.conf
 
 
 Start cleaner
+~~~~~~~~~~~~~
+
+Checks expiration time of VMs and sends notifications before expiration to let use extend the VM if necessary.
+Once expiration is reached (and if user could be notified of expiration), deletes the VM.
 
 .. code-block:: bash
 
