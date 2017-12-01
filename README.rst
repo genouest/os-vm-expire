@@ -83,6 +83,11 @@ Start worker
   osvmexpire-worker --config-file etc/os-vm-expire/osvmexpire.conf
 
 
+Start cleaner
+
+.. code-block:: bash
+
+  osvmexpire-cleaner --config-file /etc/os-vm-expire/osvmexpire.conf
 
   CLI usage
   ---------

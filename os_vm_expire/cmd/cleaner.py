@@ -22,6 +22,10 @@ import os
 import sys
 import time
 import datetime
+import time
+
+import smtplib
+from email.mime.text import MIMEText
 
 # Oslo messaging RPC server uses eventlet.
 eventlet.monkey_patch()
@@ -58,17 +62,14 @@ def fail(returncode, e):
 
 
 def delete_vm(instance_id, project_id, token):
-    ''' TODO
-    TODO TODO TODO
-    conf in [DEFAULT]
-    nova_url = http://controller.genouest.org:8774/v2.1
     '''
-    # TODO
-    LOG.error('Not yet implemented')
-    nova_url = config.CONF.nova_url
+    conf in [cleaner]
+    nova_url = http://controller.genouest.org:8774/v2.1/%(tenant_id)s
+    '''
+    nova_url = config.CONF.cleaner.nova_url % {'tenant_id': project_id, 'project_id': project_id}
     LOG.debug('Nova URI:' + nova_url)
     headers = {'X-Auth-Token': token, 'Content-Type': 'application/json', 'Accept': 'application/json'}
-    r = requests.delete(nova_url + '/' + project_id + '/servers/' + instance_id, headers=headers)
+    r = requests.delete(nova_url + '/servers/' + instance_id, headers=headers)
     if r.status_code != 204:
         LOG.error('Failed to delete instance ' + str(instance_id))
         return False
@@ -119,18 +120,76 @@ def get_identity_token():
 
 
 
+def send_email(instance, token, delete=False):
+    LOG.debug("Send expiration notification mail")
+    # fetch user from identity to get user email
+    headers = {'X-Auth-Token': token, 'Content-Type': 'application/json', 'Accept': 'application/json'}
+    r = requests.get(ks_uri + '/users/' + instance.user_id, headers=headers)
+    if r.status_code != 200:
+        return False
+    user = r.json()
+    email = None
+    if 'user' in user and 'email' in user['user']:
+        email = user['user']['email']
+    if email is None:
+        LOG.error('Could not get email for user ' + user_id)
+        return False
+    # send email
+
+    to = email
+    subject = 'VM ' + str(instance.instance_name) + ' expiration'
+
+    message = 'VM ' + str(instance.instance_name) + '(' + str(instance.instance_id) + ') will expire at ' + str(datetime.datetime.fromtimestamp(instance.expire)) + ', connect to dashboard to extend its duration else it will be deleted.'
+    if delete:
+        message = 'VM ' + str(instance.instance_name) + '(' + str(instance.instance_id) + ') has expired at ' + str(datetime.datetime.fromtimestamp(instance.expire)) + ' and has been deleted.'
+    # Create a text/plain message
+    msg = MIMEText(message)
+
+    msg['Subject'] = subject
+    msg['From'] = config.CONF.smtp.email_smtp_from
+    if msg['From'] is None:
+        LOG.error('Missing smtp.email_smtp_from in config')
+        return False
+    msg['To'] = to
+
+    # Send the message via our own SMTP server, but don't include the
+    # envelope header.
+    try:
+        s = smtplib.SMTP(config.CONF.smtp.email_smtp_host, config.CONF.smtp.email_smtp_port)
+        if config.CONF.smtp.email_smtp_tls:
+            s.starttls()
+        if config.CONF.smtp.email_smtp_user:
+            s.login(config.CONF.smtp.email_smtp_user, config.CONF.smtp.email_smtp_password)
+        s.sendmail(msg['From'], [msg['To']], msg.as_string())
+        s.quit()
+    except Exception as e:
+        LOG.error('Failed to send expiration notification mail to ' + email)
+        return False
+
+    return True
+
 @periodics.periodic(60)
 def check(started_at):
     token = get_identity_token()
     LOG.info("check instances")
     repo = repositories.get_vmexpire_repository()
     now = int(time.mktime(datetime.datetime.now().timetuple()))
+    check_time = now - config.CONF.cleaner.notify_before_days*3600*24
     entities = repo.get_entities(expiration_filter=now)
     for entity in entities:
-        res = delete_vm(entity.instance_id, entity.project_id, token)
-        if res:
-            repo.delete_entity_by_id(entity_id=entity.id)
-            repositories.commit()
+        if entity.expire < check_time and entity.expire < now and not entity.notified:
+            res = send_email(entity.user_id, token, delete=False)
+            if res:
+                entity.notified = True
+                entity.save()
+                repositories.commit()
+        elif entity.expire > now and entity.notified:
+            # If user has not been notified (no email or email failure, do not delete yet)
+            res = delete_vm(entity.instance_id, entity.project_id, token)
+            if res:
+                repo.delete_entity_by_id(entity_id=entity.id)
+                repositories.commit()
+            send_email(entity.user_id, token, delete=True)
 
 
 class CleanerServer(service.Service):

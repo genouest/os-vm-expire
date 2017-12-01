@@ -34,6 +34,36 @@ MAX_VM_EXTEND_DAYS=30
 
 KS_NOTIFICATIONS_GRP_NAME="nova_notifications"
 
+mail_opt_group = cfg.OptGroup(name='smtp',
+                               title='SMTP mail Options')
+
+mail_opts = [
+    cfg.StrOpt('email_smtp_host',
+               default='localhost',
+               help=u._("SMTP hostname")
+    ),
+    cfg.IntOpt('email_smtp_port',
+               default=25,
+               help=u._("SMTP port")
+    ),
+    cfg.BoolOpt('email_smtp_tls',
+               default=False,
+               help=u._("SMTP tls use?")
+    ),
+    cfg.StrOpt('email_smtp_user',
+               default=None,
+               help=u._("SMTP user")
+    ),
+    cfg.StrOpt('email_smtp_password',
+               default=None,
+               help=u._("SMTP password")
+    ),
+    cfg.StrOpt('email_smtp_from',
+               default=None,
+               help=u._("SMTP From mail origin")
+    ),
+]
+
 cleaner_opt_group = cfg.OptGroup(name='cleaner',
                                title='Cleaner Application Options')
 
@@ -65,7 +95,10 @@ cleaner_opts = [
                default='default',
                help=u._("os-vm-expire service project domain name")
     ),
-
+    cfg.IntOpt('notify_before_days',
+               default=10,
+               help=u._("send expiration notification before X days")
+    ),
 ]
 
 
@@ -234,6 +267,7 @@ def list_opts():
     yield queue_opt_group, queue_opts
     yield ks_queue_opt_group, ks_queue_opts
     yield cleaner_opt_group, cleaner_opts
+    yield mail_opt_group, mail_opts
 
 
 
@@ -286,6 +320,7 @@ def new_config():
     conf.register_group(ks_queue_opt_group)
     conf.register_opts(ks_queue_opts, group=ks_queue_opt_group)
     conf.register_opts(cleaner_opts, group=cleaner_opt_group)
+    conf.register_opts(mail_opts, group=mail_opt_group)
 
 
     # Update default values from libraries that carry their own oslo.config
