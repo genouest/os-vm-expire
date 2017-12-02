@@ -171,21 +171,22 @@ class TaskServer(Tasks, service.Service):
         # nova_x = Exchange('nova', type='topic', durable=False)
         # info_q = Queue('osvmexpire-worker', exchange=nova_x, durable=False,
         #       routing_key='notifications.info')
-        self.target = queue.get_notification_target()
-        #self.target = queue.get_target()
+        
+        # self.target = queue.get_notification_target()
+
 
         # Create an oslo RPC server, that calls back on to this class
         #   instance to invoke tasks, such as 'process_order()' on the
         #   extended Tasks class above.
-        #self._server = queue.get_server(target=self.target,
-        #                                endpoints=[self])
-        self._server = queue.get_notification_server(targets= [self.target],
-                                                     endpoints=[self])
+        
+        # self._server = queue.get_notification_server(targets= [self.target],
+        #                                             endpoints=[self])
 
-        #transport = oslo_messaging.get_transport(queue.CONF)
-        #targets = [ oslo_messaging.Target(topic='notifications') ]
-        #endpoints = [ self ]
-        #self._server = oslo_messaging.get_notification_listener(transport, targets, endpoints)
+        # Test with pool for message copy
+        transport = oslo_messaging.get_transport(CONF)
+        targets = [ oslo_messaging.Target(topic='versioned_notifications') ]
+        endpoints = [ self ]
+        self._server = oslo_messaging.get_notification_listener(transport, targets, endpoints, pool='os_vm_expire')
 
     def start(self):
         LOG.info("Starting the TaskServer")
