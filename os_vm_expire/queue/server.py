@@ -184,7 +184,9 @@ class TaskServer(Tasks, service.Service):
 
         # Test with pool for message copy
         transport = oslo_messaging.get_transport(CONF)
-        targets = [ oslo_messaging.Target(topic='versioned_notifications') ]
+
+        conf_opts = getattr(CONF, config.KS_NOTIFICATIONS_GRP_NAME)
+        targets = [ oslo_messaging.Target(topic=conf_opts.topic, exchange=conf_opts.control_exchange) ]
         endpoints = [ self ]
         self._server = oslo_messaging.get_notification_listener(transport, targets, endpoints, pool='os_vm_expire')
 
