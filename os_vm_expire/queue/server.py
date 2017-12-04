@@ -52,28 +52,23 @@ def transactional(fn):
     def wrapper(*args, **kwargs):
         fn_name = find_function_name(fn, if_no_name='???')
 
-        if not queue.is_server_side():
-            # Non-server mode directly invokes tasks.
+        # Manage session/transaction.
+        try:
             fn(*args, **kwargs)
-            LOG.info("Completed worker task: '%s'", fn_name)
-        else:
-            # Manage session/transaction.
-            try:
-                fn(*args, **kwargs)
-                repositories.commit()
-                LOG.info("Completed worker task (post-commit): '%s'", fn_name)
-            except Exception:
-                """NOTE: Wrapped functions must process with care!
-                Exceptions that reach here will revert the entire transaction,
-                including any updates made to entities such as setting error
-                codes and error messages.
-                """
-                LOG.exception("Problem seen processing worker task: '%s'",
-                              fn_name
-                              )
-                repositories.rollback()
-            finally:
-                repositories.clear()
+            repositories.commit()
+            LOG.info("Completed worker task (post-commit): '%s'", fn_name)
+        except Exception:
+            """NOTE: Wrapped functions must process with care!
+            Exceptions that reach here will revert the entire transaction,
+            including any updates made to entities such as setting error
+            codes and error messages.
+            """
+            LOG.exception("Problem seen processing worker task: '%s'",
+                          fn_name
+                          )
+            repositories.rollback()
+        finally:
+            repositories.clear()
 
     return wrapper
 
@@ -121,7 +116,7 @@ class Tasks(object):
             entity.notified = False
             #repo = repositories.get_vmexpire_repository()
             instance = repo.create_from(entity)
-            repositories.commit();
+            #repositories.commit();
             LOG.debug("NewInstanceExpiration:" + payload['nova_object.data']['uuid'])
         elif event_type == 'instance.delete.end':
             LOG.info(event_type + ':' + payload['nova_object.data']['uuid'])
@@ -129,7 +124,7 @@ class Tasks(object):
             try:
                 instance = repo.get_by_instance(str(payload['nova_object.data']['uuid']))
                 repo.delete_entity_by_id(entity_id=instance.id)
-                repositories.commit();
+                #repositories.commit();
                 LOG.debug("Delete id:" + instance.id)
             except Exception as e:
                 LOG.warn('Failed to delete: ' + payload['nova_object.data']['uuid'])

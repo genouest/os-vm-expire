@@ -140,9 +140,11 @@ def send_email(instance, token, delete=False):
     to = email
     subject = 'VM ' + str(instance.instance_name) + ' expiration'
 
-    message = 'VM ' + str(instance.instance_name) + '(' + str(instance.instance_id) + ') will expire at ' + str(datetime.datetime.fromtimestamp(instance.expire)) + ', connect to dashboard to extend its duration else it will be deleted.'
+    message = 'VM %s (id: %s, project: %s) will expire at %d, connect to dashboard to extend its duration else it will be deleted.' % (instance.name, instance.id, instance.project_id, instance.expire)
+    #message = 'VM ' + str(instance.instance_name) + '(id:' + str(instance.instance_id) + ', project: ' + str(instance.project_id) + ') will expire at ' + str(datetime.datetime.fromtimestamp(instance.expire)) + ', connect to dashboard to extend its duration else it will be deleted.'
     if delete:
-        message = 'VM ' + str(instance.instance_name) + '(' + str(instance.instance_id) + ') has expired at ' + str(datetime.datetime.fromtimestamp(instance.expire)) + ' and has been deleted.'
+        message = 'VM %s (id: %s, project: %s) has expired at %d and has been deleted.' % (instance.name, instance.id, instance.project_id, instance.expire)
+        #message = 'VM ' + str(instance.instance_name) + '(id:' + str(instance.instance_id) + ', project: ' + str(instance.project_id) + ') has expired at ' + str(datetime.datetime.fromtimestamp(instance.expire)) + ' and has been deleted.'
     # Create a text/plain message
     msg = MIMEText(message)
 

@@ -60,8 +60,8 @@ class VmExpireController(controllers.ACLMixin):
         if instance_id is None:
             instances = self.vmexpire_repo.get_project_entities(str(self.project_id))
         else:
-            url = hrefs.convert_vmexpire_to_href(instance.id)
             instance = self.vmexpire_repo.get(entity_id=str(instance_id))
+            url = hrefs.convert_vmexpire_to_href(instance.id)
             return {'vmexpire_ref': str(url), 'instance': instance.to_dict_fields()}
             #if instance:
             #    instances.append(instance)
@@ -94,7 +94,7 @@ class VmExpireController(controllers.ACLMixin):
     def on_put(self, meta, instance_id):
         instance = self.vmexpire_repo.get_by_instance(instance_id)
         if instance:
-            self.vmexpire_repo..delete_entity_by_id(entity_id=instance.id)
+            self.vmexpire_repo.delete_entity_by_id(entity_id=instance.id)
             repo.commit()
         pecan.response.status = 204
         return

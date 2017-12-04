@@ -317,9 +317,9 @@ class BaseRepo(object):
             entity = query.one()
 
         except sa_orm.exc.NoResultFound:
-            LOG.exception("Not found for %s", entity_id)
+            LOG.exception("Not found for %s", instance_id)
             entity = None
-            _raise_entity_not_found(self._do_entity_name(), entity_id)
+            _raise_entity_not_found(self._do_entity_name(), instance_id)
 
         return entity
 
@@ -420,6 +420,7 @@ class BaseRepo(object):
                           session=session)
 
         entity.delete(session=session)
+
 
     def _do_entity_name(self):
         """Sub-class hook: return entity name, such as for debugging."""
