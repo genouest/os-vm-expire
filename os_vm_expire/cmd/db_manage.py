@@ -12,16 +12,15 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from os_vm_expire.common import config
+from os_vm_expire.model.migration import commands
+from oslo_log import log
 
 import argparse
 import os
 import sys
 
 sys.path.insert(0, os.getcwd())
-
-from os_vm_expire.common import config
-from os_vm_expire.model.migration import commands
-from oslo_log import log
 
 # Import and configure logging.
 CONF = config.CONF
@@ -95,7 +94,6 @@ class DatabaseManager(object):
                                    help='Show full information about the '
                                         'revision.')
         create_parser.set_defaults(func=self.current)
-
 
     def revision(self, args):
         """Process the 'revision' Alembic command."""

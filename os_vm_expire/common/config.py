@@ -29,76 +29,62 @@ from os_vm_expire import i18n as u
 import os_vm_expire.version
 
 
-MAX_VM_DURATION_DAYS=60
-MAX_VM_EXTEND_DAYS=30
+MAX_VM_DURATION_DAYS = 60
+MAX_VM_EXTEND_DAYS = 30
 
-KS_NOTIFICATIONS_GRP_NAME="nova_notifications"
+KS_NOTIFICATIONS_GRP_NAME = "nova_notifications"
 
 mail_opt_group = cfg.OptGroup(name='smtp',
-                               title='SMTP mail Options')
+                              title='SMTP mail Options')
 
 mail_opts = [
     cfg.StrOpt('email_smtp_host',
                default='localhost',
-               help=u._("SMTP hostname")
-    ),
+               help=u._("SMTP hostname")),
     cfg.IntOpt('email_smtp_port',
                default=25,
-               help=u._("SMTP port")
-    ),
+               help=u._("SMTP port")),
     cfg.BoolOpt('email_smtp_tls',
-               default=False,
-               help=u._("SMTP tls use?")
-    ),
+                default=False,
+                help=u._("SMTP tls use?")),
     cfg.StrOpt('email_smtp_user',
                default=None,
-               help=u._("SMTP user")
-    ),
+               help=u._("SMTP user")),
     cfg.StrOpt('email_smtp_password',
                default=None,
-               help=u._("SMTP password")
-    ),
+               help=u._("SMTP password")),
     cfg.StrOpt('email_smtp_from',
                default=None,
-               help=u._("SMTP From mail origin")
-    ),
+               help=u._("SMTP From mail origin")),
 ]
 
 cleaner_opt_group = cfg.OptGroup(name='cleaner',
-                               title='Cleaner Application Options')
+                                 title='Cleaner Application Options')
 
 cleaner_opts = [
     cfg.StrOpt('auth_uri',
                default='http://controller:5000/v3.0',
-               help=u._("Openstack identity url")
-    ),
+               help=u._("Openstack identity url")),
     cfg.StrOpt('nova_url',
                default='http://controller:8774/v2.1',
-               help=u._("Openstack nova compute url")
-    ),
+               help=u._("Openstack nova compute url")),
     cfg.StrOpt('admin_service',
                default='service',
-               help=u._("service project name")
-    ),
+               help=u._("service project name")),
     cfg.StrOpt('admin_user',
                default='os_vm_expire',
-               help=u._("os-vm-expire service user id")
-    ),
+               help=u._("os-vm-expire service user id")),
     cfg.StrOpt('admin_password',
-               help=u._("os-vm-expire service user password")
-    ),
+               help=u._("os-vm-expire service user password")),
     cfg.StrOpt('admin_user_domain_name',
                default='default',
-               help=u._("os-vm-expire user domain name")
-    ),
+               help=u._("os-vm-expire user domain name")),
     cfg.StrOpt('admin_project_domain_name',
                default='default',
-               help=u._("os-vm-expire service project domain name")
-    ),
+               help=u._("os-vm-expire service project domain name")),
     cfg.IntOpt('notify_before_days',
                default=10,
-               help=u._("os-vm-expire send expiration notification before X days")
-    ),
+               help=u._("os-vm-expire send expiration notification before X days")),
 ]
 
 
@@ -133,6 +119,10 @@ ks_queue_opts = [
                help=u._('The default exchange under which topics are scoped. '
                         'May be overridden by an exchange name specified in '
                         'the transport_url option.')),
+    cfg.StrOpt('pool_name', default='os_vm_expire',
+               help=u._('Pool notification to listen on nova exchange.'
+                        'Messages in same pool will get messages distributed,'
+                        ' while messages are copied over all pools')),
     cfg.StrOpt('topic', default='versioned_notifications',
                help=u._("nova notification queue topic name. This name "
                         "needs to match one of values mentioned in nova "
@@ -170,12 +160,10 @@ context_opts = [
 common_opts = [
     cfg.IntOpt('max_vm_duration',
                default=MAX_VM_DURATION_DAYS,
-               help=u._("Maximum life duration of VM in days")
-    ),
+               help=u._("Maximum life duration of VM in days")),
     cfg.IntOpt('max_vm_extend',
                default=MAX_VM_EXTEND_DAYS,
-               help=u._("Maximum life extend of VM in days")
-    )
+               help=u._("Maximum life extend of VM in days")),
 ]
 
 host_opts = [
@@ -270,7 +258,6 @@ def list_opts():
     yield mail_opt_group, mail_opts
 
 
-
 # Flag to indicate  configuration is already parsed once or not
 _CONFIG_PARSED_ONCE = False
 
@@ -282,10 +269,19 @@ def parse_args(conf, args=None, usage=None, default_config_files=None):
         dir_path = os.path.dirname(os.path.realpath(__file__))
         if os.path.exists('/etc/os-vm-expire/osvmexpire.conf'):
             default_config_files = ['/etc/os-vm-expire/osvmexpire.conf']
-        elif os.path.exists(os.path.join(dir_path, '../../etc/os-vm-expire/osvmexpire.conf')):
-            default_config_files = [os.path.join(dir_path, '../../etc/os-vm-expire/osvmexpire.conf')]
+        elif os.path.exists(
+            os.path.join(dir_path, '../../etc/os-vm-expire/osvmexpire.conf')
+        ):
+            default_config_files = [
+                os.path.join(
+                    dir_path,
+                    '../../etc/os-vm-expire/osvmexpire.conf'
+                )
+            ]
         elif os.path.exists(os.path.join(dir_path, '../../osvmexpire.conf')):
-            default_config_files = [os.path.join(dir_path, '../../osvmexpire.conf')]
+            default_config_files = [
+                os.path.join(dir_path, '../../osvmexpire.conf')
+            ]
 
     conf(args=args if args else [],
          project='os-vm-expire',
@@ -321,7 +317,6 @@ def new_config():
     conf.register_opts(ks_queue_opts, group=ks_queue_opt_group)
     conf.register_opts(cleaner_opts, group=cleaner_opt_group)
     conf.register_opts(mail_opts, group=mail_opt_group)
-
 
     # Update default values from libraries that carry their own oslo.config
     # initialization and configuration.
@@ -383,6 +378,7 @@ def set_middleware_defaults():
                        'DELETE',
                        'PATCH']
     )
+
 
 CONF = new_config()
 LOG = logging.getLogger(__name__)

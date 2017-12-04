@@ -2,11 +2,11 @@
 os-vm-expire
 ===============================
 
-Manage VM expiration and deletion
+Manage VM expiration and auto-deletion in an Openstack cloud.
+
+This project is an unofficial Openstack project, but follows Openstack projects architecture, with a Horizon plugin and associated services.
 
 !!!In Development!!!!
-
-
 
 * Free software: Apache license
 * Documentation: https://docs.openstack.org/os-vm-expire/latest
@@ -16,19 +16,12 @@ Manage VM expiration and deletion
 Features
 --------
 
-* TODO
+* On VM creation, add an expiration date
+* On near-expiration date, send an email to user
+* Horizon plugin to view VM expiration and allow for expiration extend
+* On expiration date, delete the VM and send an email to user
+* CLI commands to extend a VM or remove expiration from a VM (admin only)
 
-
-
-test get: curl -v -H "X-Auth-Token: $TOKEN" http://localhost:9311/v1/123/vmexpire/09400330-3b40-4d10-b719-bb1955d0818f
-test inject: curl -v -H "X-Auth-Token: $TOKEN" -H "Content-Type: application/json" -X POST -d '{"instance_id": "1234"}'  http://localhost:9311/v1/123/vmexpire/
-
-check user/policy management
-
-
-add periodic service to delete VMs expired (need nova conf) (cmd.cleaner.py)
-
-manage alembic revisions for upgrades
 
 Development
 -----------

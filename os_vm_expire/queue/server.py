@@ -22,6 +22,7 @@ import functools
 import json
 
 from oslo_service import service
+import oslo_messaging
 
 from os_vm_expire.common import utils
 from os_vm_expire.model import models
@@ -161,34 +162,12 @@ class TaskServer(Tasks, service.Service):
         # Setting up db engine to avoid lazy initialization
         repositories.setup_database_engine_and_factory()
 
-        # This property must be defined for the 'endpoints' specified below,
-        #   as the oslo_messaging RPC server will ask for it.
-
-        # Listens to versioned_notification
-        # Pb is messages would be dispatched among the different listeners (ceilometer etc...)
-        # Solution is to use directly kombu with a routing_key
-        # Ex:
-        # nova_x = Exchange('nova', type='topic', durable=False)
-        # info_q = Queue('osvmexpire-worker', exchange=nova_x, durable=False,
-        #       routing_key='notifications.info')
-        
-        # self.target = queue.get_notification_target()
-
-
-        # Create an oslo RPC server, that calls back on to this class
-        #   instance to invoke tasks, such as 'process_order()' on the
-        #   extended Tasks class above.
-        
-        # self._server = queue.get_notification_server(targets= [self.target],
-        #                                             endpoints=[self])
-
-        # Test with pool for message copy
         transport = oslo_messaging.get_transport(CONF)
 
         conf_opts = getattr(CONF, config.KS_NOTIFICATIONS_GRP_NAME)
         targets = [ oslo_messaging.Target(topic=conf_opts.topic, exchange=conf_opts.control_exchange) ]
         endpoints = [ self ]
-        self._server = oslo_messaging.get_notification_listener(transport, targets, endpoints, pool='os_vm_expire')
+        self._server = oslo_messaging.get_notification_listener(transport, targets, endpoints, pool=conf_opts.pool_name)
 
     def start(self):
         LOG.info("Starting the TaskServer")

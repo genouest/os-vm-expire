@@ -16,8 +16,13 @@
 """
     CLI interface for barbican management
 """
-
 from __future__ import print_function
+
+from os_vm_expire.common import config
+from os_vm_expire.model import clean
+from os_vm_expire.model.migration import commands
+from os_vm_expire.model import repositories
+import os_vm_expire.version
 
 import argparse
 import sys
@@ -28,13 +33,6 @@ from tabulate import tabulate
 from oslo_config import cfg
 from oslo_log import log as logging
 
-from os_vm_expire.common import config
-from os_vm_expire.model import clean
-from os_vm_expire.model.migration import commands
-from os_vm_expire.model import repositories
-
-
-import os_vm_expire.version
 
 CONF = cfg.CONF
 LOG = logging.getLogger(__name__)
@@ -142,16 +140,31 @@ class VmExpireCommands(object):
 
     list_description = "Extend a VM duration"
 
-    @args('--instance', metavar='<instance-id>', dest='instanceid', default=None,
+    @args('--instance', metavar='<instance-id>', dest='instanceid',
+          default=None,
           help='Instance id')
     def list(self, instanceid=None):
         repositories.setup_database_engine_and_factory()
         repo = repositories.get_vmexpire_repository()
         res = repo.get_all_by(instance_id=instanceid, project_id=None)
-        headers = ['id', 'expire', 'instance.name', 'instance.id', 'project.id']
+        headers = [
+            'id',
+            'expire',
+            'instance.name',
+            'instance.id',
+            'project.id'
+        ]
         data = []
         for instance in res:
-            data.append([instance.id, datetime.datetime.fromtimestamp(instance.expire), instance.instance_name, instance.instance_id, instance.project_id])
+            data.append(
+                [
+                    instance.id,
+                    datetime.datetime.fromtimestamp(instance.expire),
+                    instance.instance_name,
+                    instance.instance_id,
+                    instance.project_id
+                ]
+            )
         print(tabulate(data, headers, tablefmt="grid"))
 
         print("VM list successfully extended!")
@@ -164,18 +177,18 @@ class VmExpireCommands(object):
         repositories.setup_database_engine_and_factory()
         repo = repositories.get_vmexpire_repository()
         repo.extend_vm(entity_id=expirationid)
-        repositories.commit();
+        repositories.commit()
         print("VM expiration successfully extended!")
 
     remove_description = "Deletes a VM expiration"
 
     @args('--id', metavar='<expiration-id>', dest='expirationid',
           help='Expiration id')
-    def remove(self, instanceid):
+    def remove(self, expirationid):
         repositories.setup_database_engine_and_factory()
         repo = repositories.get_vmexpire_repository()
         repo.delete_entity_by_id(entity_id=expirationid)
-        repositories.commit();
+        repositories.commit()
         print("VM expiration successfully generated!")
 
 
@@ -280,6 +293,7 @@ def main():
         return fn(*fn_args, **fn_kwargs)
     except Exception as e:
         sys.exit("ERROR: %s" % e)
+
 
 if __name__ == '__main__':
     main()

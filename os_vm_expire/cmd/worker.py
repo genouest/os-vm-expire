@@ -16,10 +16,17 @@
 """
 Osvmexpire worker server.
 """
+from os_vm_expire.common import config
+from os_vm_expire import queue
+from os_vm_expire.queue import server
+from os_vm_expire import version
 
 import eventlet
 import os
 import sys
+
+from oslo_log import log
+from oslo_service import service
 
 # Oslo messaging RPC server uses eventlet.
 eventlet.monkey_patch()
@@ -30,17 +37,10 @@ eventlet.monkey_patch()
 possible_topdir = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]),
                                    os.pardir,
                                    os.pardir))
-if os.path.exists(os.path.join(possible_topdir, 'os_vm_expire', '__init__.py')):
+if os.path.exists(
+        os.path.join(possible_topdir, 'os_vm_expire', '__init__.py')
+):
     sys.path.insert(0, possible_topdir)
-
-
-from os_vm_expire.common import config
-from os_vm_expire import queue
-from os_vm_expire.queue import server
-from os_vm_expire import version
-
-from oslo_log import log
-from oslo_service import service
 
 
 def fail(returncode, e):
@@ -59,9 +59,6 @@ def main():
         LOG = log.getLogger(__name__)
         LOG.debug("Booting up os-vm-expire worker node...")
 
-        # Queuing initialization
-        queue.init(CONF)
-
         service.launch(
             CONF,
             server.TaskServer(),
@@ -69,6 +66,7 @@ def main():
         ).wait()
     except RuntimeError as e:
         fail(1, e)
+
 
 if __name__ == '__main__':
     main()

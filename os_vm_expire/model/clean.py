@@ -92,13 +92,6 @@ def clean_command(sql_url, min_num_days, verbose, log_file):
             CONF.set_override('sql_connection', sql_url)
         repo.setup_database_engine_and_factory()
 
-        if do_clean_unassociated_projects:
-            cleanup_total += cleanup_unassociated_projects()
-
-        if do_soft_delete_expired_secrets:
-            cleanup_total += soft_delete_expired_secrets(
-                threshold_date=current_time)
-
         threshold_date = None
         if min_num_days >= 0:
             threshold_date = current_time - datetime.timedelta(

@@ -24,20 +24,17 @@ from os_vm_expire.model import models
 from os_vm_expire.model import repositories as repo
 
 from os_vm_expire.common import config
+
+
 CONF = config.CONF
 
 LOG = utils.getLogger(__name__)
-
-_DEPRECATION_MSG = '%s has been deprecated in the Newton release. ' \
-                   'It will be removed in the Pike release.'
 
 
 def _vmexpire_not_found():
     """Throw exception indicating order not found."""
     pecan.abort(404, u._('Not Found. Sorry but your vm is in '
                          'another castle.'))
-
-
 
 
 class VmExpireController(controllers.ACLMixin):
@@ -77,19 +74,27 @@ class VmExpireController(controllers.ACLMixin):
                                                       0, total, total,
                                                       {'instances': instances_resp})
         instances_resp_overall.update({'total': total})
-        #return {'instances': instances, 'project_id': self.project_id, 'instance_id': str(instance_id)}
         return instances_resp_overall
-
-
 
     @index.when(method='PUT', template='json')
     @controllers.handle_exceptions(u._('VmExpire extend'))
     @controllers.enforce_rbac('vmexpire:extend')
     @controllers.enforce_content_types(['application/json'])
     def on_put(self, meta, instance_id):
-        #body = api.load_body(pecan.request)
         instance = self.vmexpire_repo.extend_vm(entity_id=instance_id)
         url = hrefs.convert_vmexpire_to_href(instance.id)
         repo.commit()
         pecan.response.status = 202
         return {'vmexpire_ref': str(url), 'instance': instance.to_dict_fields()}
+
+    @index.when(method='DELETE', template='json')
+    @controllers.handle_exceptions(u._('VmExpire expiration deletion'))
+    @controllers.enforce_rbac('vmexpire:delete')
+    @controllers.enforce_content_types(['application/json'])
+    def on_put(self, meta, instance_id):
+        instance = self.vmexpire_repo.get_by_instance(instance_id)
+        if instance:
+            self.vmexpire_repo..delete_entity_by_id(entity_id=instance.id)
+            repo.commit()
+        pecan.response.status = 204
+        return

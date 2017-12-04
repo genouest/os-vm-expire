@@ -88,5 +88,5 @@ def get_vmexpire_id_from_ref(vmexpire_ref):
     :param container_ref: HTTP reference of container
     :return: a string containing the ID of the container
     """
-    vmexpirer_id = vmexpire_ref.rsplit('/', 1)[1]
-    return container_id
+    vmexpire_id = vmexpire_ref.rsplit('/', 1)[1]
+    return vmexpire_id
