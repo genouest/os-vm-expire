@@ -17,7 +17,6 @@
 Osvmexpire worker server.
 """
 from os_vm_expire.common import config
-from os_vm_expire import queue
 from os_vm_expire.queue import server
 from os_vm_expire import version
 

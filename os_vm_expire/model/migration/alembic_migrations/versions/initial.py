@@ -26,6 +26,5 @@ down_revision = None
 from os_vm_expire.model.migration.alembic_migrations import vmexpire_init_ops
 
 
-
 def upgrade():
     vmexpire_init_ops.upgrade()

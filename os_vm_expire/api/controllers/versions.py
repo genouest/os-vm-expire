@@ -35,7 +35,8 @@ def _version_not_found():
 def _get_versioned_url(version):
     if version[-1] != '/':
         version += '/'
-    # If host_href is not set in osvmexpire conf, then derive it from request url
+    # If host_href is not set in osvmexpire conf,
+    # then derive it from request url
     host_part = utils.get_base_url_from_request()
     if host_part[-1] != '/':
         host_part += '/'
@@ -91,7 +92,7 @@ class V1Controller(BaseVersionController):
     @pecan.expose()
     def _lookup(self, project_id, *remainder):
         if not project_id:
-            return on_get()
+            return self.on_get()
         return vmexpire.VmExpireController(project_id), remainder
 
     @index.when(method='GET', template='json')
@@ -117,7 +118,6 @@ class VersionsController(object):
     @pecan.expose(generic=True)
     def index(self, **kwargs):
         pecan.abort(405)  # HTTP 405 Method Not Allowed as default
-
 
     @index.when(method='GET', template='json')
     @utils.allow_certain_content_types(MIME_TYPE_JSON, MIME_TYPE_JSON_HOME)

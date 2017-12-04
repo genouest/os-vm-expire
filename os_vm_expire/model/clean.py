@@ -1,4 +1,5 @@
 # Copyright (c) 2016 IBM
+#               2017 IRISA
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,7 +20,7 @@ from os_vm_expire.model import repositories as repo
 from oslo_log import log
 from oslo_utils import timeutils
 
-from sqlalchemy import sql as sa_sql
+# from sqlalchemy import sql as sa_sql
 
 import datetime
 

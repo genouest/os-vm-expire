@@ -1,4 +1,5 @@
 # Copyright 2011-2012 OpenStack LLC.
+#           2017 O. Sallou, IRISA
 # All Rights Reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -48,7 +49,7 @@ class ContextMiddleware(BaseContextMiddleware):
 
     def process_request(self, req):
         """Convert authentication information into a request context
-        Generate a os_vm_expire.context.RequestContext object from the available
+        Generate os_vm_expire.context.RequestContext object from the available
         authentication headers and store on the 'context' attribute
         of the req object.
         :param req: wsgi request object that will be given the context object

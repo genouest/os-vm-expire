@@ -1,4 +1,5 @@
 # Copyright (c) 2013-2014 Rackspace, Inc.
+#               2017 IRISA
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,17 +28,11 @@ import oslo_messaging
 from os_vm_expire.common import utils
 from os_vm_expire.model import models
 from os_vm_expire.model import repositories
-from os_vm_expire import queue
 from os_vm_expire.common import config
 
 CONF = config.CONF
 
 LOG = utils.getLogger(__name__)
-
-
-# Maps the common/shared RetryTasks (returned from lower-level business logic
-# and plugin processing) to top-level RPC tasks in the Tasks class below.
-
 
 
 def find_function_name(func, if_no_name=None):
@@ -79,7 +74,6 @@ def monitored(fn):  # pragma: no cover
     return fn
 
 
-
 class Tasks(object):
     """Tasks that can be invoked asynchronously.
     Only place task methods and implementations on this class, as they can be
@@ -99,35 +93,43 @@ class Tasks(object):
             LOG.info(event_type + ':' + payload['nova_object.data']['uuid'])
             repo = repositories.get_vmexpire_repository()
             instance = None
+            instance_uuid = str(payload['nova_object.data']['uuid'])
             try:
-                instance = repo.get_by_instance(str(payload['nova_object.data']['uuid']))
+                instance = repo.get_by_instance(instance_uuid)
             except Exception:
                 LOG.debug("Fine, instance does not already exists")
             if instance:
-                LOG.warn("InstanceAlreadyExists:" + payload['nova_object.data']['uuid']+ ", deleting first")
+                LOG.warn("InstanceAlreadyExists:" +
+                         instance_uuid +
+                         ", deleting first"
+                         )
                 repo.delete_entity_by_id(entity_id=instance.id)
             entity = models.VmExpire()
-            entity.instance_id = payload['nova_object.data']['uuid']
+            entity.instance_id = instance_uuid
             if payload['nova_object.data']['display_name']:
-                entity.instance_name = payload['nova_object.data']['display_name']
+                display_name = payload['nova_object.data']['display_name']
+                entity.instance_name = display_name
+            else:
+                entity.instance_name = instance_uuid
             entity.project_id = payload['nova_object.data']['tenant_id']
             entity.user_id = payload['nova_object.data']['user_id']
-            entity.expire = int(time.mktime(datetime.datetime.now().timetuple()) + CONF.max_vm_duration * 3600 * 24)
+            entity.expire = int(
+                time.mktime(datetime.datetime.now().timetuple()) +
+                (CONF.max_vm_duration * 3600 * 24)
+                )
             entity.notified = False
-            #repo = repositories.get_vmexpire_repository()
             instance = repo.create_from(entity)
-            #repositories.commit();
-            LOG.debug("NewInstanceExpiration:" + payload['nova_object.data']['uuid'])
+            LOG.debug("NewInstanceExpiration:" + instance_uuid)
         elif event_type == 'instance.delete.end':
-            LOG.info(event_type + ':' + payload['nova_object.data']['uuid'])
+            instance_uuid = str(payload['nova_object.data']['uuid'])
+            LOG.info(event_type + ':' + instance_uuid)
             repo = repositories.get_vmexpire_repository()
             try:
-                instance = repo.get_by_instance(str(payload['nova_object.data']['uuid']))
+                instance = repo.get_by_instance(instance_uuid)
                 repo.delete_entity_by_id(entity_id=instance.id)
-                #repositories.commit();
                 LOG.debug("Delete id:" + instance.id)
-            except Exception as e:
-                LOG.warn('Failed to delete: ' + payload['nova_object.data']['uuid'])
+            except Exception:
+                LOG.warn('Failed to delete: ' + instance_uuid)
 
         LOG.debug(publisher_id)
         LOG.debug(event_type)
@@ -137,10 +139,8 @@ class Tasks(object):
     def warn(self, ctxt, publisher_id, event_type, payload, metadata):
         LOG.debug(json.dumps(payload, indent=4))
 
-
     def error(self, ctxt, publisher_id, event_type, payload, metadata):
         LOG.debug(json.dumps(payload, indent=4))
-
 
 
 class TaskServer(Tasks, service.Service):
@@ -160,9 +160,19 @@ class TaskServer(Tasks, service.Service):
         transport = oslo_messaging.get_transport(CONF)
 
         conf_opts = getattr(CONF, config.KS_NOTIFICATIONS_GRP_NAME)
-        targets = [ oslo_messaging.Target(topic=conf_opts.topic, exchange=conf_opts.control_exchange) ]
-        endpoints = [ self ]
-        self._server = oslo_messaging.get_notification_listener(transport, targets, endpoints, pool=conf_opts.pool_name)
+        targets = [
+            oslo_messaging.Target(
+                topic=conf_opts.topic,
+                exchange=conf_opts.control_exchange
+                )
+        ]
+        endpoints = [self]
+        self._server = oslo_messaging.get_notification_listener(
+            transport,
+            targets,
+            endpoints,
+            pool=conf_opts.pool_name
+            )
 
     def start(self):
         LOG.info("Starting the TaskServer")

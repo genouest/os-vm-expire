@@ -1,4 +1,5 @@
 # Copyright (c) 2013-2015 Rackspace, Inc.
+#               2017 O. Sallou, IRISA
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -29,7 +30,6 @@ from os_vm_expire.common import config
 from os_vm_expire.model import repositories
 
 CONF = config.CONF
-
 
 
 def build_wsgi_app(controller=None, transactional=False):
@@ -85,6 +85,10 @@ def get_api_wsgi_script():
     conf = '/etc/os-vm-expire/osvmexpire-api-paste.ini'
     if not os.path.exists(conf):
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        conf = os.path.join(dir_path, '../..', 'etc/os-vm-expire/osvmexpire-api-paste.ini')
+        conf = os.path.join(
+            dir_path,
+            '../..',
+            'etc/os-vm-expire/osvmexpire-api-paste.ini'
+            )
     application = deploy.loadapp('config:%s' % conf)
     return application

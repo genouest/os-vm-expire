@@ -45,7 +45,7 @@ def load_body(req, resp=None, validator=None):
     :return: A dict of values from the JSON request.
     """
     try:
-        #body = req.body_file.read(CONF.max_allowed_request_size_in_bytes)
+        # body = req.body_file.read(CONF.max_allowed_request_size_in_bytes)
         body = req.body_file.read()
         req.body_file.seek(0)
     except IOError:
@@ -53,9 +53,6 @@ def load_body(req, resp=None, validator=None):
         pecan.abort(500, u._('Read Error'))
 
     try:
-        # TODO(jwood): Investigate how to get UTF8 format via openstack
-        # jsonutils:
-        #     parsed_body = json.loads(raw_json, 'utf-8')
         parsed_body = json.loads(body)
         strip_whitespace(parsed_body)
     except ValueError:

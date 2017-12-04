@@ -1,4 +1,5 @@
 # Copyright (c) 2013-2014 Rackspace, Inc.
+#               2017 IRISA
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -28,10 +29,10 @@ import datetime
 from oslo_db import exception as db_exc
 from oslo_db.sqlalchemy import session
 from oslo_utils import timeutils
-from oslo_utils import uuidutils
+# from oslo_utils import uuidutils
 import sqlalchemy
-from sqlalchemy import func as sa_func
-from sqlalchemy import or_
+# from sqlalchemy import func as sa_func
+# from sqlalchemy import or_
 import sqlalchemy.orm as sa_orm
 
 from os_vm_expire.common import config
@@ -191,10 +192,6 @@ def _create_engine(connection, **engine_args):
 
     engine = session.create_engine(connection, **engine_args)
 
-    # TODO(jfwood): if 'mysql' in connection_dict.drivername:
-    # TODO(jfwood): sqlalchemy.event.listen(_ENGINE, 'checkout',
-    # TODO(jfwood):                         ping_listener)
-
     # Wrap the engine's connect method with a retry decorator.
     engine.connect = wrap_db_error(engine.connect)
 
@@ -313,7 +310,9 @@ class BaseRepo(object):
         session = self.get_session(session)
 
         try:
-            query = session.query(models.VmExpire).filter_by(instance_id=instance_id)
+            query = session.query(
+                models.VmExpire
+                ).filter_by(instance_id=instance_id)
             entity = query.one()
 
         except sa_orm.exc.NoResultFound:
@@ -350,7 +349,10 @@ class BaseRepo(object):
                                              session)
 
             entity = query.one()
-            entity.expire = int(time.mktime(datetime.datetime.now().timetuple()) + CONF.max_vm_extend * 3600 * 24)
+            entity.expire = int(
+                time.mktime(datetime.datetime.now().timetuple()) +
+                CONF.max_vm_extend * 3600 * 24
+                )
             entity.save()
         except sa_orm.exc.NoResultFound:
             LOG.exception("Not found for %s", entity_id)
@@ -421,7 +423,6 @@ class BaseRepo(object):
 
         entity.delete(session=session)
 
-
     def _do_entity_name(self):
         """Sub-class hook: return entity name, such as for debugging."""
         return "Entity"
@@ -479,7 +480,6 @@ class BaseRepo(object):
             return query.all()
         else:
             return []
-
 
     def get_entities(self, expiration_filter=None, session=None):
         """Get all entities
@@ -539,10 +539,9 @@ class BaseRepo(object):
             LOG.exception('Problem finding project related entity to delete')
             if not suppress_exception:
                 raise Exception(u._('Error deleting project '
-                                                      'entities for '
-                                                      'project_id=%s'),
-                                                  project_id)
-
+                                    'entities for '
+                                    'project_id=%s'),
+                                project_id)
 
 
 class VmExpireRepo(BaseRepo):
@@ -632,7 +631,7 @@ def _raise_entity_not_found(entity_name, entity_id):
 
 def _raise_entity_id_not_found(entity_id):
     raise Exception(u._("Entity ID {entity_id} not "
-                                 "found").format(entity_id=entity_id))
+                        "found").format(entity_id=entity_id))
 
 
 def _raise_no_entities_found(entity_name):

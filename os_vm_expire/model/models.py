@@ -1,4 +1,5 @@
 # Copyright (c) 2013-2014 Rackspace, Inc.
+#               2017 IRISA
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,8 +17,6 @@
 """
 Defines database models for osvmexpire
 """
-import hashlib
-
 from oslo_serialization import jsonutils as json
 from oslo_utils import timeutils
 import six
@@ -25,18 +24,16 @@ import sqlalchemy as sa
 from sqlalchemy.ext import compiler
 from sqlalchemy.ext import declarative
 from sqlalchemy import orm
-from sqlalchemy.orm import collections as col
+# from sqlalchemy.orm import collections as col
 from sqlalchemy import types as sql_types
 
 from os_vm_expire.common import utils
-from os_vm_expire import i18n as u
+# from os_vm_expire import i18n as u
 
 BASE = declarative.declarative_base()
 ERROR_REASON_LENGTH = 255
 SUB_STATUS_LENGTH = 36
 SUB_STATUS_MESSAGE_LENGTH = 255
-
-
 
 
 @compiler.compiles(sa.BigInteger, 'sqlite')
@@ -76,7 +73,6 @@ class ModelBase(object):
     deleted_at = sa.Column(sa.DateTime)
     deleted = sa.Column(sa.Boolean, nullable=False, default=False)
 
-
     def save(self, session=None):
         """Save this object."""
         # import api here to prevent circular dependency problem
@@ -87,8 +83,7 @@ class ModelBase(object):
             self.created_at = timeutils.utcnow()
             self.updated_at = self.created_at
         session.add(self)
-        #session.flush()
-        session.flush();
+        session.flush()
 
     def delete(self, session=None):
         """Delete this object."""

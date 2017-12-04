@@ -10,17 +10,17 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 
-from oslo_log import versionutils
+# from oslo_log import versionutils
 import pecan
-import time
-import datetime
+# import time
+# import datetime
 
-from os_vm_expire import api
+# from os_vm_expire import api
 from os_vm_expire.common import hrefs
 from os_vm_expire.api import controllers
 from os_vm_expire.common import utils
 from os_vm_expire import i18n as u
-from os_vm_expire.model import models
+# from os_vm_expire.model import models
 from os_vm_expire.model import repositories as repo
 
 from os_vm_expire.common import config
@@ -45,7 +45,6 @@ class VmExpireController(controllers.ACLMixin):
         self.project_id = str(project_id)
         self.vmexpire_repo = repo.get_vmexpire_repository()
 
-
     @pecan.expose(generic=True)
     def index(self, **kwargs):
         pecan.abort(405)  # HTTP 405 Method Not Allowed as default
@@ -55,24 +54,29 @@ class VmExpireController(controllers.ACLMixin):
     @controllers.enforce_rbac('vmexpire:get')
     def on_get(self, meta, instance_id=None):
         # if null get all else get expiration for instance
-        ctxt = controllers._get_vmexpire_context(pecan.request)
+        # ctxt = controllers._get_vmexpire_context(pecan.request)
+        repo = self.vmexpire_repo
         instances = []
         if instance_id is None:
-            instances = self.vmexpire_repo.get_project_entities(str(self.project_id))
+            instances = repo.get_project_entities(str(self.project_id))
         else:
-            instance = self.vmexpire_repo.get(entity_id=str(instance_id))
+            instance = repo.get(entity_id=str(instance_id))
             url = hrefs.convert_vmexpire_to_href(instance.id)
-            return {'vmexpire_ref': str(url), 'instance': instance.to_dict_fields()}
-            #if instance:
-            #    instances.append(instance)
+            return {
+                'vmexpire_ref': str(url),
+                'instance': instance.to_dict_fields()
+                }
+
         total = len(instances)
         instances_resp = [
-                hrefs.convert_to_hrefs(o.to_dict_fields())
-                for o in instances
-            ]
-        instances_resp_overall = hrefs.add_nav_hrefs('instances',
-                                                      0, total, total,
-                                                      {'instances': instances_resp})
+            hrefs.convert_to_hrefs(o.to_dict_fields())
+            for o in instances
+        ]
+        instances_resp_overall = hrefs.add_nav_hrefs(
+            'instances',
+            0, total, total,
+            {'instances': instances_resp}
+            )
         instances_resp_overall.update({'total': total})
         return instances_resp_overall
 
@@ -85,13 +89,16 @@ class VmExpireController(controllers.ACLMixin):
         url = hrefs.convert_vmexpire_to_href(instance.id)
         repo.commit()
         pecan.response.status = 202
-        return {'vmexpire_ref': str(url), 'instance': instance.to_dict_fields()}
+        return {
+            'vmexpire_ref': str(url),
+            'instance': instance.to_dict_fields()
+            }
 
     @index.when(method='DELETE', template='json')
     @controllers.handle_exceptions(u._('VmExpire expiration deletion'))
     @controllers.enforce_rbac('vmexpire:delete')
     @controllers.enforce_content_types(['application/json'])
-    def on_put(self, meta, instance_id):
+    def on_delete(self, meta, instance_id):
         instance = self.vmexpire_repo.get_by_instance(instance_id)
         if instance:
             self.vmexpire_repo.delete_entity_by_id(entity_id=instance.id)

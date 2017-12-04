@@ -112,7 +112,6 @@ class DatabaseManager(object):
     def current(self, args):
         commands.current(args.verbose, sql_url=args.dburl)
 
-
     def execute(self):
         """Parse the command line arguments."""
         args = self.parser.parse_args()

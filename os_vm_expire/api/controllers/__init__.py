@@ -27,9 +27,9 @@ def is_json_request_accept(req):
     :param req: HTTP request
     :return: True if need to return JSON response.
     """
-    return (not req.accept
-            or req.accept.header_value == 'application/json'
-            or req.accept.header_value == '*/*')
+    return (not req.accept or
+            req.accept.header_value == 'application/json' or
+            req.accept.header_value == '*/*')
 
 
 def _get_vmexpire_context(req):
@@ -72,14 +72,10 @@ def enforce_rbac(action_name='default'):
             # context placed here by context.py
             # middleware
             ctx = _get_vmexpire_context(pecan.request)
-            external_project_id = None
-            if ctx:
-                external_project_id = ctx.project
 
             _do_enforce_rbac(inst, pecan.request, action_name, ctx, **kwargs)
-            # insert external_project_id as the first arg to the guarded method
             args = list(args)
-            
+
             # Execute guarded method now.
             return fn(inst, *args, **kwargs)
 
@@ -110,10 +106,6 @@ def handle_exceptions(operation_name=u._('System')):
                 # In case intervening modules have disabled logging.
                 LOG.logger.disabled = False
                 LOG.exception(e)
-                #status, message = api.generate_safe_exception_message(
-                #    operation_name, e)
-                #LOG.exception(message)
-                #pecan.abort(status, message)
                 pecan.abort(500, str(e))
 
         return handler

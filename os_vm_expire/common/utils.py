@@ -1,4 +1,5 @@
 # Copyright (c) 2013-2014 Rackspace, Inc.
+#               2017 O. Sallou, IRISA
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -36,13 +37,6 @@ CONF = config.CONF
 
 # Current API version
 API_VERSION = 'v1'
-
-# Added here to remove cyclic dependency.
-# In barbican.model.models module SecretType.OPAQUE was imported from
-# barbican.plugin.interface.secret_store which introduces a cyclic dependency
-# if `secret_store` plugin needs to use db model classes. So moving shared
-# value to another common python module which is already imported in both.
-SECRET_TYPE_OPAQUE = "opaque"
 
 
 def _do_allow_certain_content_types(func, content_types_list=[]):

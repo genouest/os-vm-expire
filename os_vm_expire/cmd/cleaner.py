@@ -22,23 +22,9 @@ import os
 import sys
 import time
 import datetime
-import time
 
 import smtplib
 from email.mime.text import MIMEText
-
-# Oslo messaging RPC server uses eventlet.
-eventlet.monkey_patch()
-
-# 'Borrowed' from the Glance project:
-# If ../barbican/__init__.py exists, add ../ to Python search path, so that
-# it will override what happens to be installed in /usr/(local/)lib/python...
-possible_topdir = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]),
-                                   os.pardir,
-                                   os.pardir))
-if os.path.exists(os.path.join(possible_topdir, 'os_vm_expire', '__init__.py')):
-    sys.path.insert(0, possible_topdir)
-
 
 from os_vm_expire.common import config
 from os_vm_expire import version
@@ -48,10 +34,22 @@ from os_vm_expire.model import repositories
 from oslo_log import log
 from oslo_service import service
 
-
-import futurist
+# import futurist
 from futurist import periodics
 import requests
+
+# Oslo messaging RPC server uses eventlet.
+eventlet.monkey_patch()
+
+# 'Borrowed' from the Glance project:
+# If ../os_vm_expire/__init__.py exists, add ../ to Python search path, so that
+# it will override what happens to be installed in /usr/(local/)lib/python...
+possible_topdir = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]),
+                                   os.pardir,
+                                   os.pardir))
+if os.path.exists(os.path.join(possible_topdir, 'os_vm_expire', '__init__.py')):
+    sys.path.insert(0, possible_topdir)
+
 
 LOG = utils.getLogger(__name__)
 
@@ -68,13 +66,18 @@ def delete_vm(instance_id, project_id, token):
     '''
     nova_url = config.CONF.cleaner.nova_url % {'tenant_id': project_id, 'project_id': project_id}
     LOG.debug('Nova URI:' + nova_url)
-    headers = {'X-Auth-Token': token, 'Content-Type': 'application/json', 'Accept': 'application/json'}
+    headers = {
+        'X-Auth-Token': token,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    }
     r = requests.delete(nova_url + '/servers/' + instance_id, headers=headers)
     if r.status_code != 204:
         LOG.error('Failed to delete instance ' + str(instance_id))
         return False
     else:
         return True
+
 
 def get_identity_token():
     '''
@@ -87,30 +90,34 @@ def get_identity_token():
     admin_user_domain_name = default
     admin_project_domain_name = default
     '''
-    ks_uri = config.CONF.cleaner.auth_uri
+    conf_cleaner = config.CONF.cleaner
+    ks_uri = conf_cleaner.auth_uri
 
-    auth={"auth":
-             {"scope":
-                 {'project': {
-                    "name": config.CONF.cleaner.admin_service,
-                    "domain":
+    auth = {
+        'auth': {
+            'scope':
+                {'project': {
+                    'name': conf_cleaner.admin_service,
+                    'domain':
                         {
-                          "name": config.CONF.cleaner.admin_project_domain_name
+                            'name': conf_cleaner.admin_project_domain_name
                         }
                     }
                  },
-              "identity": {
-                  "password": {
-                        "user": {
-                              "domain": {"name": config.CONF.cleaner.admin_user_domain_name},
-                              "password": config.CONF.cleaner.admin_password,
-                              "name": config.CONF.cleaner.admin_user
+            'identity': {
+                    'password': {
+                        'user': {
+                            'domain': {
+                                'name': conf_cleaner.admin_user_domain_name
+                            },
+                            'password': conf_cleaner.admin_password,
+                            'name': conf_cleaner.admin_user
                         }
-                  },
-                  "methods": ["password"]
-                  }
-             }
-         }
+                    },
+                    'methods': ['password']
+                }
+        }
+    }
     r = requests.post(ks_uri + '/auth/tokens', json=auth)
     if 'X-Subject-Token' not in r.headers:
         LOG.error('Could not get authorization')
@@ -119,11 +126,14 @@ def get_identity_token():
     return token
 
 
-
 def send_email(instance, token, delete=False):
     LOG.debug("Send expiration notification mail")
     # fetch user from identity to get user email
-    headers = {'X-Auth-Token': token, 'Content-Type': 'application/json', 'Accept': 'application/json'}
+    headers = {
+        'X-Auth-Token': token,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    }
     ks_uri = config.CONF.cleaner.auth_uri
     r = requests.get(ks_uri + '/users/' + instance.user_id, headers=headers)
     if r.status_code != 200:
@@ -133,7 +143,7 @@ def send_email(instance, token, delete=False):
     if 'user' in user and 'email' in user['user']:
         email = user['user']['email']
     if email is None:
-        LOG.error('Could not get email for user ' + user_id)
+        LOG.error('Could not get email for user ' + instance.user_id)
         return False
     # send email
 
@@ -141,10 +151,8 @@ def send_email(instance, token, delete=False):
     subject = 'VM ' + str(instance.instance_name) + ' expiration'
 
     message = 'VM %s (id: %s, project: %s) will expire at %d, connect to dashboard to extend its duration else it will be deleted.' % (instance.name, instance.id, instance.project_id, instance.expire)
-    #message = 'VM ' + str(instance.instance_name) + '(id:' + str(instance.instance_id) + ', project: ' + str(instance.project_id) + ') will expire at ' + str(datetime.datetime.fromtimestamp(instance.expire)) + ', connect to dashboard to extend its duration else it will be deleted.'
     if delete:
         message = 'VM %s (id: %s, project: %s) has expired at %d and has been deleted.' % (instance.name, instance.id, instance.project_id, instance.expire)
-        #message = 'VM ' + str(instance.instance_name) + '(id:' + str(instance.instance_id) + ', project: ' + str(instance.project_id) + ') has expired at ' + str(datetime.datetime.fromtimestamp(instance.expire)) + ' and has been deleted.'
     # Create a text/plain message
     msg = MIMEText(message)
 
@@ -158,18 +166,21 @@ def send_email(instance, token, delete=False):
     # Send the message via our own SMTP server, but don't include the
     # envelope header.
     try:
-        s = smtplib.SMTP(config.CONF.smtp.email_smtp_host, config.CONF.smtp.email_smtp_port)
+        s = smtplib.SMTP(config.CONF.smtp.email_smtp_host,
+                         config.CONF.smtp.email_smtp_port)
         if config.CONF.smtp.email_smtp_tls:
             s.starttls()
         if config.CONF.smtp.email_smtp_user:
-            s.login(config.CONF.smtp.email_smtp_user, config.CONF.smtp.email_smtp_password)
+            s.login(config.CONF.smtp.email_smtp_user,
+                    config.CONF.smtp.email_smtp_password)
         s.sendmail(msg['From'], [msg['To']], msg.as_string())
         s.quit()
-    except Exception as e:
+    except Exception:
         LOG.error('Failed to send expiration notification mail to ' + email)
         return False
 
     return True
+
 
 @periodics.periodic(60)
 def check(started_at):
@@ -177,17 +188,21 @@ def check(started_at):
     LOG.info("check instances")
     repo = repositories.get_vmexpire_repository()
     now = int(time.mktime(datetime.datetime.now().timetuple()))
-    check_time = now - config.CONF.cleaner.notify_before_days*3600*24
+    check_time = now - (config.CONF.cleaner.notify_before_days * 3600 * 24)
     entities = repo.get_entities(expiration_filter=now)
     for entity in entities:
-        if entity.expire < check_time and entity.expire < now and not entity.notified:
+        if (entity.expire < check_time and
+            entity.expire < now and
+            not entity.notified
+            ):
             res = send_email(entity, token, delete=False)
             if res:
                 entity.notified = True
                 entity.save()
                 repositories.commit()
         elif entity.expire > now and entity.notified:
-            # If user has not been notified (no email or email failure, do not delete yet)
+            # If user has not been notified
+            # (no email or email failure, do not delete yet)
             res = delete_vm(entity.instance_id, entity.project_id, token)
             if res:
                 repo.delete_entity_by_id(entity_id=entity.id)
@@ -201,8 +216,7 @@ class CleanerServer(service.Service):
         super(CleanerServer, self).__init__(config.CONF)
         repositories.setup_database_engine_and_factory()
         started_at = time.time()
-        nova_url = ''
-        callables = [(check,(started_at,),{})]
+        callables = [(check, (started_at,), {})]
         self.w = periodics.PeriodicWorker(callables)
 
     def start(self):
@@ -218,8 +232,9 @@ class CleanerServer(service.Service):
 
 def main():
     try:
-        config.CONF(sys.argv[1:], project='os-vm-expire',
-             version=version.version_info.version_string)
+        config.CONF(sys.argv[1:],
+                    project='os-vm-expire',
+                    version=version.version_info.version_string)
 
         # Import and configure logging.
         log.setup(config.CONF, 'osvmexpire')
@@ -234,6 +249,7 @@ def main():
 
     except RuntimeError as e:
         fail(1, e)
+
 
 if __name__ == '__main__':
     main()
