@@ -202,24 +202,32 @@ def send_email(instance, token, delete=False):
 @periodics.periodic(60)
 def check(started_at):
     token = get_identity_token()
-    LOG.info("check instances")
+    LOG.debug("check instances")
     repo = repositories.get_vmexpire_repository()
     now = int(time.mktime(datetime.datetime.now().timetuple()))
     check_time = now - (config.CONF.cleaner.notify_before_days * 3600 * 24)
+    last_check_time = now - (config.CONF.cleaner.notify_before_days_last * 3600 * 24)
     entities = repo.get_entities(expiration_filter=now)
     for entity in entities:
-        if (entity.expire < check_time and
-            entity.expire < now and
-            not entity.notified
-            ):
+        if entity.expire > check_time and not entity.notified:
+            # notify
+            LOG.debug("First expiration notification %s" % (entity.id))
             res = send_email(entity, token, delete=False)
             if res:
                 entity.notified = True
                 entity.save()
                 repositories.commit()
-        elif entity.expire > now and entity.notified:
-            # If user has not been notified
-            # (no email or email failure, do not delete yet)
+        elif entity.expire > last_check_time and not entity.notified_last:
+            # notify_last
+            LOG.debug("Last expiration notification" % (entity.id))
+            res = send_email(entity, token, delete=False)
+            if res:
+                entity.notified_last = True
+                entity.save()
+                repositories.commit()
+        elif entity > now:
+            # delete
+            LOG.debug("Delete VM" % (entity.id))
             res = delete_vm(entity.instance_id, entity.project_id, token)
             if res:
                 repo.delete_entity_by_id(entity_id=entity.id)

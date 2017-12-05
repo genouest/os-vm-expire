@@ -118,6 +118,7 @@ class Tasks(object):
                 (CONF.max_vm_duration * 3600 * 24)
                 )
             entity.notified = False
+            entity.notified_last = False
             instance = repo.create_from(entity)
             LOG.debug("NewInstanceExpiration:" + instance_uuid)
         elif event_type == 'instance.delete.end':

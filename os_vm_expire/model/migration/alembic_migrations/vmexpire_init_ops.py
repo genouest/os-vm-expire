@@ -44,6 +44,7 @@ def upgrade():
                   nullable=False),
         sa.Column('expire', sa.Integer, index=False, nullable=False),
         sa.Column('notified', sa.Boolean, index=False, nullable=False),
+        sa.Column('notified_last', sa.Boolean, index=False, nullable=False),
         sa.Column('instance_name', sa.String(255), index=False, nullable=True),
         sa.PrimaryKeyConstraint('id')
     )
