@@ -1,7 +1,7 @@
 Prerequisites
 -------------
 
-Before you install and configure the OpenstackVmExpirationManagement service,
+Before you install and configure the Openstack VmExpiration Management service,
 you must create a database, service credentials, and API endpoints.
 
 #. To create the database, complete these steps:
@@ -61,15 +61,15 @@ you must create a database, service credentials, and API endpoints.
 
      .. code-block:: console
 
-        $ openstack service create --name os_vm_expire --description "OpenstackVmExpirationManagement" openstackvmexpirationmanagement
+        $ openstack service create --name os_vm_expire --description "Openstack VmExpiration Management" vmexpire
 
-#. Create the OpenstackVmExpirationManagement service API endpoints:
+#. Create the Openstack VmExpiration Management service API endpoints:
 
    .. code-block:: console
 
       $ openstack endpoint create --region RegionOne \
-        openstackvmexpirationmanagement public http://controller:XXXX/vY/%\(tenant_id\)s
+        vmexpire public http://controller:XXXX/vY/%\(tenant_id\)s
       $ openstack endpoint create --region RegionOne \
-        openstackvmexpirationmanagement internal http://controller:XXXX/vY/%\(tenant_id\)s
+        vmexpire internal http://controller:XXXX/vY/%\(tenant_id\)s
       $ openstack endpoint create --region RegionOne \
-        openstackvmexpirationmanagement admin http://controller:XXXX/vY/%\(tenant_id\)s
+        vmexpire admin http://controller:XXXX/vY/%\(tenant_id\)s

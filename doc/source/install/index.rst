@@ -1,5 +1,5 @@
 ============================================================
-Openstack VmExpiration Management service installation guide
+Service installation guide
 ============================================================
 
 .. toctree::

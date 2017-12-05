@@ -3,7 +3,7 @@
 Install and configure for Ubuntu
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This section describes how to install and configure the OpenstackVmExpirationManagement
+This section describes how to install and configure the Openstack VmExpiration Management
 service for Ubuntu 14.04 (LTS).
 
 .. include:: common_prerequisites.rst
@@ -21,10 +21,12 @@ Install and configure components
 
 .. include:: common_configure.rst
 
+.. include:: common_database.rst
+
 Finalize installation
 ---------------------
 
-Restart the OpenstackVmExpirationManagement services:
+Restart the OpenstackVm Expiration Management services:
 
 .. code-block:: console
 

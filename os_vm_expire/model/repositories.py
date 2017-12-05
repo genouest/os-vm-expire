@@ -140,9 +140,6 @@ def _get_engine(engine):
             raise Exception(
                 u._('No SQL connection configured'))
 
-    # TODO(jfwood):
-    # connection_dict = sqlalchemy.engine.url.make_url(_CONNECTION)
-
         engine_args = {
             'idle_timeout': CONF.sql_idle_timeout}
         if CONF.sql_pool_size:
@@ -611,7 +608,7 @@ class VmExpireRepo(BaseRepo):
 
 
 def get_vmexpire_repository():
-    """Returns a singleton Secret repository instance."""
+    """Returns a singleton repository instance."""
     global _VMEXPIRE_REPOSITORY
     return _get_repository(_VMEXPIRE_REPOSITORY, VmExpireRepo)
 

@@ -32,6 +32,12 @@ x-openstack-request-id_resp:
   type: string
 
 # variables in path
+id:
+  in: path
+  required: true
+  type: string
+  description: |
+    id of the object.
 
 # variables in body
 expiration_id:
