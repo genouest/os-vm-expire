@@ -349,7 +349,7 @@ class BaseRepo(object):
                 time.mktime(datetime.datetime.now().timetuple()) +
                 CONF.max_vm_extend * 3600 * 24
                 )
-            entity.save()
+            entity.save(session=session)
         except sa_orm.exc.NoResultFound:
             LOG.exception("Not found for %s", entity_id)
             entity = None
@@ -395,7 +395,7 @@ class BaseRepo(object):
 
         return entity
 
-    def save(self, entity):
+    def save(self, entity, session=None):
         """Saves the state of the entity."""
         entity.updated_at = timeutils.utcnow()
 
@@ -406,7 +406,7 @@ class BaseRepo(object):
         # idiotic.
         self._do_validate(entity.to_dict())
 
-        entity.save()
+        entity.save(session=session)
 
     def delete_entity_by_id(self, entity_id,
                             session=None):
