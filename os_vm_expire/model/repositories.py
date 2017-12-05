@@ -342,7 +342,6 @@ class BaseRepo(object):
         return entity
 
     def extend_vm(self, entity_id, session=None):
-        # TODO
         session = self.get_session(session)
         try:
             query = self._do_build_get_query(entity_id,

@@ -154,21 +154,21 @@ def send_email(instance, token, delete=False):
     to = email
     subject = 'VM ' + str(instance.instance_name) + ' expiration'
 
-    message = ('VM %s (id: %s, project: %s) will expire at %d,' +
+    message = ('VM %s (id: %s, project: %s) will expire at %s,' +
                'connect to dashboard to extend its duration else ' +
                ' it will be deleted.') % (
-        instance.name,
+        instance.instance_name,
         instance.id,
         instance.project_id,
-        instance.expire
+        str(datetime.datetime.fromtimestamp(instance.expire))
         )
     if delete:
-        message = ('VM %s (id: %s, project: %s) has expired at %d' +
+        message = ('VM %s (id: %s, project: %s) has expired at %s' +
                    ' and has been deleted.') % (
-            instance.name,
+            instance.instance_name,
             instance.id,
             instance.project_id,
-            instance.expire
+            str(datetime.datetime.fromtimestamp(instance.expire))
             )
     # Create a text/plain message
     msg = MIMEText(message)
@@ -220,7 +220,7 @@ def check(started_at):
                 repositories.commit()
         elif entity.expire < last_check_time and not entity.notified_last:
             # notify_last
-            LOG.debug("Last expiration notification" % (entity.id))
+            LOG.debug("Last expiration notification %s" % (entity.id))
             res = send_email(entity, token, delete=False)
             if res:
                 entity.notified_last = True
@@ -228,7 +228,7 @@ def check(started_at):
                 repositories.commit()
         elif entity.expire < now:
             # delete
-            LOG.debug("Delete VM" % (entity.id))
+            LOG.debug("Delete VM %s" % (entity.id))
             res = delete_vm(entity.instance_id, entity.project_id, token)
             if res:
                 repo.delete_entity_by_id(entity_id=entity.id)
