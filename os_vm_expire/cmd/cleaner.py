@@ -206,8 +206,8 @@ def check(started_at):
     LOG.debug("check instances")
     repo = repositories.get_vmexpire_repository()
     now = int(time.mktime(datetime.datetime.now().timetuple()))
-    check_time = now - (conf_cleaner.notify_before_days * 3600 * 24)
-    last_check_time = now - (conf_cleaner.notify_before_days_last * 3600 * 24)
+    check_time = now + (conf_cleaner.notify_before_days * 3600 * 24)
+    last_check_time = now + (conf_cleaner.notify_before_days_last * 3600 * 24)
     entities = repo.get_entities(expiration_filter=now)
     for entity in entities:
         if entity.expire < check_time and not entity.notified:

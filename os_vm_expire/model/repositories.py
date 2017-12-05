@@ -492,7 +492,7 @@ class BaseRepo(object):
         session = self.get_session(session)
         query = session.query(models.VmExpire)
         if expiration_filter:
-            query = query.filter(models.VmExpire.expire > expiration_filter)
+            query = query.filter(models.VmExpire.expire < expiration_filter)
         LOG.debug(query)
         if query:
             return query.all()
