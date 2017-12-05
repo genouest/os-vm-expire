@@ -55,13 +55,14 @@ class VmExpireController(controllers.ACLMixin):
     def on_get(self, meta, instance_id=None):
         # if null get all else get expiration for instance
         # ctxt = controllers._get_vmexpire_context(pecan.request)
-        repo = self.vmexpire_repo
+        vm_repo = self.vmexpire_repo
         instances = []
         if instance_id is None:
-            instances = repo.get_project_entities(str(self.project_id))
+            instances = vm_repo.get_project_entities(str(self.project_id))
         else:
-            instance = repo.get(entity_id=str(instance_id))
+            instance = vm_repo.get(entity_id=str(instance_id))
             url = hrefs.convert_vmexpire_to_href(instance.id)
+            repo.commit()
             return {
                 'vmexpire_ref': str(url),
                 'instance': instance.to_dict_fields()
@@ -78,6 +79,7 @@ class VmExpireController(controllers.ACLMixin):
             {'instances': instances_resp}
             )
         instances_resp_overall.update({'total': total})
+        repo.commit()
         return instances_resp_overall
 
     @index.when(method='PUT', template='json')
