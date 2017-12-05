@@ -14,28 +14,23 @@ from oslo_policy import policy
 
 
 rules = [
-    policy.RuleDefault('admin',
+    policy.RuleDefault('context_is_admin',
                        'role:admin'),
-    policy.RuleDefault('observer',
-                       'role:observer'),
-    policy.RuleDefault('creator',
-                       'role:creator'),
-    policy.RuleDefault('audit',
-                       'role:audit'),
-    policy.RuleDefault('service_admin',
-                       'role:key-manager:service-admin'),
-    policy.RuleDefault('admin_or_user_does_not_work',
-                       'project_id:%(project_id)s'),
-    policy.RuleDefault('admin_or_user',
-                       'rule:admin or project_id:%(project_id)s'),
-    policy.RuleDefault('admin_or_creator',
-                       'rule:admin or rule:creator'),
-    policy.RuleDefault('all_but_audit',
-                       'rule:admin or rule:observer or rule:creator'),
-    policy.RuleDefault('all_users',
-                       'rule:admin or rule:observer or rule:creator or '
-                       'rule:audit or rule:service_admin'),
+    policy.RuleDefault('admin_or_owner',
+                       'is_admin:True or project_id:%(project_id)s'),
+    policy.RuleDefault('default',
+                       'rule:admin_or_owner'),
 ]
+
+
+{
+    "context_is_admin": "role:admin",
+    "admin_or_owner": "is_admin:True or project_id:%(project_id)s",
+    "default": "rule:admin_or_owner",
+    "vmexpire:get": "rule:admin_or_owner",
+    "vmexpire:extend": "rule:admin_or_owner",
+    "vmexpire:delete": "rule:context_is_admin"
+}
 
 
 def list_rules():

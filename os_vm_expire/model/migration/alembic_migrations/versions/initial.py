@@ -17,13 +17,11 @@
 Revision ID: newton
 Revises: None
 """
+from os_vm_expire.model.migration.alembic_migrations import vmexpire_init_ops
 
 # revision identifiers, used by Alembic.
 revision = 'newton'
 down_revision = None
-
-
-from os_vm_expire.model.migration.alembic_migrations import vmexpire_init_ops
 
 
 def upgrade():

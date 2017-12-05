@@ -85,7 +85,7 @@ cleaner_opts = [
                help=u._("os-vm-expire service project domain name")),
     cfg.IntOpt('notify_before_days',
                default=10,
-               help=u._("os-vm-expire send expiration notification before X days")),
+               help=u._("os-vm-expire send notification before X days")),
 ]
 
 
@@ -206,7 +206,7 @@ db_opts = [
                help=u._("Interval between retries of opening a SQL "
                         "connection.")),
     cfg.BoolOpt('db_auto_create', default=True,
-                help=u._("Create the osvmexpire database on service startup.")),
+                help=u._("Create the database on service startup.")),
     cfg.IntOpt('max_limit_paging', default=100,
                help=u._("Maximum page size for the 'limit' paging URL "
                         "parameter.")),

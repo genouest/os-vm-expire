@@ -47,7 +47,8 @@ eventlet.monkey_patch()
 possible_topdir = os.path.normpath(os.path.join(os.path.abspath(sys.argv[0]),
                                    os.pardir,
                                    os.pardir))
-if os.path.exists(os.path.join(possible_topdir, 'os_vm_expire', '__init__.py')):
+base_local_dir = os.path.join(possible_topdir, 'os_vm_expire', '__init__.py')
+if os.path.exists(base_local_dir):
     sys.path.insert(0, possible_topdir)
 
 
@@ -64,7 +65,10 @@ def delete_vm(instance_id, project_id, token):
     conf in [cleaner]
     nova_url = http://controller.genouest.org:8774/v2.1/%(tenant_id)s
     '''
-    nova_url = config.CONF.cleaner.nova_url % {'tenant_id': project_id, 'project_id': project_id}
+    nova_url = config.CONF.cleaner.nova_url % {
+        'tenant_id': project_id,
+        'project_id': project_id
+        }
     LOG.debug('Nova URI:' + nova_url)
     headers = {
         'X-Auth-Token': token,
@@ -150,9 +154,22 @@ def send_email(instance, token, delete=False):
     to = email
     subject = 'VM ' + str(instance.instance_name) + ' expiration'
 
-    message = 'VM %s (id: %s, project: %s) will expire at %d, connect to dashboard to extend its duration else it will be deleted.' % (instance.name, instance.id, instance.project_id, instance.expire)
+    message = ('VM %s (id: %s, project: %s) will expire at %d,' +
+               'connect to dashboard to extend its duration else ' +
+               ' it will be deleted.') % (
+        instance.name,
+        instance.id,
+        instance.project_id,
+        instance.expire
+        )
     if delete:
-        message = 'VM %s (id: %s, project: %s) has expired at %d and has been deleted.' % (instance.name, instance.id, instance.project_id, instance.expire)
+        message = ('VM %s (id: %s, project: %s) has expired at %d' +
+                   ' and has been deleted.') % (
+            instance.name,
+            instance.id,
+            instance.project_id,
+            instance.expire
+            )
     # Create a text/plain message
     msg = MIMEText(message)
 

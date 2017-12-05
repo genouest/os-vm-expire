@@ -1,5 +1,5 @@
 ==========================================================
-OpenstackVmExpirationManagement service installation guide
+Openstack VmExpiration Management service installation guide
 ==========================================================
 
 .. toctree::
@@ -10,7 +10,7 @@ OpenstackVmExpirationManagement service installation guide
    verify.rst
    next-steps.rst
 
-The OpenstackVmExpirationManagement service (os_vm_expire) provides...
+The Openstack VmExpiration Management service (os_vm_expire) provides...
 
 This chapter assumes a working setup of OpenStack following the
 `OpenStack Installation Tutorial

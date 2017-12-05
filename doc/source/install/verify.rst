@@ -3,7 +3,7 @@
 Verify operation
 ~~~~~~~~~~~~~~~~
 
-Verify operation of the OpenstackVmExpirationManagement service.
+Verify operation of the Openstack VmExpiration Management service.
 
 .. note::
 
@@ -21,4 +21,4 @@ Verify operation of the OpenstackVmExpirationManagement service.
 
    .. code-block:: console
 
-      $ openstack openstackvmexpirationmanagement service list
+      $ openstack vmexpire service list
