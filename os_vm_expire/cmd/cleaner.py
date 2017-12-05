@@ -210,7 +210,7 @@ def check(started_at):
     last_check_time = now - (conf_cleaner.notify_before_days_last * 3600 * 24)
     entities = repo.get_entities(expiration_filter=now)
     for entity in entities:
-        if entity.expire > check_time and not entity.notified:
+        if entity.expire < check_time and not entity.notified:
             # notify
             LOG.debug("First expiration notification %s" % (entity.id))
             res = send_email(entity, token, delete=False)
@@ -218,7 +218,7 @@ def check(started_at):
                 entity.notified = True
                 entity.save()
                 repositories.commit()
-        elif entity.expire > last_check_time and not entity.notified_last:
+        elif entity.expire < last_check_time and not entity.notified_last:
             # notify_last
             LOG.debug("Last expiration notification" % (entity.id))
             res = send_email(entity, token, delete=False)
@@ -226,7 +226,7 @@ def check(started_at):
                 entity.notified_last = True
                 entity.save()
                 repositories.commit()
-        elif entity > now:
+        elif entity.expire < now:
             # delete
             LOG.debug("Delete VM" % (entity.id))
             res = delete_vm(entity.instance_id, entity.project_id, token)
