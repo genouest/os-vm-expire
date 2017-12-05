@@ -1,6 +1,6 @@
-================================================
+==================================================
 Openstack VmExpiration Management service overview
-================================================
+==================================================
 The Openstack VmExpiration Management service provides...
 
 The Openstack VmExpiration Management service consists of the following components:

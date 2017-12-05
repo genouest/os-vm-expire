@@ -221,7 +221,7 @@ class VmExpire(BASE, ModelBase):
             'project_id': self.project_id,
             'expire': self.expire,
             'notified': self.notified,
-            'notified_last: self.notified_last,
+            'notified_last': self.notified_last,
             'user_id': self.user_id,
             'instance_name': self.instance_name
         }

@@ -1,0 +1,78 @@
+# variables in header
+server_location:
+  description: |
+    The location URL of the server, HTTP header
+    "Location: <server location URL>" will be returned.
+  in: header
+  required: true
+  type: string
+x-openstack-request-id_req:
+  description: |
+    The global request ID, which is a unique common ID
+    for tracking each request in OpenStack components.
+    The format of the global request ID must be ``req-`` + UUID (UUID4).
+    If not in accordance with the format, it is ignored.
+    It is associated with the request and appears in the log lines
+    for that request.
+    By default, the middleware configuration ensures that
+    the global request ID appears in the log files.
+  in: header
+  required: false
+  type: string
+x-openstack-request-id_resp:
+  description: |
+    The local request ID, which is a unique ID generated automatically
+    for tracking each request to nova.
+    It is associated with the request and appears in the log lines
+    for that request.
+    By default, the middleware configuration
+    ensures that the local request ID appears in the log files.
+  in: header
+  required: true
+  type: string
+
+# variables in path
+
+# variables in body
+expiration_id:
+  in: body
+  required: true
+  type: string
+  description: |
+    id of the expiration.
+instance:
+  in: body
+  required: true
+  type: object
+  description: |
+    expiration data for an instance.
+instance_id:
+  in: body
+  required: false
+  type: string
+  description: |
+    ID of the instance.
+instance_name:
+  in: body
+  required: false
+  type: string
+  description: |
+    Given name for the instance.
+instances:
+  description: |
+    A list of ``instance`` objects.
+  in: body
+  required: true
+  type: array
+project_id:
+  in: body
+  required: true
+  type: string
+  description: |
+    id fo the project.
+user_id:
+  in: body
+  required: false
+  type: string
+  description: |
+    ID of the user owning the VM.

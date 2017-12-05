@@ -21,6 +21,7 @@ Contents:
    user/index
    admin/index
    reference/index
+   api-ref/index
 
 Indices and tables
 ==================

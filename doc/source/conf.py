@@ -23,6 +23,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 extensions = [
     'sphinx.ext.autodoc',
     'openstackdocstheme',
+    'os_api_ref',
     #'sphinx.ext.intersphinx',
 ]
 
@@ -38,7 +39,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'os-vm-expire'
-copyright = u'2017, OpenStack Developers'
+copyright = u'2017, O. Sallou IRISA'
 
 # openstackdocstheme options
 repository_name = 'genouest/os-vm-expire'

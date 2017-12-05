@@ -202,11 +202,12 @@ def send_email(instance, token, delete=False):
 @periodics.periodic(60)
 def check(started_at):
     token = get_identity_token()
+    conf_cleaner = config.CONF.cleaner
     LOG.debug("check instances")
     repo = repositories.get_vmexpire_repository()
     now = int(time.mktime(datetime.datetime.now().timetuple()))
-    check_time = now - (config.CONF.cleaner.notify_before_days * 3600 * 24)
-    last_check_time = now - (config.CONF.cleaner.notify_before_days_last * 3600 * 24)
+    check_time = now - (conf_cleaner.notify_before_days * 3600 * 24)
+    last_check_time = now - (conf_cleaner.notify_before_days_last * 3600 * 24)
     entities = repo.get_entities(expiration_filter=now)
     for entity in entities:
         if entity.expire > check_time and not entity.notified:
