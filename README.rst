@@ -8,7 +8,7 @@ This project is an unofficial Openstack project, but follows Openstack projects 
 
 
 * Free software: Apache license
-* Documentation: https://git.openstack.org/cgit/genouest/os-vm-expire
+* Documentation:
 * Bugs:
 
 
