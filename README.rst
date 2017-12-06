@@ -11,6 +11,23 @@ This project is an unofficial Openstack project, but follows Openstack projects 
 * Documentation: https://git.openstack.org/cgit/genouest/os-vm-expire
 * Bugs:
 
+
+The Openstack VmExpiration Management service adds an expiration to VMs.
+After expiration, VM is deleted.
+User can extend the VM lifetime via API or Horizon.
+Expiration extend is not limited, user can always extend a VM, but it will be extended only for a configured duration.
+User cannot extend it more than configured duration.
+Example:
+
+  - date A: VM is created, VM will expire at A + N days
+  - some days before expiration user is notified
+  - user extend VM to today + M days (M is configuration based, user cannot specify it)
+  - if user tries to extend VM again, it will be extend again to today + M days
+
+
+Requirements
+------------
+
 Nova notifications need to be enabled to get VM start and end messages.
 
 Features

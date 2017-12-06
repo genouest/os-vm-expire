@@ -12,6 +12,9 @@ environment with at least the following components installed:
 
 Note that installation and configuration vary by distribution.
 
+
+No package available at this time for obs, rdo or ubuntu, only manual installation is available.
+
 .. toctree::
    :maxdepth: 2
 
