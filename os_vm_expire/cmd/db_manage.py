@@ -12,9 +12,14 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import os_vm_expire
 from os_vm_expire.common import config
 from os_vm_expire.model.migration import commands
 from oslo_log import log
+
+from oslo_config import cfg
+from oslo_log import log as logging
+from oslo_db import options
 
 import argparse
 import os
@@ -24,6 +29,7 @@ sys.path.insert(0, os.getcwd())
 
 # Import and configure logging.
 CONF = config.CONF
+options.set_defaults(CONF)
 log.setup(CONF, 'osvmexpire')
 LOG = log.getLogger(__name__)
 
@@ -48,8 +54,6 @@ class DatabaseManager(object):
     def get_main_parser(self):
         """Create top-level parser and arguments."""
         parser = argparse.ArgumentParser(description='osvmexpire DB manager.')
-        parser.add_argument('--dburl', '-d', default=self.conf.sql_connection,
-                            help='URL to the database.')
 
         return parser
 
@@ -97,27 +101,34 @@ class DatabaseManager(object):
 
     def revision(self, args):
         """Process the 'revision' Alembic command."""
+        config = commands.init_config()
+        config.osvmexpire = CONF
         commands.generate(autogenerate=args.autogenerate,
                           message=args.message,
-                          sql_url=args.dburl)
+                          config=config)
 
     def upgrade(self, args):
         """Process the 'upgrade' Alembic command."""
         LOG.debug("Performing database schema migration...")
-        commands.upgrade(to_version=args.version, sql_url=args.dburl)
+        config = commands.init_config()
+        config.osvmexpire = CONF
+        commands.upgrade(to_version=args.version,config=config)
+        #commands.upgrade(to_version=args.version, sql_url=args.dburl)
 
     def history(self, args):
-        commands.history(args.verbose, sql_url=args.dburl)
+        config = commands.init_config()
+        config.osvmexpire = CONF
+        commands.history(args.verbose, config=config)
 
     def current(self, args):
-        commands.current(args.verbose, sql_url=args.dburl)
+        config = commands.init_config()
+        config.osvmexpire = CONF
+        commands.current(args.verbose, config=config)
 
     def execute(self):
         """Parse the command line arguments."""
         args = self.parser.parse_args()
-
         # Perform other setup here...
-
         args.func(args)
 
 
@@ -127,7 +138,6 @@ def _exception_is_successful_exit(thrown_exception):
 
 
 def main():
-
     try:
         dm = DatabaseManager(CONF)
         dm.execute()

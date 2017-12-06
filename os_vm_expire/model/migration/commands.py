@@ -1,4 +1,5 @@
 # Copyright (c) 2013-2014 Rackspace, Inc.
+#               2017 O. Sallou, IRISA
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -32,51 +33,41 @@ LOG = utils.getLogger(__name__)
 CONF = config.CONF
 
 
-def init_config(sql_url=None):
+def init_config():
     """Initialize and return the Alembic configuration."""
-    sqlalchemy_url = sql_url or CONF.sql_connection
-    if not sqlalchemy_url:
-        raise RuntimeError("Please specify a SQLAlchemy-friendly URL to "
-                           "connect to the proper database, either through "
-                           "the CLI or the configuration file.")
-
-    if sqlalchemy_url and 'sqlite' in sqlalchemy_url:
-        LOG.warning('!!! Limited support for migration commands using'
-                    ' sqlite databases; This operation may not succeed.')
 
     config = alembic_config.Config(
         os.path.join(os.path.dirname(__file__), 'alembic.ini')
     )
-    config.osvmexpire_sqlalchemy_url = sqlalchemy_url
     config.set_main_option('script_location',
                            'os_vm_expire.model.migration:alembic_migrations')
     return config
 
 
-def upgrade(to_version='head', sql_url=None):
+def upgrade(to_version='head', config=None):
     """Upgrade to the specified version."""
-    alembic_cfg = init_config(sql_url)
+    alembic_cfg = config or init_config()
     alembic_command.upgrade(alembic_cfg, to_version)
 
 
-def history(verbose, sql_url=None):
-    alembic_cfg = init_config(sql_url)
+def history(verbose, config=None):
+    alembic_cfg = config or init_config()
     alembic_command.history(alembic_cfg, verbose=verbose)
 
 
-def current(verbose, sql_url=None):
-    alembic_cfg = init_config(sql_url)
+def current(verbose, config=None):
+    alembic_cfg = config or init_config()
     alembic_command.current(alembic_cfg, verbose=verbose)
 
 
-def stamp(to_version='head', sql_url=None):
+def stamp(to_version='head', config=None):
     """Stamp the specified version, with no migration performed."""
-    alembic_cfg = init_config(sql_url)
+    alembic_cfg = config or init_config()
     alembic_command.stamp(alembic_cfg, to_version)
 
 
-def generate(autogenerate=True, message='generate changes', sql_url=None):
+def generate(autogenerate=True, message='generate changes', config=None):
     """Generate a version file."""
-    alembic_cfg = init_config(sql_url)
+    alembic_cfg = config or init_config()
     alembic_command.revision(alembic_cfg, message=message,
                              autogenerate=autogenerate)

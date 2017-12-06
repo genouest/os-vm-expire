@@ -182,79 +182,10 @@ host_opts = [
 ]
 
 
-db_opts = [
-    cfg.StrOpt('sql_connection',
-               default="sqlite:///osvmexpire.sqlite",
-               secret=True,
-               help=u._("SQLAlchemy connection string for the reference "
-                        "implementation registry server. Any valid "
-                        "SQLAlchemy connection string is fine. See: "
-                        "http://www.sqlalchemy.org/docs/05/reference/"
-                        "sqlalchemy/connections.html#sqlalchemy."
-                        "create_engine. Note: For absolute addresses, use "
-                        "'////' slashes after 'sqlite:'.")),
-    cfg.IntOpt('sql_idle_timeout', default=3600,
-               help=u._("Period in seconds after which SQLAlchemy should "
-                        "reestablish its connection to the database. MySQL "
-                        "uses a default `wait_timeout` of 8 hours, after "
-                        "which it will drop idle connections. This can result "
-                        "in 'MySQL Gone Away' exceptions. If you notice this, "
-                        "you can lower this value to ensure that SQLAlchemy "
-                        "reconnects before MySQL can drop the connection.")),
-    cfg.IntOpt('sql_max_retries', default=60,
-               help=u._("Maximum number of database connection retries "
-                        "during startup. Set to -1 to specify an infinite "
-                        "retry count.")),
-    cfg.IntOpt('sql_retry_interval', default=1,
-               help=u._("Interval between retries of opening a SQL "
-                        "connection.")),
-    cfg.BoolOpt('db_auto_create', default=True,
-                help=u._("Create the database on service startup.")),
-    cfg.IntOpt('max_limit_paging', default=100,
-               help=u._("Maximum page size for the 'limit' paging URL "
-                        "parameter.")),
-    cfg.IntOpt('default_limit_paging', default=10,
-               help=u._("Default page size for the 'limit' paging URL "
-                        "parameter.")),
-    cfg.StrOpt('sql_pool_class', default="QueuePool",
-               help=u._("Accepts a class imported from the sqlalchemy.pool "
-                        "module, and handles the details of building the "
-                        "pool for you. If commented out, SQLAlchemy will "
-                        "select based on the database dialect. Other options "
-                        "are QueuePool (for SQLAlchemy-managed connections) "
-                        "and NullPool (to disabled SQLAlchemy management of "
-                        "connections). See http://docs.sqlalchemy.org/en/"
-                        "latest/core/pooling.html for more details")),
-    cfg.BoolOpt('sql_pool_logging', default=False,
-                help=u._("Show SQLAlchemy pool-related debugging output in "
-                         "logs (sets DEBUG log level output) if specified.")),
-    cfg.IntOpt('sql_pool_size', default=5,
-               help=u._("Size of pool used by SQLAlchemy. This is the largest "
-                        "number of connections that will be kept persistently "
-                        "in the pool. Can be set to 0 to indicate no size "
-                        "limit. To disable pooling, use a NullPool with "
-                        "sql_pool_class instead. Comment out to allow "
-                        "SQLAlchemy to select the default.")),
-    cfg.IntOpt('sql_pool_max_overflow', default=10,
-               help=u._("# The maximum overflow size of the pool used by "
-                        "SQLAlchemy. When the number of checked-out "
-                        "connections reaches the size set in sql_pool_size, "
-                        "additional connections will be returned up to this "
-                        "limit. It follows then that the total number of "
-                        "simultaneous connections the pool will allow is "
-                        "sql_pool_size + sql_pool_max_overflow. Can be set "
-                        "to -1 to indicate no overflow limit, so no limit "
-                        "will be placed on the total number of concurrent "
-                        "connections. Comment out to allow SQLAlchemy to "
-                        "select the default.")),
-]
-
-
 def list_opts():
     yield None, context_opts
     yield None, common_opts
     yield None, host_opts
-    yield None, db_opts
     yield None, _options.eventlet_backdoor_opts
     yield queue_opt_group, queue_opts
     yield ks_queue_opt_group, ks_queue_opts
@@ -268,11 +199,16 @@ _CONFIG_PARSED_ONCE = False
 
 def parse_args(conf, args=None, usage=None, default_config_files=None):
     global _CONFIG_PARSED_ONCE
-
     if default_config_files is None:
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        if os.path.exists('/etc/os-vm-expire/osvmexpire.conf'):
+        if 'OSVMEXPIRE_CONFIG' in os.environ and os.environ['OSVMEXPIRE_CONFIG']:
+            default_config_files = [os.environ['OSVMEXPIRE_CONFIG']]
+        elif os.path.exists('/etc/os-vm-expire/osvmexpire.conf'):
             default_config_files = ['/etc/os-vm-expire/osvmexpire.conf']
+        elif os.path.exists('osvmexpire.conf'):
+            default_config_files = [
+                'osvmexpire.conf'
+            ]
         elif os.path.exists(
             os.path.join(dir_path, '../../etc/os-vm-expire/osvmexpire.conf')
         ):
@@ -310,7 +246,6 @@ def new_config():
     conf.register_opts(context_opts)
     conf.register_opts(common_opts)
     conf.register_opts(host_opts)
-    conf.register_opts(db_opts)
     conf.register_opts(_options.eventlet_backdoor_opts)
     conf.register_opts(_options.periodic_opts)
 

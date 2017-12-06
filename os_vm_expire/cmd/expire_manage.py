@@ -180,10 +180,9 @@ def main():
         logging.register_options(CONF)
         logging.setup(CONF, "osvmexpire-manage")
         cfg_files = cfg.find_config_files(project='os-vm-expire')
-
         CONF(args=sys.argv[1:],
              project='os-vm-expire',
-             prog='os-vmexpire-manage',
+             prog='osvmexpire-manage',
              version=os_vm_expire.version.__version__,
              default_config_files=cfg_files)
 

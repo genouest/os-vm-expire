@@ -48,7 +48,7 @@ target_metadata = models.BASE.metadata
 
 
 def get_sqlalchemy_url():
-    return (config.osvmexpire_sqlalchemy_url or
+    return (config.osvmexpire.database.connection or
             config.get_main_option("sqlalchemy.url"))
 
 

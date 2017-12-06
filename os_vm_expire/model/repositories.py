@@ -25,6 +25,7 @@ import re
 import sys
 import time
 import datetime
+import threading
 
 from oslo_db import exception as db_exc
 from oslo_db.sqlalchemy import session
@@ -52,8 +53,21 @@ sa_logger = None
 #   functions below.  Please keep this list in alphabetical order.
 _VMEXPIRE_REPOSITORY = None
 
-
 CONF = config.CONF
+
+_FACADE = None
+_LOCK = threading.Lock()
+
+def _create_facade_lazily():
+    global _LOCK, _FACADE
+
+    if _FACADE is None:
+        with _LOCK:
+            if _FACADE is None:
+                _FACADE = session.EngineFacade.from_config(CONF,
+                                                              sqlite_fk=True)
+    return _FACADE
+
 
 
 def hard_reset():
@@ -77,9 +91,6 @@ def setup_database_engine_and_factory():
     if CONF.debug:
         sa_logger = logging.getLogger('sqlalchemy.engine')
         sa_logger.setLevel(logging.DEBUG)
-    if CONF.sql_pool_logging:
-        pool_logger = logging.getLogger('sqlalchemy.pool')
-        pool_logger.setLevel(logging.DEBUG)
 
     _ENGINE = _get_engine(_ENGINE)
 
@@ -135,25 +146,25 @@ def get_session():
 
 def _get_engine(engine):
     if not engine:
-        connection = CONF.sql_connection
-        if not connection:
-            raise Exception(
-                u._('No SQL connection configured'))
+        #connection = CONF.sql_connection
+        #if not connection:
+        #    raise Exception(
+        #        u._('No SQL connection configured'))
 
-        engine_args = {
-            'idle_timeout': CONF.sql_idle_timeout}
-        if CONF.sql_pool_size:
-            engine_args['max_pool_size'] = CONF.sql_pool_size
-        if CONF.sql_pool_max_overflow:
-            engine_args['max_overflow'] = CONF.sql_pool_max_overflow
+        #engine_args = {
+        #    'idle_timeout': CONF.sql_idle_timeout}
+        #if CONF.sql_pool_size:
+        #    engine_args['max_pool_size'] = CONF.sql_pool_size
+        #if CONF.sql_pool_max_overflow:
+        #    engine_args['max_overflow'] = CONF.sql_pool_max_overflow
 
         db_connection = None
         try:
-            engine = _create_engine(connection, **engine_args)
+            engine = _create_engine()
             db_connection = engine.connect()
         except Exception as err:
             msg = u._("Error configuring registry database with supplied "
-                      "sql_connection. Got error: {error}").format(error=err)
+                      "connection. Got error: {error}").format(error=err)
             LOG.exception(msg)
             raise Exception(msg)
         finally:
@@ -174,11 +185,11 @@ def is_db_connection_error(args):
     return False
 
 
-def _create_engine(connection, **engine_args):
-    LOG.debug('Sql connection: please check "sql_connection" property in '
-              'osvmexpire configuration file; Args: %s', engine_args)
+def _create_engine():
+    LOG.debug('Sql connection')
 
-    engine = session.create_engine(connection, **engine_args)
+    # engine = session.create_engine(connection, **engine_args)
+    engine = _create_facade_lazily().get_engine()
 
     # Wrap the engine's connect method with a retry decorator.
     engine.connect = wrap_db_error(engine.connect)
@@ -227,36 +238,6 @@ def wrap_db_error(f):
             raise
     _wrap.__name__ = f.__name__
     return _wrap
-
-
-def clean_paging_values(offset_arg=0, limit_arg=CONF.default_limit_paging):
-    """Cleans and safely limits raw paging offset/limit values."""
-    offset_arg = offset_arg or 0
-    limit_arg = limit_arg or CONF.default_limit_paging
-
-    try:
-        offset = int(offset_arg)
-        if offset < 0:
-            offset = 0
-        if offset > sys.maxsize:
-            offset = 0
-    except ValueError:
-        offset = 0
-
-    try:
-        limit = int(limit_arg)
-        if limit < 1:
-            limit = 1
-        if limit > CONF.max_limit_paging:
-            limit = CONF.max_limit_paging
-    except ValueError:
-        limit = CONF.default_limit_paging
-
-    LOG.debug("Clean paging values limit=%(limit)s, offset=%(offset)s" %
-              {'limit': limit,
-               'offset': offset})
-
-    return offset, limit
 
 
 def delete_all_project_resources(project_id):
@@ -533,47 +514,6 @@ class BaseRepo(object):
 
 class VmExpireRepo(BaseRepo):
     """Repository for the Order entity."""
-
-    def get_by_create_date(self, external_project_id, offset_arg=None,
-                           limit_arg=None, meta_arg=None,
-                           suppress_exception=False, session=None):
-        """Returns a list of vmexpire
-        The list is ordered by the date they were created at and paged
-        based on the offset and limit fields.
-        :param external_project_id: The keystone id for the project.
-        :param offset_arg: The entity number where the query result should
-                           start.
-        :param limit_arg: The maximum amount of entities in the result set.
-        :param meta_arg: Optional meta field used to filter results.
-        :param suppress_exception: Whether NoResultFound exceptions should be
-                                   suppressed.
-        :param session: SQLAlchemy session object.
-        :returns: Tuple consisting of (list_of_entities, offset, limit, total).
-        """
-
-        offset, limit = clean_paging_values(offset_arg, limit_arg)
-
-        session = self.get_session(session)
-
-        query = session.query(models.VmExpire)
-        query = query.order_by(models.VmExpire.created_at)
-        # query = query.filter_by(deleted=False)
-
-        query = query.filter(models.VmExpire.project_id == external_project_id)
-
-        start = offset
-        end = offset + limit
-        LOG.debug('Retrieving from %s to %s', start, end)
-        total = query.count()
-        entities = query.offset(start).limit(limit).all()
-        LOG.debug('Number entities retrieved: %s out of %s',
-                  len(entities), total
-                  )
-
-        if total <= 0 and not suppress_exception:
-            _raise_no_entities_found(self._do_entity_name())
-
-        return entities, offset, limit, total
 
     def _do_entity_name(self):
         """Sub-class hook: return entity name, such as for debugging."""
