@@ -43,7 +43,7 @@ copyright = u'2017, O. Sallou IRISA'
 
 # openstackdocstheme options
 repository_name = 'genouest/os-vm-expire'
-bug_project = 'replace with the name of the project on launchpad'
+bug_project = ''
 bug_tag = ''
 
 # If true, '()' will be appended to :func: etc. cross-reference text.

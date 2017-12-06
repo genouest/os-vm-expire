@@ -8,8 +8,8 @@ This project is an unofficial Openstack project, but follows Openstack projects 
 
 
 * Free software: Apache license
-* Documentation:
-* Bugs:
+* Documentation: http://os-vm-expire.readthedocs.io/
+* Bugs: https://github.com/genouest/os-vm-expire/issues
 
 
 The Openstack VmExpiration Management service adds an expiration to VMs.
