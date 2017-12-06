@@ -32,9 +32,11 @@ from tabulate import tabulate
 
 from oslo_config import cfg
 from oslo_log import log as logging
+from oslo_db import options
 
 
 CONF = cfg.CONF
+options.set_defaults(CONF)
 LOG = logging.getLogger(__name__)
 
 
@@ -44,93 +46,6 @@ def args(*args, **kwargs):
         func.__dict__.setdefault('args', []).insert(0, (args, kwargs))
         return func
     return _decorator
-
-
-class DbCommands(object):
-    """Class for managing osvmexpire database"""
-
-    description = "Subcommands for managing osvmexpire database"
-
-    clean_description = "Clean up soft deletions in the database"
-
-    @args('--db-url', '-d', metavar='<db-url>', dest='dburl',
-          help='osvmexpire database URL')
-    @args('--min-days', '-m', metavar='<min-days>', dest='min_days', type=int,
-          default=90, help='minimum number of days to keep soft deletions. '
-          'default is %(default)s days.')
-    @args('--verbose', '-V', action='store_true', dest='verbose',
-          default=False, help='Show verbose information about the clean up.')
-    @args('--log-file', '-L', metavar='<log-file>', type=str, default=None,
-          dest='log_file', help='Set log file location. '
-          'Default value for log_file can be found in barbican.conf')
-    def clean(self, dburl=None, min_days=None, verbose=None, log_file=None):
-        """Clean soft deletions in the database"""
-        if dburl is None:
-            dburl = CONF.sql_connection
-        if log_file is None:
-            log_file = CONF.log_file
-
-        clean.clean_command(
-            sql_url=dburl,
-            min_num_days=min_days,
-            verbose=verbose,
-            log_file=log_file)
-
-    revision_description = "Create a new database version file"
-
-    @args('--db-url', '-d', metavar='<db-url>', dest='dburl',
-          help='osvmexpire database URL')
-    @args('--message', '-m', metavar='<message>', default='DB change',
-          help='the message for the DB change')
-    @args('--autogenerate', action="store_true", dest='autogen',
-          default=False, help='autogenerate from models')
-    def revision(self, dburl=None, message=None, autogen=None):
-        """Process the 'revision' Alembic command."""
-        if dburl is None:
-            commands.generate(autogenerate=autogen, message=str(message),
-                              sql_url=CONF.sql_connection)
-        else:
-            commands.generate(autogenerate=autogen, message=str(message),
-                              sql_url=str(dburl))
-
-    upgrade_description = "Upgrade to a future database version"
-
-    @args('--db-url', '-d', metavar='<db-url>', dest='dburl',
-          help='osvmexpire database URL')
-    @args('--version', '-v', metavar='<version>', default='head',
-          help='the version to upgrade to, or else '
-          'the latest/head if not specified.')
-    def upgrade(self, dburl=None, version=None):
-        """Process the 'upgrade' Alembic command."""
-        if dburl is None:
-            commands.upgrade(to_version=str(version),
-                             sql_url=CONF.sql_connection)
-        else:
-            commands.upgrade(to_version=str(version), sql_url=str(dburl))
-
-    history_description = "Show database changset history"
-
-    @args('--db-url', '-d', metavar='<db-url>', dest='dburl',
-          help='osvmexpire database URL')
-    @args('--verbose', '-V', action='store_true', dest='verbose',
-          default=False, help='Show full information about the revisions.')
-    def history(self, dburl=None, verbose=None):
-        if dburl is None:
-            commands.history(verbose, sql_url=CONF.sql_connection)
-        else:
-            commands.history(verbose, sql_url=str(dburl))
-
-    current_description = "Show current revision of database"
-
-    @args('--db-url', '-d', metavar='<db-url>', dest='dburl',
-          help='osvmexpire database URL')
-    @args('--verbose', '-V', action='store_true', dest='verbose',
-          default=False, help='Show full information about the revisions.')
-    def current(self, dburl=None, verbose=None):
-        if dburl is None:
-            commands.current(verbose, sql_url=CONF.sql_connection)
-        else:
-            commands.current(verbose, sql_url=str(dburl))
 
 
 class VmExpireCommands(object):
@@ -193,7 +108,6 @@ class VmExpireCommands(object):
 
 
 CATEGORIES = {
-    'db': DbCommands,
     'vm': VmExpireCommands,
 }
 
@@ -287,6 +201,7 @@ def main():
         if isinstance(v, bytes):
             v = v.decode('utf-8')
         fn_kwargs[k] = v
+
 
     # call the action with the remaining arguments
     try:
