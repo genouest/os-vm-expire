@@ -28,6 +28,8 @@ def convert_vmexpire_to_href(vmexpire_id):
 
 def convert_to_hrefs(fields):
     """Convert id's within a fields dict to HATEOAS-style hrefs."""
+    url = convert_vmexpire_to_href(fields['id'])
+    fields['links'] = {'self': url}
     return fields
 
 
@@ -80,6 +82,15 @@ def add_nav_hrefs(resources_name, offset, limit,
                                        limit)})
     return data
 
+def add_self_href(resource_name, data):
+    """Add self href to response
+    :param resources_name: Name of api resource
+    :returns: augmented dictionary with next and/or previous hrefs
+    """
+    if 'links' not in data:
+        data['links'] = {}
+    data['links'].update({'self': utils.hostname_for_refs(resource=resource_name)})
+    return data
 
 def get_vmexpire_id_from_ref(vmexpire_ref):
     """Parse a container reference and return the container ID
