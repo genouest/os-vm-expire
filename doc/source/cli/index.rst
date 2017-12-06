@@ -2,4 +2,24 @@
 Command line interface reference
 ================================
 
-CLI reference of os-vm-expire.
+Those command-line tools need access to configuration file, so are dedicated to administer the tool, not for end user.
+
+osvmexpire-manage
+=================
+
+Manage expirations
+
+.. code-block:: bash
+
+  osvmexpire-manage vm list
+  osvmexpire-manage vm extend -h
+  osvmexpire-manage vm remove -h
+
+osvmexpire-db-manage
+====================
+
+Manage database creation and upgrades
+
+.. code-block:: bash
+
+  osvmexpire-db-manage -h

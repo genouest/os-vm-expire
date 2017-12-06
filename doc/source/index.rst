@@ -20,6 +20,7 @@ Contents:
    admin/index
    reference/index
    api-ref/index
+   development/index
 
 Indices and tables
 ==================

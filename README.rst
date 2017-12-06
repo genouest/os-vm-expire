@@ -1,55 +1,42 @@
 ===============================
-os-vm-expire
+About
 ===============================
 
 Manage VM expiration and auto-deletion in an Openstack cloud.
 
 This project is an unofficial Openstack project, but follows Openstack projects architecture, with a Horizon plugin and associated services.
 
-!!!In Development!!!!
 
 * Free software: Apache license
-* Documentation: https://docs.openstack.org/os-vm-expire/latest
-* Source: https://git.openstack.org/cgit/genouest/os-vm-expire
-* Bugs: https://bugs.launchpad.net/replace with the name of the project on launchpad
+* Documentation: https://git.openstack.org/cgit/genouest/os-vm-expire
+* Bugs:
+
+Nova notifications need to be enabled to get VM start and end messages.
 
 Features
 --------
 
 * On VM creation, add an expiration date
 * On near-expiration date, send an email to user
-* Horizon plugin to view VM expiration and allow for expiration extend
+* Horizon plugin to view VM expiration and extend expiration time
 * On expiration date, delete the VM and send an email to user
 * CLI commands to extend a VM or remove expiration from a VM (admin only)
 
-configuration file can be specified via environement variable OSVMEXPIRE_CONFIG.
-
-Development
------------
 
 Configuration
-~~~~~~~~~~~~~
+-------------
 
-.. code-block:: bash
+Configuration files are expected in directory /etc/os-vm-expire/ :
 
-  oslo-config-generator --namespace oslo.db --namespace oslo.messaging --namespace osvmexpire.common.config --namespace keystonemiddleware.auth_token --namespace oslo.service.periodic_task --namespace oslo.service.service > etc/oslo-config-generator/osvmexpire.conf
-  oslopolicy-sample-generator --config-file etc/oslo-config-generator/policy.conf --format json
+* osvmexpire.conf
+* policy.json
+* osvmexpire-api-paste.ini (for wsgi server)
 
-Create/Upgrade DB
-~~~~~~~~~~~~~~~~~
+Main configuration file can be specified via environment variable OSVMEXPIRE_CONFIG.
 
-(if using mysql need library MySQL-python)
+Components
+----------
 
-.. code-block:: bash
-
-  osvmexpire-db-manage upgrade
-
-Documentation
-~~~~~~~~~~~~~
-
-.. code-block:: bash
-
-  python setup.py build_sphinx
 
 Start API server
 ~~~~~~~~~~~~~~~~
@@ -101,7 +88,7 @@ Those command-line tools need access to configuration file, so are dedicated to 
 
 
 Credits
-~~~~~~~
+-------
 
 Code is mostly inspired (code base coming from) the Barbican Openstack project, code was more or less updated to manage different objects.
 This project takes the same license and kept original file headers.

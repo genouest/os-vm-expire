@@ -21,4 +21,7 @@ Verify operation of the Openstack VmExpiration Management service.
 
    .. code-block:: console
 
-      $ openstack vmexpire service list
+      $ openstack service list
+
+
+The os_vm_expire should appear

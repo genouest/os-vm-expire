@@ -46,12 +46,6 @@ expiration_id:
   type: string
   description: |
     id of the expiration.
-instance:
-  in: body
-  required: true
-  type: object
-  description: |
-    expiration data for an instance.
 instance_id:
   in: body
   required: false
@@ -64,12 +58,6 @@ instance_name:
   type: string
   description: |
     Given name for the instance.
-instances:
-  description: |
-    A list of ``instance`` objects.
-  in: body
-  required: true
-  type: array
 project_id:
   in: body
   required: true
@@ -82,3 +70,15 @@ user_id:
   type: string
   description: |
     ID of the user owning the VM.
+vmexpire:
+  in: body
+  required: true
+  type: object
+  description: |
+    expiration data for an instance.
+vmexpires:
+  description: |
+    A list of ``vmexpire`` objects.
+  in: body
+  required: true
+  type: array

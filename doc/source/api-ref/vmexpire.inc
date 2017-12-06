@@ -26,7 +26,7 @@ List expirations
 
 .. rest_method:: GET /vmexpires/
 
-Lists expiration info for all instances in selected project.
+Lists expiration info for all vmexpires in selected project.
 
 Normal response codes: 200
 
@@ -42,12 +42,17 @@ Response
 
 .. rest_parameters:: parameters.yaml
 
-  - instances: instances
+  - vmexpires: vmexpires
   - id: expiration_id
   - instance_id: instance_id
   - intance_name: instance_name
   - project_id: project_id
   - user_id: user_id
+
+**Example List VmExpires**
+
+.. literalinclude:: vmexpire-list-resp.json
+    :language: javascript
 
 
 Get expiration
@@ -75,12 +80,17 @@ Response
 
 .. rest_parameters:: parameters.yaml
 
-  - instance: instance
+  - vmexpire: vmexpire
   - id: expiration_id
   - instance_id: instance_id
   - intance_name: instance_name
   - project_id: project_id
   - user_id: user_id
+
+**Example Get VmExpire**
+
+.. literalinclude:: vmexpire-list-resp.json
+    :language: javascript
 
 Extend expiration
 =================
@@ -106,7 +116,7 @@ Response
 
 .. rest_parameters:: parameters.yaml
 
-  - instance: instance
+  - vmexpire: vmexpire
   - id: expiration_id
   - instance_id: instance_id
   - intance_name: instance_name
