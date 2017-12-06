@@ -160,15 +160,6 @@ def _get_engine(engine):
             if db_connection:
                 db_connection.close()
 
-        if CONF.db_auto_create:
-            meta = sqlalchemy.MetaData()
-            meta.reflect(bind=engine)
-            tables = meta.tables
-
-            _auto_generate_tables(engine, tables)
-        else:
-            LOG.info('Not auto-creating osvmexpire registry DB')
-
     return engine
 
 
