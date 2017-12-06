@@ -22,6 +22,7 @@ Features
 * On expiration date, delete the VM and send an email to user
 * CLI commands to extend a VM or remove expiration from a VM (admin only)
 
+configuration file can be specified via environement variable OSVMEXPIRE_CONFIG.
 
 Development
 -----------
@@ -31,7 +32,7 @@ Configuration
 
 .. code-block:: bash
 
-  oslo-config-generator --namespace oslo.messaging --namespace osvmexpire.common.config --namespace keystonemiddleware.auth_token --namespace oslo.service.periodic_task --namespace oslo.service.service > etc/oslo-config-generator/osvmexpire.conf
+  oslo-config-generator --namespace oslo.db --namespace oslo.messaging --namespace osvmexpire.common.config --namespace keystonemiddleware.auth_token --namespace oslo.service.periodic_task --namespace oslo.service.service > etc/oslo-config-generator/osvmexpire.conf
   oslopolicy-sample-generator --config-file etc/oslo-config-generator/policy.conf --format json
 
 Create/Upgrade DB
@@ -57,15 +58,14 @@ For dev (port 8000)
 
 .. code-block:: bash
 
-  export OSVMEXPIRE_PORT=9311 # optional
+  export OSVMEXPIRE_PORT=9411 # optional
   osvmexpire-wsgi-api
 
 For prod
 
 .. code-block:: bash
 
-  # uwsgi --master --die-on-term --emperor /etc/os-vm-expire/vassals --logto /var/log/os-vm-expire/osvmexpire-api.log --stats localhost:9314
-  python bin/osvmexpire-api.py
+  uwsgi --master --die-on-term --emperor /etc/os-vm-expire/vassals --logto /var/log/os-vm-expire/osvmexpire-api.log --stats localhost:9314
 
 
 Start worker
@@ -75,7 +75,7 @@ Manage nova notifications on instance creation and deletion to create/delete exp
 
 .. code-block:: bash
 
-  osvmexpire-worker --config-file etc/os-vm-expire/osvmexpire.conf
+  osvmexpire-worker --config-file /etc/os-vm-expire/osvmexpire.conf
 
 
 Start cleaner
@@ -88,11 +88,22 @@ Once expiration is reached (and if user could be notified of expiration), delete
 
   osvmexpire-cleaner --config-file /etc/os-vm-expire/osvmexpire.conf
 
-  CLI usage
-  ---------
+CLI usage
+---------
 
-  .. code-block:: bash
+Those command-line tools need access to configuration file, so are dedicated to administer the tool, not for end user.
 
-     osvmexpire-manage db -h
-     osvmexpire-manage vm extend -h
-     osvmexpire-manage vm remove -h
+.. code-block:: bash
+
+  osvmexpire-manage vm list
+  osvmexpire-manage vm extend -h
+  osvmexpire-manage vm remove -h
+
+
+Credits
+~~~~~~~
+
+Code is mostly inspired (code base coming from) the Barbican Openstack project, code was more or less updated to manage different objects.
+This project takes the same license and kept original file headers.
+
+This project was developed by the GenOuest core facility, IRISA, France.

@@ -27,9 +27,9 @@
         # would be the load balanced endpoint that clients would use to
         # communicate back with this service. If a deployment wants to derive
         # host from wsgi request instead then make this blank. Blank is needed
-        # to override default config value which is 'http://localhost:9311'
+        # to override default config value which is 'http://localhost:9411'
         # (string value)
-        host_href = http://localhost:9311
+        host_href = http://localhost:9411
 
         # Maximum life duration of VM in days (integer value)
         #max_vm_duration = 60
@@ -37,14 +37,14 @@
         # Maximum life extend of VM in days (integer value)
         #max_vm_extend = 30
 
+        [database]
         # SQLAlchemy connection string for the reference implementation
         # registry server. Any valid SQLAlchemy connection string is fine.
         # See:
         # http://www.sqlalchemy.org/docs/05/reference/sqlalchemy/connections.html#sqlalchemy.create_engine.
         # Note: For absolute addresses, use '////' slashes after 'sqlite:'.
         # (string value)
-        sql_connection=mysql+mysqldb://os_vm_expire:dbpassword@localhost/os_vm_expire
-
+        connection=mysql+pysql://os_vm_expire:dbpassword@localhost/os_vm_expire
 
         [keystone_authtoken]
         auth_type = password

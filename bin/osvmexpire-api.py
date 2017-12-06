@@ -6,7 +6,7 @@ from paste import httpserver
 
 
 def run():
-    vmexpire_port = '9311'
+    vmexpire_port = '9411'
     if 'OSVMEXPIRE_PORT' in os.environ:
         vmexpire_port = os.environ['OSVMEXPIRE_PORT']
 

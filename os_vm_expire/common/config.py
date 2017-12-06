@@ -171,14 +171,14 @@ common_opts = [
 ]
 
 host_opts = [
-    cfg.StrOpt('host_href', default='http://localhost:9311',
+    cfg.StrOpt('host_href', default='http://localhost:9411',
                help=u._("Host name, for use in HATEOAS-style references Note: "
                         "Typically this would be the load balanced endpoint "
                         "that clients would use to communicate back with this "
                         "service. If a deployment wants to derive host from "
                         "wsgi request instead then make this blank. Blank is "
                         "needed to override default config value which is "
-                        "'http://localhost:9311'")),
+                        "'http://localhost:9411'")),
 ]
 
 
