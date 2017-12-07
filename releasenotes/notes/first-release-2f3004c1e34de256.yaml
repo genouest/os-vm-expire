@@ -1,0 +1,8 @@
+---
+prelude: >
+    First release of os-vm-expire
+features:
+  - Adds expiration to all VMs.
+  - Notify users before expiration
+  - User can extend VM expiration delay at any time
+  - Delete VM on expiration
