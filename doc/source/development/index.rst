@@ -29,3 +29,12 @@ Generate documentation
 .. code-block:: bash
 
   python setup.py build_sphinx
+
+Release notes
+~~~~~~~~~~~~~
+
+Release notes are managed via reno
+
+.. code-block:: bash
+
+  tox -e releasenotes
