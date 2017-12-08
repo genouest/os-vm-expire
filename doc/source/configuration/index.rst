@@ -15,3 +15,7 @@ to fetch notifications message (versoined_notifications)
 os-vm-expire works only with v3 authentication.
 
 *cleaner* section is specific to osvmexpire-cleaner service.
+
+Policy.json should be used to defined policy access rules to API endpoints and should also be used for Horizon ACLs.
+
+Templates can be found in et/oslo-config-generator for osvmexpire.conf and policy.json
