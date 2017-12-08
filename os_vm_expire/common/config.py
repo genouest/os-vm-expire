@@ -57,6 +57,10 @@ mail_opts = [
     cfg.StrOpt('email_smtp_from',
                default=None,
                help=u._("SMTP From mail origin")),
+    cfg.StrOpt('email_smtp_copy_delete_notif_to',
+               default=None,
+               help=u._('Email where deletion notifications should be sent,'
+                        ' leave empty if no copy is needed')),
 ]
 
 cleaner_opt_group = cfg.OptGroup(name='cleaner',

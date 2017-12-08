@@ -150,8 +150,10 @@ def send_email(instance, token, delete=False):
         LOG.error('Could not get email for user ' + instance.user_id)
         return False
     # send email
+    to = [email]
+    if delete and config.CONF.smtp.email_smtp_copy_delete_notif_to is not None:
+        to = [email, config.CONF.smtp.email_smtp_copy_delete_notif_to]
 
-    to = email
     subject = 'VM ' + str(instance.instance_name) + ' expiration'
 
     message = ('VM %s (id: %s, project: %s) will expire at %s,' +
@@ -178,7 +180,7 @@ def send_email(instance, token, delete=False):
     if msg['From'] is None:
         LOG.error('Missing smtp.email_smtp_from in config')
         return False
-    msg['To'] = to
+    msg['To'] = ', '.join(to)
 
     # Send the message via our own SMTP server, but don't include the
     # envelope header.
@@ -190,7 +192,7 @@ def send_email(instance, token, delete=False):
         if config.CONF.smtp.email_smtp_user:
             s.login(config.CONF.smtp.email_smtp_user,
                     config.CONF.smtp.email_smtp_password)
-        s.sendmail(msg['From'], [msg['To']], msg.as_string())
+        s.sendmail(msg['From'], to, msg.as_string())
         s.quit()
     except Exception:
         LOG.error('Failed to send expiration notification mail to ' + email)
@@ -198,8 +200,8 @@ def send_email(instance, token, delete=False):
 
     return True
 
-
-@periodics.periodic(60)
+# Every hour
+@periodics.periodic(3600)
 def check(started_at):
     token = get_identity_token()
     conf_cleaner = config.CONF.cleaner
