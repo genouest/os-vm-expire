@@ -100,7 +100,7 @@ class VmExpireController(controllers.ACLMixin):
     @controllers.enforce_rbac('vmexpire:delete')
     @controllers.enforce_content_types(['application/json'])
     def on_delete(self, meta, instance_id):
-        instance = self.vmexpire_repo.get_by_instance(instance_id)
+        instance = self.vmexpire_repo.get(entity_id=instance_id)
         if instance:
             self.vmexpire_repo.delete_entity_by_id(entity_id=instance.id)
             repo.commit()

@@ -1,0 +1,3 @@
+---
+fixes:
+  - Fix #7, DELETE API must use expiration id instead of instance id as parameter
