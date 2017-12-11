@@ -53,11 +53,11 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'os_vm_expire Release Notes'
-copyright = u'2017, OpenStack Developers'
+copyright = u'2017, Olivier Sallou, IRISA'
 
 # openstackdocstheme options
 repository_name = 'genouest/os-vm-expire'
-bug_project = 'replace with the name of the project on launchpad'
+bug_project = ''
 bug_tag = ''
 
 # The version info for the project you're documenting, acts as replacement for
@@ -213,7 +213,7 @@ latex_elements = {
 latex_documents = [
     ('index', 'os_vm_expireReleaseNotes.tex',
      u'os_vm_expire  Release Notes Documentation',
-     u'OpenStack Foundation', 'manual'),
+     u'IRISA', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -244,7 +244,7 @@ latex_documents = [
 man_pages = [
     ('index', 'os_vm_expirerereleasenotes',
      u'os_vm_expire  Release Notes Documentation',
-     [u'OpenStack Foundation'], 1)
+     [u'IRISA'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -259,8 +259,8 @@ man_pages = [
 texinfo_documents = [
     ('index', 'os_vm_expire ReleaseNotes',
      u'os_vm_expire Release Notes Documentation',
-     u'OpenStack Foundation', 'os_vm_expireReleaseNotes',
-     'One line description of project.',
+     u'IRISA', 'os_vm_expireReleaseNotes',
+     'Auto expiration of VM in openstack.',
      'Miscellaneous'),
 ]
 
