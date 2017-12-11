@@ -11,6 +11,7 @@ This project is an unofficial Openstack project, but follows Openstack projects 
 * Documentation: http://os-vm-expire.readthedocs.io/
 * Bugs: https://github.com/genouest/os-vm-expire/issues
 * Horizon plugin: https://github.com/genouest/os-vm-expire-horizon-plugin
+* OSC plugin (openstack client): https://github.com/genouest/os-vm-expire-osc-plugin
 
 The Openstack VmExpiration Management service adds an expiration to VMs.
 After expiration, VM is deleted.
