@@ -17,7 +17,7 @@ rules = [
     policy.RuleDefault('context_is_admin',
                        'role:admin'),
     policy.RuleDefault('admin_or_owner',
-                       'is_admin:True or project_id:%(project_id)s'),
+                       'rule:context_is_admin or is_admin:True or project_id:%(project_id)s'),
     policy.RuleDefault('default',
                        'rule:admin_or_owner'),
 ]
@@ -25,7 +25,7 @@ rules = [
 
 {
     "context_is_admin": "role:admin",
-    "admin_or_owner": "is_admin:True or project_id:%(project_id)s",
+    "admin_or_owner": "rule:context_is_admin or is_admin:True or project_id:%(project_id)s",
     "default": "rule:admin_or_owner",
     "vmexpire:get": "rule:admin_or_owner",
     "vmexpire:extend": "rule:admin_or_owner",
