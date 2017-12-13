@@ -1,0 +1,13 @@
+[Unit]
+Description=os-vm-expire worker daemon
+
+[Service]
+PIDFile=/var/run/osvmexpire-worker.pid
+#EnvironmentFile=/etc/default/osvmexpire-worker
+ExecStart=/usr/bin/osvmexpire-worker --config-file /etc/os-vm-expire/osvmexpire.conf
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

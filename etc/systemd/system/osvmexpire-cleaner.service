@@ -1,0 +1,13 @@
+[Unit]
+Description=os-vm-expire cleaner daemon
+
+[Service]
+PIDFile=/var/run/osvmexpire-cleaner.pid
+#EnvironmentFile=/etc/default/osvmexpire-cleaner
+ExecStart=/usr/bin/osvmexpire-cleaner --config-file /etc/os-vm-expire/osvmexpire.conf
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

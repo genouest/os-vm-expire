@@ -12,3 +12,5 @@ The Openstack VmExpiration Management service consists of the following componen
 
   ``osvmexpire-cleaner`` service
   Checks at regular interval for VM expiration, sends email notifications to user before final deletion of the VM.
+
+Systemd templates can be found in etc/systemd/system directory.
