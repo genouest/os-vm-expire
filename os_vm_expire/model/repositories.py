@@ -533,7 +533,6 @@ class VmExpireRepo(BaseRepo):
         session = self.get_session(session)
         try:
             nb_del = session.query(models.VmExpire).delete()
-            print("### DEL?" + str(nb_del))
         except sqlalchemy.exc.SQLAlchemyError:
             LOG.exception('Problem deleting entities')
             if not suppress_exception:
