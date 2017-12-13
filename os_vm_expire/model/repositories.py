@@ -20,12 +20,11 @@ TODO: The top part of this file was 'borrowed' from Glance, but seems
 quite intense for sqlalchemy, and maybe could be simplified.
 """
 
+import datetime
 import logging
 import re
-import sys
-import time
-import datetime
 import threading
+import time
 
 from oslo_db import exception as db_exc
 from oslo_db.sqlalchemy import session
@@ -58,6 +57,7 @@ CONF = config.CONF
 _FACADE = None
 _LOCK = threading.Lock()
 
+
 def _create_facade_lazily():
     global _LOCK, _FACADE
 
@@ -65,9 +65,8 @@ def _create_facade_lazily():
         with _LOCK:
             if _FACADE is None:
                 _FACADE = session.EngineFacade.from_config(CONF,
-                                                              sqlite_fk=True)
+                                                           sqlite_fk=True)
     return _FACADE
-
 
 
 def hard_reset():
@@ -146,18 +145,6 @@ def get_session():
 
 def _get_engine(engine):
     if not engine:
-        #connection = CONF.sql_connection
-        #if not connection:
-        #    raise Exception(
-        #        u._('No SQL connection configured'))
-
-        #engine_args = {
-        #    'idle_timeout': CONF.sql_idle_timeout}
-        #if CONF.sql_pool_size:
-        #    engine_args['max_pool_size'] = CONF.sql_pool_size
-        #if CONF.sql_pool_max_overflow:
-        #    engine_args['max_overflow'] = CONF.sql_pool_max_overflow
-
         db_connection = None
         try:
             engine = _create_engine()
@@ -512,6 +499,7 @@ class BaseRepo(object):
                                 project_id)
 
 
+
 class VmExpireRepo(BaseRepo):
     """Repository for the Order entity."""
 
@@ -536,6 +524,20 @@ class VmExpireRepo(BaseRepo):
         """
         return session.query(models.VmExpire).filter_by(
             project_id=project_id)
+
+    def delete_all_entities(self, suppress_exception=False, session=None):
+        """Deletes all entities.
+        :param suppress_exception: Pass True if want to suppress exception
+        :param session: existing db session reference. If None, gets session.
+        """
+        session = self.get_session(session)
+        try:
+            nb_del = session.query(models.VmExpire).delete()
+            print("### DEL?" + str(nb_del))
+        except sqlalchemy.exc.SQLAlchemyError:
+            LOG.exception('Problem deleting entities')
+            if not suppress_exception:
+                raise Exception(u._('Error deleting entities '))
 
 
 def get_vmexpire_repository():
