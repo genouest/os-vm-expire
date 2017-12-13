@@ -51,7 +51,7 @@ class VmExpireController(controllers.ACLMixin):
 
     @index.when(method='GET', template='json')
     @controllers.handle_exceptions(u._('VmExpire retrieval'))
-    #controllers.enforce_rbac('vmexpire:get')
+    @controllers.enforce_rbac('vmexpire:get')
     def on_get(self, meta, instance_id=None):
         # if null get all else get expiration for instance
         # ctxt = controllers._get_vmexpire_context(pecan.request)
@@ -61,7 +61,7 @@ class VmExpireController(controllers.ACLMixin):
             instances = vm_repo.get_project_entities(str(self.project_id))
         else:
             instance = vm_repo.get(entity_id=str(instance_id))
-            url = hrefs.convert_vmexpire_to_href(instance.id)
+            # url = hrefs.convert_vmexpire_to_href(instance.id)
             repo.commit()
             return {
                 'vmexpire': hrefs.convert_to_hrefs(instance.to_dict_fields())
@@ -88,12 +88,12 @@ class VmExpireController(controllers.ACLMixin):
     @controllers.enforce_content_types(['application/json'])
     def on_put(self, meta, instance_id):
         instance = self.vmexpire_repo.extend_vm(entity_id=instance_id)
-        url = hrefs.convert_vmexpire_to_href(instance.id)
+        # url = hrefs.convert_vmexpire_to_href(instance.id)
         repo.commit()
         pecan.response.status = 202
         return {
             'vmexpire': hrefs.convert_to_hrefs(instance.to_dict_fields())
-            }
+        }
 
     @index.when(method='DELETE', template='json')
     @controllers.handle_exceptions(u._('VmExpire expiration deletion'))
