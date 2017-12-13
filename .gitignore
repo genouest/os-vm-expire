@@ -1,5 +1,8 @@
 *.py[cod]
 
+#sqlite test db
+test.db
+
 etc/os-vm-expire/osvmexpire.conf
 
 # C extensions
