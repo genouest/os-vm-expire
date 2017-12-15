@@ -1,0 +1,5 @@
+etc/oslo-config-generator/osvmexpire.conf.sample etc/os-vm-expire/
+etc/systemd/system/osvmexpire-api.service lib/systemd/system/
+etc/systemd/system/osvmexpire-cleaner.service lib/systemd/system/
+etc/systemd/system/osvmexpire-worker.service lib/systemd/system/
+

@@ -1,0 +1,4 @@
+version=4
+opts="repack,compression=xz,filenamemangle=s/.+\/v?(\d\S+)\.tar\.gz/os-vm-expire-$1\.tar\.gz/" \
+  https://github.com/genouest/os-vm-expire/tags .*/v?(\d\S+)\.tar\.gz
+

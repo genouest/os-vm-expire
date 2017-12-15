@@ -1,0 +1,49 @@
+Source: python-osvmexpire
+Maintainer: Olivier Sallou <olivier.sallou@irisa.fr>
+Section: python
+Priority: optional
+Build-Depends: debhelper (>= 10),
+               dh-python,
+               python3-all,
+               python3-setuptools,
+               python3-mock,
+               python3-nose,
+               python3-pbr,
+               python3-paste,
+               python3-pastedeploy,
+               python3-oslo.config,
+               python3-oslo.context,
+               python3-oslo.db,
+               python3-oslo.policy,
+               python3-oslo.messaging,
+               python3-oslo.log,
+               python3-oslo.utils,
+               python3-oslo.middleware,
+               python3-oslo.i18n,
+               python3-oslo.service,
+               python3-webob,
+               python3-keystonemiddleware,
+               python3-pecan,
+               python3-six,
+               python3-sqlalchemy,
+               python3-alembic,
+               python3-prettytable,
+               python3-oslotest,
+               python3-sphinx,
+               python3-os-api-ref,
+               python3-openstackdocstheme,
+               sqlite3
+Standards-Version: 4.1.0
+Vcs-Browser: https://github.com/genouest/os-vm-expire
+Vcs-Git: https://github.com/genouest/os-vm-expire.git
+Homepage: https://github.com/genouest/os-vm-expire
+X-Python3-Version: >= 3.4
+
+Package: python3-osvmexpire
+Architecture: all
+Depends: ${misc:Depends},
+         ${python3:Depends},
+         ${shlibs:Depends}
+Suggests: mariadb-server
+Description: Openstack os-vm-expire project (Python 3)
+ Manage VM expiration and auto-deletion in an Openstack cloud.

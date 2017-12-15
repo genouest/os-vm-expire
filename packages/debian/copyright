@@ -1,0 +1,9 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: os-vm-expire
+Source: https://github.com/genouest/os-vm-expire
+
+Files: *
+Copyright: 2017 Olivier Sallou <olivier.sallou@irisa.fr>, IRISA
+License: Apache-2.0
+ On Debian systems, the complete text of the GNU General
+ Public License version 2 can be found in "/usr/share/common-licenses/Apache-2.0".

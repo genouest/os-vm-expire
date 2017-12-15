@@ -1,0 +1,38 @@
+#!/usr/bin/make -f
+## See debhelper(7) (uncomment to enable)
+## output every command that modifies files on the build system.
+##export DH_VERBOSE = 1
+#
+
+export PYBUILD_NAME=os_vm_expire
+
+# main packaging script based on dh7 syntax
+%:
+	dh $@ --with python3 --with systemd --buildsystem=pybuild
+
+override_dh_clean:
+	rm -f MANIFEST.in AUTHORS ChangeLog
+	rm -rf os_vm_expire.egg-info
+
+
+override_dh_systemd_enable:
+	dh_systemd_enable etc/systemd/system/osvmexpire-api.service
+	dh_systemd_enable etc/systemd/system/osvmexpire-cleaner.service
+	dh_systemd_enable etc/systemd/system/osvmexpire-worker.service
+
+override_dh_auto_build:
+	mkdir -p .pybuild/pythonX.Y_3.5/build/etc/oslo-config-generator
+	cp etc/oslo-config-generator/* .pybuild/pythonX.Y_3.5/build/etc/oslo-config-generator/
+	dh_auto_build
+	# do not generate doc, openstackdoctheme needs sphinx >= 1.5.2
+	# python3 setup.py build_sphinx
+
+override_dh_auto_install:
+	rm -rf .pybuild/pythonX.Y_3.5/build/etc
+	rm -f .pybuild/pythonX.Y_3.5/build/test.db
+	dh_auto_install
+	cp -r etc/os-vm-expire/* debian/python3-osvmexpire/etc/os-vm-expire/
+
+override_dh_installdocs:
+	dh_installdocs
+	#cp -r doc/build/html debian/python3-osvmexpire/usr/share/doc/python3-osvmexpire/
