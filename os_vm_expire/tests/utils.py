@@ -30,7 +30,7 @@ import six
 from six.moves.urllib import parse
 import webtest
 
-from OpenSSL import crypto
+# from OpenSSL import crypto
 
 from os_vm_expire.api import app
 from os_vm_expire.common import config
