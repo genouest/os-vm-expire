@@ -1,0 +1,9 @@
+# logrotate.d configuration
+
+/var/log/os-vm-expire/osvmexpire-api.log {
+    daily
+    missingok
+    compress
+    delaycompress
+    notifempty
+}
