@@ -308,6 +308,8 @@ class BaseRepo(object):
                 time.mktime(datetime.datetime.now().timetuple()) +
                 CONF.max_vm_extend * 3600 * 24
                 )
+            entity.notified = False
+            entity.notified_last = False
             entity.save(session=session)
         except sa_orm.exc.NoResultFound:
             LOG.exception("Not found for %s", entity_id)

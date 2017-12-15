@@ -1,0 +1,5 @@
+---
+fixes:
+  - After VM extend operation, reset notifications status.
+other:
+  - Add unit testing.

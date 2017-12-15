@@ -75,6 +75,32 @@ class WhenTestingVmExpiresResource(utils.OsVMExpireAPIBaseTestCase):
             new_expire > prev_expire
             )
 
+    def test_extend_reset_notified_vmexpire(self):
+        entity = create_vmexpire_model()
+        instance = create_vmexpire(entity)
+        instance.notified = True
+        instance.save()
+        repositories.commit()
+        _get_existing_resp = self.app.get(
+            '/'+ entity.project_id +'/vmexpires/' + instance.id
+            )
+        _get_resp = self.app.put(
+            '/'+ entity.project_id +'/vmexpires/' + instance.id,
+            headers={'Content-Type': 'application/json'}
+            )
+        self.assertEqual(202, _get_resp.status_int)
+        self.assertFalse(_get_resp.json['vmexpire']['notified'])
+        self.assertIn('vmexpire', _get_resp.json)
+        self.assertEqual(
+            _get_resp.json['vmexpire']['instance_id'],
+            _get_existing_resp.json['vmexpire']['instance_id']
+            )
+        prev_expire =  _get_existing_resp.json['vmexpire']['expire']
+        new_expire = _get_resp.json['vmexpire']['expire']
+        self.assertTrue(
+            new_expire > prev_expire
+            )
+
     def test_can_delete_vmexpire(self):
         entity = create_vmexpire_model()
         instance = create_vmexpire(entity)
