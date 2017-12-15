@@ -1,0 +1,5 @@
+---
+other:
+  - |
+    Use prettytable instead of tabulate for grid display as tabulate is not
+    available in centos packages.

@@ -19,20 +19,21 @@
 from __future__ import print_function
 
 from os_vm_expire.common import config
-from os_vm_expire.model import clean
-from os_vm_expire.model.migration import commands
+# from os_vm_expire.model import clean
+# from os_vm_expire.model.migration import commands
 from os_vm_expire.model import repositories
 import os_vm_expire.version
 
 import argparse
-import sys
 import datetime
-
-from tabulate import tabulate
+import prettytable
+import six
+import sys
 
 from oslo_config import cfg
-from oslo_log import log as logging
 from oslo_db import options
+from oslo_log import log as logging
+from oslo_utils import encodeutils
 
 
 CONF = cfg.CONF
@@ -69,9 +70,9 @@ class VmExpireCommands(object):
             'instance.id',
             'project.id'
         ]
-        data = []
+        pt = prettytable.PrettyTable(headers)
         for instance in res:
-            data.append(
+            pt.append(
                 [
                     instance.id,
                     datetime.datetime.fromtimestamp(instance.expire),
@@ -80,9 +81,11 @@ class VmExpireCommands(object):
                     instance.project_id
                 ]
             )
-        print(tabulate(data, headers, tablefmt="grid"))
+        if six.PY3:
+            print(encodeutils.safe_encode(pt.get_string()).decode())
+        else:
+            print(encodeutils.safe_encode(pt.get_string()))
 
-        print("VM list successfully extended!")
 
     extend_description = "Extend a VM duration"
 
@@ -200,7 +203,6 @@ def main():
         if isinstance(v, bytes):
             v = v.decode('utf-8')
         fn_kwargs[k] = v
-
 
     # call the action with the remaining arguments
     try:

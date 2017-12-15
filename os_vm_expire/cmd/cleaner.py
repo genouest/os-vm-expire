@@ -16,20 +16,19 @@
 """
 Osvmexpire worker server.
 """
-
+import datetime
+from email.mime.text import MIMEText
 import eventlet
 import os
+import smtplib
 import sys
 import time
-import datetime
 
-import smtplib
-from email.mime.text import MIMEText
 
 from os_vm_expire.common import config
-from os_vm_expire import version
 from os_vm_expire.common import utils
 from os_vm_expire.model import repositories
+from os_vm_expire import version
 
 from oslo_log import log
 from oslo_service import service
@@ -199,6 +198,7 @@ def send_email(instance, token, delete=False):
         return False
 
     return True
+
 
 # Every hour
 @periodics.periodic(3600)

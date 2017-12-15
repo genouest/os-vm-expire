@@ -12,14 +12,14 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os_vm_expire
+# import os_vm_expire
 from os_vm_expire.common import config
 from os_vm_expire.model.migration import commands
-from oslo_log import log
 
-from oslo_config import cfg
-from oslo_log import log as logging
+# from oslo_config import cfg
 from oslo_db import options
+from oslo_log import log
+# from oslo_log import log as logging
 
 import argparse
 import os
@@ -112,8 +112,7 @@ class DatabaseManager(object):
         LOG.debug("Performing database schema migration...")
         config = commands.init_config()
         config.osvmexpire = CONF
-        commands.upgrade(to_version=args.version,config=config)
-        #commands.upgrade(to_version=args.version, sql_url=args.dburl)
+        commands.upgrade(to_version=args.version, config=config)
 
     def history(self, args):
         config = commands.init_config()
