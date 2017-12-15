@@ -22,12 +22,14 @@ class WhenTestingVmExpiresResource(utils.OsVMExpireAPIBaseTestCase):
 
     def setUp(self):
         super(WhenTestingVmExpiresResource, self).setUp()
+        self.max_vm_total_duration = repositories.CONF.max_vm_total_duration
 
     def tearDown(self):
         super(WhenTestingVmExpiresResource, self).tearDown()
         repo = repositories.get_vmexpire_repository()
         repo.delete_all_entities()
         repositories.commit()
+        repositories.CONF.max_vm_total_duration = self.max_vm_total_duration
 
     def test_can_get_vmexpires(self):
         entity = create_vmexpire_model()
@@ -73,6 +75,19 @@ class WhenTestingVmExpiresResource(utils.OsVMExpireAPIBaseTestCase):
         new_expire = _get_resp.json['vmexpire']['expire']
         self.assertTrue(
             new_expire > prev_expire
+            )
+
+    def test_cannot_extend_max_reached(self):
+        repositories.CONF.max_vm_total_duration = 3
+        entity = create_vmexpire_model()
+        instance = create_vmexpire(entity)
+        _get_existing_resp = self.app.get(
+            '/'+ entity.project_id +'/vmexpires/' + instance.id
+            )
+        _get_resp = self.app.put(
+            '/'+ entity.project_id +'/vmexpires/' + instance.id,
+            headers={'Content-Type': 'application/json'},
+            status=403
             )
 
     def test_extend_reset_notified_vmexpire(self):

@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    Add max_vm_total_duration in configuration file.
+    This parameter defines a maximum VM duration above which user cannot extend
+    the VM anymore, defaults to 365 days.

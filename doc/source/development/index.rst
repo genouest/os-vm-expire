@@ -38,3 +38,9 @@ Release notes are managed via reno
 .. code-block:: bash
 
   tox -e releasenotes
+
+To add a release note:
+
+.. code-block:: bash
+
+  reno -new XXXX

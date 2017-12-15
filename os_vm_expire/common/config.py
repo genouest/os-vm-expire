@@ -32,6 +32,7 @@ import os_vm_expire.version
 
 MAX_VM_DURATION_DAYS = 60
 MAX_VM_EXTEND_DAYS = 30
+MAX_VM_TOTAL_DURATION_DAYS = 365
 
 KS_NOTIFICATIONS_GRP_NAME = "nova_notifications"
 
@@ -172,6 +173,9 @@ common_opts = [
     cfg.IntOpt('max_vm_extend',
                default=MAX_VM_EXTEND_DAYS,
                help=u._("Maximum life extend of VM in days")),
+    cfg.IntOpt('max_vm_total_duration',
+               default=MAX_VM_TOTAL_DURATION_DAYS,
+               help=u._("Maximum life of VM in days, whatever the extends")),
 ]
 
 host_opts = [

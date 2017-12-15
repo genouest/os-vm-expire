@@ -304,10 +304,15 @@ class BaseRepo(object):
                                              session)
 
             entity = query.one()
+
             entity.expire = int(
                 time.mktime(datetime.datetime.now().timetuple()) +
                 CONF.max_vm_extend * 3600 * 24
                 )
+
+            if entity.created_at + datetime.timedelta(days=CONF.max_vm_total_duration) < datetime.datetime.fromtimestamp(entity.expire):
+                _raise_entity_max_extend_reached(entity.id)
+                return None
             entity.notified = False
             entity.notified_last = False
             entity.save(session=session)
@@ -551,6 +556,11 @@ def _get_repository(global_ref, repo_class):
     if not global_ref:
         global_ref = repo_class()
     return global_ref
+
+
+def _raise_entity_max_extend_reached(entity_id):
+    raise Exception(u._("VM reached its maximum life, {id}, cannot extend it").format(
+        id=entity_id))
 
 
 def _raise_entity_not_found(entity_name, entity_id):

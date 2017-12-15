@@ -37,6 +37,9 @@
         # Maximum life extend of VM in days (integer value)
         #max_vm_extend = 30
 
+        # Maximum life of VM in days, whatever the extends
+        #max_vm_total_duration = 365
+
         [database]
         # SQLAlchemy connection string for the reference implementation
         # registry server. Any valid SQLAlchemy connection string is fine.
