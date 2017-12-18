@@ -122,6 +122,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_unitdir}/osvmexpire-cleaner.service
 %{_unitdir}/osvmexpire-worker.service
 %{_unitdir}/osvmexpire-api.service
+%doc CHANGELOG
 
 %post
 %systemd_post osvmexpire-cleaner.service
