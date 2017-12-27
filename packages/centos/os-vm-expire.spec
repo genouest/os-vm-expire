@@ -49,19 +49,19 @@ BuildRequires:  python-reno
 BuildRequires:  sudo
 BuildRequires:  systemd
 
-Requires:  python-pbr >= 2.0
+Requires:  python-pbr
 Requires:  python-paste
 Requires:  python-paste-deploy >= 1.5.0
 Requires:  python-oslo-config >= 4.6.0
 Requires:  python2-oslo-context
 Requires:  python2-oslo-db
-Requires:  python-oslo-policy >= 1.23.0
-Requires:  python-oslo-messaging >= 5.29.0
-Requires:  python-oslo-log >= 3.30.0
+Requires:  python-oslo-policy
+Requires:  python-oslo-messaging
+Requires:  python-oslo-log
 Requires:  python2-oslo-utils
 Requires:  python2-oslo-middleware
-Requires:  python-oslo-i18n >= 3.15.3
-Requires:  python-oslo-service >= 1.24.0
+Requires:  python-oslo-i18n
+Requires:  python-oslo-service
 Requires:  python-webob
 Requires:  python-keystonemiddleware
 Requires:  python-pecan >= 1.0.0
