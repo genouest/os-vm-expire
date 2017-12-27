@@ -1,0 +1,5 @@
+---
+features:
+  - Add deb and rpm creation scripts
+fixes:
+  - Fixes for Otaca support.

@@ -68,8 +68,8 @@ you must create a database, service credentials, and API endpoints.
    .. code-block:: console
 
       $ openstack endpoint create --region RegionOne \
-        vmexpire public http://controller:XXXX/vY/%\(tenant_id\)s
+        vmexpire public http://controller:9411/v1/%\(tenant_id\)s
       $ openstack endpoint create --region RegionOne \
-        vmexpire internal http://controller:XXXX/vY/%\(tenant_id\)s
+        vmexpire internal http://controller:9411/v1/%\(tenant_id\)s
       $ openstack endpoint create --region RegionOne \
-        vmexpire admin http://controller:XXXX/vY/%\(tenant_id\)s
+        vmexpire admin http://controller:9411/v1/%\(tenant_id\)s

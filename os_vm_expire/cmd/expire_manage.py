@@ -72,7 +72,7 @@ class VmExpireCommands(object):
         ]
         pt = prettytable.PrettyTable(headers)
         for instance in res:
-            pt.append(
+            pt.add_row(
                 [
                     instance.id,
                     datetime.datetime.fromtimestamp(instance.expire),

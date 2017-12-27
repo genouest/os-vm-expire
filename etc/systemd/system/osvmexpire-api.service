@@ -4,7 +4,7 @@ Description=os-vm-expire API daemon
 [Service]
 PIDFile=/var/run/osvmexpire-api.pid
 #EnvironmentFile=/etc/default/osvmexpire-api
-ExecStart=/usr/bin/uwsgi --master --die-on-term --emperor /etc/os-vm-expire/vassals --logto /var/log/os-vm-expire/osvmexpire-api.log --stats localhost:9314
+ExecStart=/usr/sbin/uwsgi --master --die-on-term --emperor /etc/os-vm-expire/vassals --logto /var/log/os-vm-expire/osvmexpire-api.log --stats localhost:9314
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s TERM $MAINPID
 PrivateTmp=true

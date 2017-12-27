@@ -18,6 +18,8 @@ git tag  | sort -V | while read tag; do
     prevtag=$tag
     done
 
+sed -i 's;/usr/sbin/uwsgi;/usr/bin/uwsgi;' etc/systemd/system/osvmexpire-api.service
+
 debian/rules binary
 cd /root
 cp -f *.deb  /opt/package/

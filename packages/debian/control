@@ -32,7 +32,9 @@ Build-Depends: debhelper (>= 10),
                python3-sphinx,
                python3-os-api-ref,
                python3-openstackdocstheme,
-               sqlite3
+               sqlite3,
+               uwsgi,
+               uwsgi-plugin-python3
 Standards-Version: 4.1.0
 Vcs-Browser: https://github.com/genouest/os-vm-expire
 Vcs-Git: https://github.com/genouest/os-vm-expire.git

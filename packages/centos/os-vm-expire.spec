@@ -69,6 +69,8 @@ Requires:  python-six >= 1.9.0
 Requires:  python-sqlalchemy >= 1.0.10
 Requires:  python-alembic >= 0.8.10
 Requires:  python-prettytable
+Requires:  uwsgi
+Requires:  uwsgi-plugin-python
 Requires(post): systemd
 Requires(postun): systemd
 Requires(preun): systemd
@@ -118,6 +120,7 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %attr(0640, root, %{uname}) /etc/os-vm-expire/osvmexpire-api-paste.ini
 %config(noreplace) %attr(0640, root, %{uname}) /etc/os-vm-expire/vassals/osvmexpire-api.ini
 %dir %{_sysconfdir}/os-vm-expire
+%dir /var/log/os-vm-expire
 %config(noreplace) %{_sysconfdir}/logrotate.d/*
 %{_unitdir}/osvmexpire-cleaner.service
 %{_unitdir}/osvmexpire-worker.service

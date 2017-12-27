@@ -23,6 +23,8 @@ Install and configure components
 
 .. include:: common_database.rst
 
+Create /var/log/os-vm-expire directory for osvmexpire-api service.
+
 Finalize installation
 ---------------------
 
