@@ -1,7 +1,6 @@
 #!/bin/bash
 set -e
 
-echo "package.sh needs git, pip and virtualenv to generate deb and rpm packages"
 git --help 1>/dev/null  && pip -h 1>/dev/null  && virtualenv -h 1>/dev/null
 
 # the temp directory used, within $DIR
@@ -52,7 +51,7 @@ echo "generate rpm...."
 docker run -v ${PWD}:/opt/package --rm  centos /opt/package/package_centos.sh ${version}
 
 echo "generate deb...."
-cp -r packages/debian ./
+cp -r os-vm-expire-${version}/packages/debian os-vm-expire-${version}/
 tar cvfz python-osvmexpire_${version}.orig.tar.gz os-vm-expire-${version}
 docker run -v ${PWD}:/opt/package --rm  centos /opt/package/package_debian.sh ${version}
 
