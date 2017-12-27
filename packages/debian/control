@@ -1,4 +1,4 @@
-Source: python-osvmexpire
+Source: python3-osvmexpire
 Maintainer: Olivier Sallou <olivier.sallou@irisa.fr>
 Section: python
 Priority: optional
