@@ -68,7 +68,8 @@ class VmExpireCommands(object):
             'expire',
             'instance.name',
             'instance.id',
-            'project.id'
+            'project.id',
+            'user.id'
         ]
         pt = prettytable.PrettyTable(headers)
         for instance in res:
@@ -78,7 +79,8 @@ class VmExpireCommands(object):
                     datetime.datetime.fromtimestamp(instance.expire),
                     instance.instance_name,
                     instance.instance_id,
-                    instance.project_id
+                    instance.project_id,
+                    instance.user_id
                 ]
             )
         if six.PY3:
