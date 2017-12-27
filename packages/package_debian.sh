@@ -1,6 +1,6 @@
 #!/bin/bash
 
-apt-get update && apt-get install -y git git-buildpackage devscripts
+apt-get update && apt-get install -y git git-buildpackage devscripts moreutils
 
 version=$1
 cd /root
