@@ -272,7 +272,7 @@ class BaseRepo(object):
             entity = query.one()
 
         except sa_orm.exc.NoResultFound:
-            LOG.exception("Not found for %s", instance_id)
+            LOG.debug("Not found for %s", instance_id)
             entity = None
             _raise_entity_not_found(self._do_entity_name(), instance_id)
 
@@ -291,7 +291,7 @@ class BaseRepo(object):
             entity = query.one()
 
         except sa_orm.exc.NoResultFound:
-            LOG.exception("Not found for %s", entity_id)
+            LOG.debug("Not found for %s", entity_id)
             entity = None
             _raise_entity_not_found(self._do_entity_name(), entity_id)
 
@@ -317,7 +317,7 @@ class BaseRepo(object):
             entity.notified_last = False
             entity.save(session=session)
         except sa_orm.exc.NoResultFound:
-            LOG.exception("Not found for %s", entity_id)
+            LOG.debug("Not found for %s", entity_id)
             entity = None
             _raise_entity_not_found(self._do_entity_name(), entity_id)
         return entity
