@@ -31,7 +31,12 @@ cp os-vm-expire/packages/package_debian.sh .
 chmod +x *.sh
 
 cd os-vm-expire
-version=`git describe --abbrev=0 --tags`
+echo "VERSION: $PACKAGE_VERSION"
+if [ -z $PACKAGE_VERSION ]; then
+    version=`git describe --abbrev=0 --tags`
+else
+    version=$PACKAGE_VERSION
+fi
 git checkout tags/${version}
 
 virtualenv venv
@@ -53,6 +58,6 @@ docker run -v ${PWD}:/opt/package --rm  centos /opt/package/package_centos.sh ${
 echo "generate deb...."
 cp -r os-vm-expire-${version}/packages/debian os-vm-expire-${version}/
 tar cvfz python-osvmexpire_${version}.orig.tar.gz os-vm-expire-${version}
-docker run -v ${PWD}:/opt/package --rm  centos /opt/package/package_debian.sh ${version}
+docker run -v ${PWD}:/opt/package --rm  debian /opt/package/package_debian.sh ${version}
 
 cp *.rpm *.deb *.dsc *.changes ${CUR_DIR}/

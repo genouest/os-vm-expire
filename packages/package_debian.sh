@@ -5,7 +5,7 @@ apt-get update && apt-get install -y git git-buildpackage devscripts
 version=$1
 cd /root
 cp /opt/package/python-osvmexpire_${version}.orig.tar.gz /root/
-tar xvfz python-osvmexpire_${version}1.orig.tar.gz
+tar xvfz python-osvmexpire_${version}.orig.tar.gz
 cd os-vm-expire-${version}
 echo y | mk-build-deps --install debian/control
 >debian/changelog
