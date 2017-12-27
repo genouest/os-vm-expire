@@ -60,4 +60,4 @@ cp -r os-vm-expire-${version}/packages/debian os-vm-expire-${version}/
 tar cvfz python-osvmexpire_${version}.orig.tar.gz os-vm-expire-${version}
 docker run -v ${PWD}:/opt/package --rm  debian /opt/package/package_debian.sh ${version}
 
-cp *.rpm *.deb *.dsc *.changes ${CUR_DIR}/
+cp *.rpm *.deb ${CUR_DIR}/
