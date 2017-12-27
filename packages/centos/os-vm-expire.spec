@@ -16,19 +16,19 @@ Url: https://github.com/genouest/os-vm-expire
 
 Source0: os-vm-expire-%{version}.tar.gz
 BuildRequires:  openstack-macros
-BuildRequires:  python-pbr >= 2.0
+BuildRequires:  python-pbr
 BuildRequires:  python-paste
 BuildRequires:  python-paste-deploy >= 1.5.0
-BuildRequires:  python-oslo-config >= 4.6.0
+BuildRequires:  python-oslo-config
 BuildRequires:  python2-oslo-context
 BuildRequires:  python2-oslo-db
-BuildRequires:  python-oslo-policy >= 1.23.0
-BuildRequires:  python-oslo-messaging >= 5.29.0
-BuildRequires:  python-oslo-log >= 3.30.0
+BuildRequires:  python-oslo-policy
+BuildRequires:  python-oslo-messaging
+BuildRequires:  python-oslo-log
 BuildRequires:  python2-oslo-utils
 BuildRequires:  python2-oslo-middleware
-BuildRequires:  python-oslo-i18n >= 3.15.3
-BuildRequires:  python-oslo-service >= 1.24.0
+BuildRequires:  python-oslo-i18n
+BuildRequires:  python-oslo-service
 BuildRequires:  python-webob
 BuildRequires:  python-keystonemiddleware
 BuildRequires:  python-pecan >= 1.0.0
