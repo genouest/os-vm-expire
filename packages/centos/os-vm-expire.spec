@@ -102,6 +102,7 @@ PBR_VERSION=%{version} python setup.py build
 %install
 PBR_VERSION=%{version} python setup.py install --single-version-externally-managed -O1 --root=$RPM_BUILD_ROOT --record=INSTALLED_FILES
 mkdir -p $RPM_BUILD_ROOT/etc/os-vm-expire
+mkdir -p $RPM_BUILD_ROOT/var/log/os-vm-expire
 cp -r etc/os-vm-expire/* $RPM_BUILD_ROOT/etc/os-vm-expire/
 install -p -D -m 640 etc/oslo-config-generator/policy.json.sample $RPM_BUILD_ROOT/etc/os-vm-expire/policy.json
 install -p -D -m 640 etc/oslo-config-generator/osvmexpire.conf.sample $RPM_BUILD_ROOT/etc/os-vm-expire/osvmexpire.conf
