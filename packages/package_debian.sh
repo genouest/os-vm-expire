@@ -20,4 +20,4 @@ git tag  | sort -V | while read tag; do
 
 debian/rules binary
 cd /root
-cp *.deb *.dsc *.changes  /opt/package/
+cp -f *.deb  /opt/package/
