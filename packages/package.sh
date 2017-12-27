@@ -9,7 +9,7 @@ git --help 1>/dev/null  && pip -h 1>/dev/null  && virtualenv -h 1>/dev/null
 WORK_DIR=`mktemp -d`
 
 CUR_DIR=${PWD}
-
+echo "Work dir: $WORK_DIR"
 # check if tmp dir was created
 if [[ ! "$WORK_DIR" || ! -d "$WORK_DIR" ]]; then
   echo "Could not create temp dir"
@@ -29,6 +29,7 @@ cd $WORK_DIR
 git clone https://github.com/genouest/os-vm-expire.git
 cp os-vm-expire/packages/package_centos.sh .
 cp os-vm-expire/packages/package_debian.sh .
+chmod +x *.sh
 
 cd os-vm-expire
 version=`git describe --abbrev=0 --tags`
@@ -46,7 +47,7 @@ cd $WORK_DIR
 
 mv os-vm-expire os-vm-expire-${version}
 
-tar cvfz os-vm-expire-${version}.tar.gz
+tar cvfz os-vm-expire-${version}.tar.gz os-vm-expire-${version}
 echo "generate rpm...."
 docker run -v ${PWD}:/opt/package --rm  centos /opt/package/package_centos.sh ${version}
 
@@ -55,4 +56,4 @@ cp -r packages/debian ./
 tar cvfz python-osvmexpire_${version}.orig.tar.gz os-vm-expire-${version}
 docker run -v ${PWD}:/opt/package --rm  centos /opt/package/package_debian.sh ${version}
 
-cp *.rpm *.deb *.dsc *.changes ${PWD}/
+cp *.rpm *.deb *.dsc *.changes ${CUR_DIR}/

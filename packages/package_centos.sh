@@ -11,7 +11,7 @@ mkdir -p /root/rpmbuild/SOURCES
 export version=$1
 
 cp /opt/package/os-vm-expire-$1.tar.gz /root/rpmbuild/SOURCES
-cp /opt/package/os-vm-expire-$1/package/centos/* /root/rpmbuild/SPEC/
+cp /opt/package/os-vm-expire-$1/packages/centos/* /root/rpmbuild/SPEC/
 sed -i "s/Version:.*/Version: $version/" /root/rpmbuild/SPEC/os-vm-expire.spec
 
 yum-builddep -y rpmbuild/SPEC/os-vm-expire.spec
