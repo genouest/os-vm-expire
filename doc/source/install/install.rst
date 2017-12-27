@@ -13,7 +13,8 @@ environment with at least the following components installed:
 Note that installation and configuration vary by distribution.
 
 
-No package available at this time for obs, rdo or ubuntu, only manual installation is available.
+No package available at this time for obs, only manual installation is available.
+For centos and debian/ubuntu, packages can be downloaded on github in releases panel.
 
 .. toctree::
    :maxdepth: 2

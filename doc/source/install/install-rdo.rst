@@ -12,11 +12,17 @@ for Red Hat Enterprise Linux 7 and CentOS 7.
 Install and configure components
 --------------------------------
 
+#. Get the rpm from git repo release (e.g. https://github.com/genouest/os-vm-expire/releases/tag/0.9.4)
+
+   .. code-block:: console
+
+      # wget https://github.com/genouest/os-vm-expire/releases/download/0.9.4/python-osvmexpire-0.9.4-1.el7.centos.noarch.rpm
+
 #. Install the packages:
 
    .. code-block:: console
 
-      # yum install
+      # rpm -ivh python-osvmexpire-0.9.4-1.el7.centos.noarch.rpm
 
 .. include:: common_configure.rst
 
@@ -30,6 +36,14 @@ the system boots:
 
 .. code-block:: console
 
-   # systemctl enable openstack-os_vm_expire-api.service
+   # systemctl enable osvmexpire-api.service
 
-   # systemctl start openstack-os_vm_expire-api.service
+   # systemctl start osvmexpire-api.service
+
+   # systemctl enable osvmexpire-worker.service
+
+   # systemctl start osvmexpire-worker.service
+
+   # systemctl enable osvmexpire-cleaner.service
+
+   # systemctl start osvmexpire-cleaner.service

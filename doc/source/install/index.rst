@@ -10,7 +10,8 @@ Service installation guide
    verify.rst
    next-steps.rst
 
-The Openstack VmExpiration Management service (os_vm_expire) provides...
+The Openstack VmExpiration Management service (os_vm_expire) provides services
+ to manage vm auto expiration.
 
 This chapter assumes a working setup of OpenStack following the
 `OpenStack Installation Tutorial

@@ -11,13 +11,19 @@ service for Ubuntu 14.04 (LTS).
 Install and configure components
 --------------------------------
 
+#. Get the deb from git repo release (e.g. https://github.com/genouest/os-vm-expire/releases/tag/0.9.4)
+
+   .. code-block:: console
+
+      # wget https://github.com/genouest/os-vm-expire/releases/download/0.9.4/python3-osvmexpire_0.9.4_all.deb
+
 #. Install the packages:
 
    .. code-block:: console
 
       # apt-get update
 
-      # apt-get install
+      # dpkg -i python3-osvmexpire_0.9.4_all.deb
 
 .. include:: common_configure.rst
 
@@ -30,4 +36,14 @@ Restart the OpenstackVm Expiration Management services:
 
 .. code-block:: console
 
-   # service openstack-os_vm_expire-api restart
+    # systemctl enable osvmexpire-api.service
+
+    # systemctl start osvmexpire-api.service
+
+    # systemctl enable osvmexpire-worker.service
+
+    # systemctl start osvmexpire-worker.service
+
+    # systemctl enable osvmexpire-cleaner.service
+
+    # systemctl start osvmexpire-cleaner.service
