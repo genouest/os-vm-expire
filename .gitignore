@@ -4,6 +4,7 @@
 test.db
 
 etc/os-vm-expire/osvmexpire.conf
+*.save
 
 # C extensions
 *.so
