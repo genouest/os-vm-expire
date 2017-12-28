@@ -1,17 +1,28 @@
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 import datetime
 import logging
 import mock
-import os
-import sqlalchemy.orm as sa_orm
+# import sqlalchemy.orm as sa_orm
 import time
 
+from os_vm_expire.model import models
+from os_vm_expire.model import repositories
 from os_vm_expire.queue.server import Tasks
 from os_vm_expire.tests import utils
-from os_vm_expire.model import repositories
-from os_vm_expire.model import models
 
 
-class MockResponse:
+class MockResponse(object):
     def __init__(self, json_data, status_code):
         self.json_data = json_data
         self.status_code = status_code
@@ -22,19 +33,18 @@ class MockResponse:
     def json(self):
         return self.json_data
 
+
 def mocked_requests_get(*args, **kwargs):
-    #print("args: "+str(*args))
-    #print("kwargs: "+str(**kwargs))
     return MockResponse(None, 404)
 
 
 def mocked_requests_post(*args, **kwargs):
-    #print("args: "+str(*args))
-    #print("kwargs: "+str(**kwargs))
     return MockResponse(None, 404)
+
 
 def mocked_get_project_domain(project_id):
     return '12345domain'
+
 
 class WhenTestingVmExpiresResource(utils.OsVMExpireAPIBaseTestCase):
 
@@ -66,9 +76,8 @@ class WhenTestingVmExpiresResource(utils.OsVMExpireAPIBaseTestCase):
         self.task.info(None, 'mock', 'instance.create.end', create_msg, None)
         repo = repositories.get_vmexpire_repository()
         expire = repo.get_by_instance(create_msg['nova_object.data']['uuid'])
-        self.assertEquals(expire.instance_id, create_msg['nova_object.data']['uuid'])
+        self.assertEqual(expire.instance_id, create_msg['nova_object.data']['uuid'])
         self.assertTrue(expire.expire > 0)
-
 
     def test_vm_delete(self):
         self.test_vm_create()
@@ -125,7 +134,7 @@ class WhenTestingVmExcludesResource(utils.OsVMExpireAPIBaseTestCase):
         self.task.info(None, 'mock', 'instance.create.end', create_msg, None)
         repo = repositories.get_vmexpire_repository()
         try:
-            expire = repo.get_by_instance(create_msg['nova_object.data']['uuid'])
+            repo.get_by_instance(create_msg['nova_object.data']['uuid'])
         except Exception as e:
             logging.info('instance not found: ' + str(e))
         else:
@@ -148,7 +157,7 @@ class WhenTestingVmExcludesResource(utils.OsVMExpireAPIBaseTestCase):
         self.task.info(None, 'mock', 'instance.create.end', create_msg, None)
         repo = repositories.get_vmexpire_repository()
         try:
-            expire = repo.get_by_instance(create_msg['nova_object.data']['uuid'])
+            repo.get_by_instance(create_msg['nova_object.data']['uuid'])
         except Exception as e:
             logging.info('instance not found: ' + str(e))
         else:
@@ -171,7 +180,7 @@ class WhenTestingVmExcludesResource(utils.OsVMExpireAPIBaseTestCase):
         self.task.info(None, 'mock', 'instance.create.end', create_msg, None)
         repo = repositories.get_vmexpire_repository()
         try:
-            expire = repo.get_by_instance(create_msg['nova_object.data']['uuid'])
+            repo.get_by_instance(create_msg['nova_object.data']['uuid'])
         except Exception as e:
             logging.info('instance not found: ' + str(e))
         else:
@@ -191,6 +200,7 @@ def create_vmexpire_model(prefix=None):
     entity.expire = time.mktime(datetime.datetime.now().timetuple())
     return entity
 
+
 def create_vmexpire(entity):
     repo = repositories.get_vmexpire_repository()
     instance = repo.create_from(entity)
@@ -203,6 +213,7 @@ def create_vmexclude_model(exclude_id, exclude_type):
     entity.exclude_id = exclude_id
     entity.exclude_type = exclude_type
     return entity
+
 
 def create_vmexclude(entity):
     repo = repositories.get_vmexclude_repository()

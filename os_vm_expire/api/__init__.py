@@ -1,4 +1,3 @@
-
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -38,6 +37,7 @@ class ApiResource(object):
 
 def load_body(req, resp=None, validator=None):
     """Helper function for loading an HTTP request body from JSON.
+
     This body is placed into into a Python dictionary.
     :param req: The HTTP request instance to load the body from.
     :param resp: The HTTP response instance.
@@ -71,6 +71,7 @@ def load_body(req, resp=None, validator=None):
 
 def generate_safe_exception_message(operation_name, excep):
     """Generates an exception message that is 'safe' for clients to consume.
+
     A 'safe' message is one that doesn't contain sensitive information.
     :param operation_name: Name of attempted operation, with a 'Verb noun'
                            format (e.g. 'Create Secret).
@@ -109,6 +110,7 @@ def generate_safe_exception_message(operation_name, excep):
 @pkgutil.simplegeneric
 def get_items(obj):
     """This is used to get items from either a list or a dictionary.
+
     While false generator is need to process scalar object
     """
 

@@ -23,11 +23,11 @@ import mock
 from oslo_policy import policy
 from webob import exc
 
-from os_vm_expire.api.controllers import vmexpire
 from os_vm_expire.api.controllers import versions
+from os_vm_expire.api.controllers import vmexpire
 from os_vm_expire.common import config
 from os_vm_expire import context
-from os_vm_expire.model import models
+# from os_vm_expire.model import models
 from os_vm_expire.tests import utils
 
 import webob
@@ -40,7 +40,7 @@ TEST_CONFIG_FILE = os.path.join(TEST_VAR_DIR, 'osvmexpire.conf.sample')
 TEST_POLICY_FILE = os.path.join(TEST_VAR_DIR, 'policy.json.sample')
 CONF = config.new_config()
 
-ENFORCER = policy.Enforcer(CONF, policy_file = TEST_POLICY_FILE)
+ENFORCER = policy.Enforcer(CONF, policy_file=TEST_POLICY_FILE)
 
 
 class TestableResource(object):
@@ -111,6 +111,7 @@ class BaseTestCase(utils.OsVMExpireAPIBaseTestCase, utils.MockModelRepositoryMix
 
     def _generate_stream_for_exit(self):
         """Mock HTTP stream generator, to force RBAC-pass exit.
+
         Generate a fake HTTP request stream that forces an IOError to
         occur, which short circuits API resource processing when RBAC
         checks under test here pass.
@@ -126,6 +127,7 @@ class BaseTestCase(utils.OsVMExpireAPIBaseTestCase, utils.MockModelRepositoryMix
 
     def _generate_get_error(self):
         """Falcon exception generator to throw from early-exit mocks.
+
         Creates an exception that should be raised by GET tests that pass
         RBAC. This allows such flows to short-circuit normal post-RBAC
         processing that is not tested in this module.
@@ -138,6 +140,7 @@ class BaseTestCase(utils.OsVMExpireAPIBaseTestCase, utils.MockModelRepositoryMix
     def _assert_pass_rbac(self, roles, method_under_test, accept=None,
                           content_type=None, user_id=None, project_id=None):
         """Assert that RBAC authorization rules passed for the specified roles.
+
         :param roles: List of roles to check, one at a time
         :param method_under_test: The test method to invoke for each role.
         :param accept Optional Accept header to set on the HTTP request
@@ -160,6 +163,7 @@ class BaseTestCase(utils.OsVMExpireAPIBaseTestCase, utils.MockModelRepositoryMix
     def _assert_fail_rbac(self, roles, method_under_test, accept=None,
                           content_type=None, user_id=None, project_id=None):
         """Assert that RBAC rules failed for one of the specified roles.
+
         :param roles: List of roles to check, one at a time
         :param method_under_test: The test method to invoke for each role.
         :param accept Optional Accept header to set on the HTTP request
@@ -208,6 +212,7 @@ class WhenTestingVersionsResource(BaseTestCase):
     def _invoke_on_get(self):
         self.resource.on_get(self.req, self.resp)
 
+
 class WhenTestingVmExpireResource(BaseTestCase):
     """RBAC tests for the barbican.api.resources.SecretsResource class."""
     def setUp(self):
@@ -245,7 +250,7 @@ class WhenTestingVmExpireResource(BaseTestCase):
         self.req = self._generate_req(roles=['bogus'])
         self.assertRaises(webob.exc.HTTPForbidden, self._invoke_on_get, '12345')
 
-    def test_should_pass_get_vmexpires(self):
+    def test_should_pass_get_vmexpires_again(self):
         self.req = self._generate_req(roles=['admin', 'member'])
         res = self._invoke_on_get()
         self.assertIsNotNone(res)

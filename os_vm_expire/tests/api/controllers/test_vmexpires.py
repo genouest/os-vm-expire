@@ -11,12 +11,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import datetime
-import os
 import time
 
-from os_vm_expire.tests import utils
-from os_vm_expire.model import repositories
 from os_vm_expire.model import models
+from os_vm_expire.model import repositories
+from os_vm_expire.tests import utils
+
 
 class WhenTestingVmExpiresResource(utils.OsVMExpireAPIBaseTestCase):
 
@@ -37,7 +37,7 @@ class WhenTestingVmExpiresResource(utils.OsVMExpireAPIBaseTestCase):
         _get_resp = self.app.get('/' + entity.project_id + '/vmexpires/')
         self.assertEqual(200, _get_resp.status_int)
         self.assertIn('vmexpires', _get_resp.json)
-        self.assertEqual(len(_get_resp.json['vmexpires']),1)
+        self.assertEqual(len(_get_resp.json['vmexpires']), 1)
         self.assertEqual(
             _get_resp.json['vmexpires'][0]['instance_id'],
             entity.instance_id
@@ -47,7 +47,7 @@ class WhenTestingVmExpiresResource(utils.OsVMExpireAPIBaseTestCase):
         entity = create_vmexpire_model()
         instance = create_vmexpire(entity)
         _get_resp = self.app.get(
-            '/'+ entity.project_id +'/vmexpires/' + instance.id
+            '/' + entity.project_id + '/vmexpires/' + instance.id
             )
         self.assertEqual(200, _get_resp.status_int)
         self.assertIn('vmexpire', _get_resp.json)
@@ -59,10 +59,10 @@ class WhenTestingVmExpiresResource(utils.OsVMExpireAPIBaseTestCase):
         entity = create_vmexpire_model()
         instance = create_vmexpire(entity)
         _get_existing_resp = self.app.get(
-            '/'+ entity.project_id +'/vmexpires/' + instance.id
+            '/' + entity.project_id + '/vmexpires/' + instance.id
             )
         _get_resp = self.app.put(
-            '/'+ entity.project_id +'/vmexpires/' + instance.id,
+            '/' + entity.project_id + '/vmexpires/' + instance.id,
             headers={'Content-Type': 'application/json'}
             )
         self.assertEqual(202, _get_resp.status_int)
@@ -71,7 +71,7 @@ class WhenTestingVmExpiresResource(utils.OsVMExpireAPIBaseTestCase):
             _get_resp.json['vmexpire']['instance_id'],
             _get_existing_resp.json['vmexpire']['instance_id']
             )
-        prev_expire =  _get_existing_resp.json['vmexpire']['expire']
+        prev_expire = _get_existing_resp.json['vmexpire']['expire']
         new_expire = _get_resp.json['vmexpire']['expire']
         self.assertTrue(
             new_expire > prev_expire
@@ -81,11 +81,11 @@ class WhenTestingVmExpiresResource(utils.OsVMExpireAPIBaseTestCase):
         repositories.CONF.max_vm_total_duration = 3
         entity = create_vmexpire_model()
         instance = create_vmexpire(entity)
-        _get_existing_resp = self.app.get(
-            '/'+ entity.project_id +'/vmexpires/' + instance.id
+        self.app.get(
+            '/' + entity.project_id + '/vmexpires/' + instance.id
             )
-        _get_resp = self.app.put(
-            '/'+ entity.project_id +'/vmexpires/' + instance.id,
+        self.app.put(
+            '/' + entity.project_id + '/vmexpires/' + instance.id,
             headers={'Content-Type': 'application/json'},
             status=403
             )
@@ -97,10 +97,10 @@ class WhenTestingVmExpiresResource(utils.OsVMExpireAPIBaseTestCase):
         instance.save()
         repositories.commit()
         _get_existing_resp = self.app.get(
-            '/'+ entity.project_id +'/vmexpires/' + instance.id
+            '/' + entity.project_id + '/vmexpires/' + instance.id
             )
         _get_resp = self.app.put(
-            '/'+ entity.project_id +'/vmexpires/' + instance.id,
+            '/' + entity.project_id + '/vmexpires/' + instance.id,
             headers={'Content-Type': 'application/json'}
             )
         self.assertEqual(202, _get_resp.status_int)
@@ -110,7 +110,7 @@ class WhenTestingVmExpiresResource(utils.OsVMExpireAPIBaseTestCase):
             _get_resp.json['vmexpire']['instance_id'],
             _get_existing_resp.json['vmexpire']['instance_id']
             )
-        prev_expire =  _get_existing_resp.json['vmexpire']['expire']
+        prev_expire = _get_existing_resp.json['vmexpire']['expire']
         new_expire = _get_resp.json['vmexpire']['expire']
         self.assertTrue(
             new_expire > prev_expire
@@ -120,14 +120,15 @@ class WhenTestingVmExpiresResource(utils.OsVMExpireAPIBaseTestCase):
         entity = create_vmexpire_model()
         instance = create_vmexpire(entity)
         _get_resp = self.app.delete(
-            '/'+ entity.project_id +'/vmexpires/' + instance.id,
+            '/' + entity.project_id + '/vmexpires/' + instance.id,
             headers={'Content-Type': 'application/json'}
             )
         self.assertEqual(204, _get_resp.status_int)
         _get_resp = self.app.get('/' + entity.project_id + '/vmexpires/')
         self.assertEqual(200, _get_resp.status_int)
         self.assertIn('vmexpires', _get_resp.json)
-        self.assertEqual(len(_get_resp.json['vmexpires']),0)
+        self.assertEqual(len(_get_resp.json['vmexpires']), 0)
+
 
 def create_vmexpire_model(prefix=None):
     if not prefix:
@@ -141,6 +142,7 @@ def create_vmexpire_model(prefix=None):
     entity.notified_last = False
     entity.expire = time.mktime(datetime.datetime.now().timetuple())
     return entity
+
 
 def create_vmexpire(entity):
     repo = repositories.get_vmexpire_repository()

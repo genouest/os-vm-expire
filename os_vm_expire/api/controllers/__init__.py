@@ -24,6 +24,7 @@ LOG = utils.getLogger(__name__)
 
 def is_json_request_accept(req):
     """Test if http request 'accept' header configured for JSON response.
+
     :param req: HTTP request
     :return: True if need to return JSON response.
     """
@@ -115,6 +116,7 @@ def handle_exceptions(operation_name=u._('System')):
 
 def _do_enforce_content_types(pecan_req, valid_content_types):
     """Content type enforcement
+
     Check to see that content type in the request is one of the valid
     types passed in by our caller.
     """
@@ -144,6 +146,7 @@ def enforce_content_types(valid_content_types=[]):
 
 def flatten(d, parent_key=''):
     """Flatten a nested dictionary
+
     Converts a dictionary with nested values to a single level flat
     dictionary, with dotted notation for each key.
     """
@@ -164,6 +167,7 @@ class ACLMixin(object):
 
     def get_acl_dict_for_user(self, req, acl_list):
         """Get acl operation found for token user in acl list.
+
         Token user is looked into users list present for each acl operation.
         If there is a match, it means that ACL data is applicable for policy
         logic. Policy logic requires data as dictionary so this method capture

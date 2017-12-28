@@ -28,6 +28,7 @@ LOG = utils.getLogger(__name__)
 
 class Middleware(object):
     """Base WSGI middleware wrapper
+
     These classes require an application to be
     initialized that will be called next.  By default the middleware will
     simply call its wrapped app, or you can override __call__ to customize its
@@ -45,6 +46,7 @@ class Middleware(object):
 
     def process_request(self, req):
         """Called on each request.
+
         If this returns None, the next application down the stack will be
         executed. If it returns a response then that response will be returned
         and execution will stop here.
@@ -68,6 +70,7 @@ class Middleware(object):
 # Brought over from an OpenStack project
 class Debug(Middleware):
     """Debug helper class
+
     This class can be inserted into any WSGI application chain
     to get information about the request and response.
     """

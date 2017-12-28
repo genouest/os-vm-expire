@@ -35,6 +35,7 @@ def convert_to_hrefs(fields):
 
 def convert_list_to_href(resources_name, offset, limit):
     """Supports pretty output of paged-list hrefs.
+
     Convert the offset/limit info to a HATEOAS-style href
     suitable for use in a list navigation paging interface.
     """
@@ -45,6 +46,7 @@ def convert_list_to_href(resources_name, offset, limit):
 
 def previous_href(resources_name, offset, limit):
     """Supports pretty output of previous-page hrefs.
+
     Create a HATEOAS-style 'previous' href suitable for use in a list
     navigation paging interface, assuming the provided values are the
     currently viewed page.
@@ -55,6 +57,7 @@ def previous_href(resources_name, offset, limit):
 
 def next_href(resources_name, offset, limit):
     """Supports pretty output of next-page hrefs.
+
     Create a HATEOAS-style 'next' href suitable for use in a list
     navigation paging interface, assuming the provided values are the
     currently viewed page.
@@ -66,6 +69,7 @@ def next_href(resources_name, offset, limit):
 def add_nav_hrefs(resources_name, offset, limit,
                   total_elements, data):
     """Adds next and/or previous hrefs to paged list responses.
+
     :param resources_name: Name of api resource
     :param offset: Element number (ie. index) where current page starts
     :param limit: Max amount of elements listed on current page
@@ -82,8 +86,10 @@ def add_nav_hrefs(resources_name, offset, limit,
                                        limit)})
     return data
 
+
 def add_self_href(resource_name, data):
     """Add self href to response
+
     :param resources_name: Name of api resource
     :returns: augmented dictionary with next and/or previous hrefs
     """
@@ -92,9 +98,10 @@ def add_self_href(resource_name, data):
     data['links'].update({'self': utils.hostname_for_refs(resource=resource_name)})
     return data
 
+
 def get_vmexpire_id_from_ref(vmexpire_ref):
     """Parse a container reference and return the container ID
-    TODO(Dave) Add some extra checking for valid prefix
+
     The container ID is the right-most element of the URL
     :param container_ref: HTTP reference of container
     :return: a string containing the ID of the container

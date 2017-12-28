@@ -21,9 +21,9 @@ from __future__ import print_function
 from os_vm_expire.common import config
 # from os_vm_expire.model import clean
 # from os_vm_expire.model.migration import commands
+from os_vm_expire.model.models import VmExclude
 from os_vm_expire.model import repositories
 import os_vm_expire.version
-from os_vm_expire.model.models import VmExclude
 
 import argparse
 import datetime
@@ -164,6 +164,7 @@ class VmExcludeCommands(object):
         repositories.commit()
         print("Exclude deleted")
 
+
 class VmExpireCommands(object):
     """Class for managing VM expiration"""
 
@@ -203,7 +204,6 @@ class VmExpireCommands(object):
         else:
             print(encodeutils.safe_encode(pt.get_string()))
 
-
     extend_description = "Extend a VM duration"
 
     @args('--id', metavar='<id>', dest='expirationid',
@@ -242,6 +242,7 @@ CATEGORIES = {
 # Modifying similar code from nova/cmd/manage.py
 def methods_of(obj):
     """Get all callable methods of an object that don't start with underscore
+
     returns a list of tuples of the form (method_name, method)
     """
 

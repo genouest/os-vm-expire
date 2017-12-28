@@ -18,15 +18,16 @@ break the DevStack functional test discovery process.
 """
 import datetime
 import time
-import oslotest.base as oslotest
 
-from sqlalchemy.engine import Engine
-from sqlalchemy import event
+# from sqlalchemy.engine import Engine
+# from sqlalchemy import event
 
 from os_vm_expire.model.migration import commands
 from os_vm_expire.model import models
 from os_vm_expire.model import repositories
 from oslo_db import options
+import oslotest.base as oslotest
+
 
 def create_vmexpire(instance=None, session=None):
     expire = models.VmExpire()
@@ -39,7 +40,8 @@ def create_vmexpire(instance=None, session=None):
     expire.notified_last = False
     container_repo = repositories.get_vmexpire_repository()
     container_repo.create_from(expire, session=session)
-    return container
+    return expire
+
 
 def create_vmexclude(exclude_id=None, exclude_type=0, session=None):
     exclude = models.VmExclude()
@@ -47,7 +49,7 @@ def create_vmexclude(exclude_id=None, exclude_type=0, session=None):
     exclude.exclude_type = exclude_type
     container_repo = repositories.get_vmexclude_repository()
     container_repo.create_exclude(exclude, session=session)
-    return container
+    return exclude
 
 
 def setup_in_memory_db():
@@ -66,7 +68,6 @@ def setup_in_memory_db():
     repositories.start()
 
 
-
 def in_memory_cleanup():
     repositories.clear()
 
@@ -75,9 +76,9 @@ def get_session():
     return repositories.get_session()
 
 
-
 class RepositoryTestCase(oslotest.BaseTestCase):
     """Base test case class for in-memory database unit tests.
+
     Database/Repository oriented unit tests should *not* modify the global
     state in the os_vm_expire/model/repositories.py module, as this can lead to
     hard to debug errors. Instead only utilize methods in this fixture.

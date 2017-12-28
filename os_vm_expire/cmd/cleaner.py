@@ -60,7 +60,8 @@ def fail(returncode, e):
 
 
 def delete_vm(instance_id, project_id, token):
-    '''
+    '''Delete a VM on expiration
+
     conf in [cleaner]
     nova_url = http://controller.genouest.org:8774/v2.1/%(tenant_id)s
     '''
@@ -83,16 +84,6 @@ def delete_vm(instance_id, project_id, token):
 
 
 def get_identity_token():
-    '''
-    [keystone_authtoken]
-    auth_uri = http://controller:5000/v3.0
-    identity_uri = http://controller:35357
-    admin_tenant_name = service
-    admin_user = os_vm_expire
-    admin_password = XYZ
-    admin_user_domain_name = default
-    admin_project_domain_name = default
-    '''
     conf_cleaner = config.CONF.cleaner
     ks_uri = conf_cleaner.auth_uri
 

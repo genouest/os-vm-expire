@@ -34,6 +34,7 @@ CONF = config.CONF
 
 def build_wsgi_app(controller=None, transactional=False):
     """WSGI application creation helper
+
     :param controller: Overrides default application controller
     :param transactional: Adds transaction hook for all requests
     """

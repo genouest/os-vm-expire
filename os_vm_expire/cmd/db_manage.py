@@ -36,6 +36,7 @@ LOG = log.getLogger(__name__)
 
 class DatabaseManager(object):
     """Database Manager class.
+
     Builds and executes a CLI parser to manage the osvmexpire database
     This extends the Alembic commands.
     """

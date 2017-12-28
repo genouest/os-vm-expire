@@ -60,6 +60,7 @@ def allow_all_content_types(f):
 
 def get_base_url_from_request():
     """Derive base url from wsgi request if CONF.host_href is not set
+
     Use host.href as base URL if its set in osvmexpire.conf.
     If its not set, then derives value from wsgi request. WSGI request uses
     HOST header or HTTP_X_FORWARDED_FOR header (in case of proxy) for host +
@@ -99,6 +100,7 @@ def getLogger(name):
 
 def get_accepted_encodings(req):
     """Returns a list of client acceptable encodings sorted by q value.
+
     For details see: http://tools.ietf.org/html/rfc2616#section-14.3
     :param req: request object
     :returns: list of client acceptable encodings sorted by q value.
@@ -110,6 +112,7 @@ def get_accepted_encodings(req):
 
 def get_accepted_encodings_direct(content_encoding_header):
     """Returns a list of client acceptable encodings sorted by q value.
+
     For details see: http://tools.ietf.org/html/rfc2616#section-14.3
     :param req: request object
     :returns: list of client acceptable encodings sorted by q value.
@@ -145,6 +148,7 @@ def get_accepted_encodings_direct(content_encoding_header):
 
 def generate_fullname_for(instance):
     """Produce a fully qualified class name for the specified instance.
+
     :param instance: The instance to generate information from.
     :return: A string providing the package.module information for the
     instance.
@@ -178,6 +182,7 @@ def generate_uuid():
 
 def validate_id_is_uuid(input_id, version=4):
     """Validates provided id is uuid4 format value.
+
     Returns true when provided id is a valid version 4 uuid otherwise
     returns False.
     This validation is to be used only for ids which are generated

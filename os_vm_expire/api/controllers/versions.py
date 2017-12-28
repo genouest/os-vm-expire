@@ -14,8 +14,8 @@ import pecan
 from six.moves.urllib import parse
 
 from os_vm_expire.api import controllers
-from os_vm_expire.api.controllers import vmexpire
 from os_vm_expire.api.controllers import vmexclude
+from os_vm_expire.api.controllers import vmexpire
 from os_vm_expire.common import utils
 from os_vm_expire import i18n as u
 from os_vm_expire import version

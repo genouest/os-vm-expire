@@ -98,7 +98,7 @@ cleaner_opts = [
 
 
 worker_opt_group = cfg.OptGroup(name='worker',
-                                 title='Worker Application Options')
+                                title='Worker Application Options')
 
 worker_opts = [
     cfg.StrOpt('auth_uri',

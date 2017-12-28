@@ -10,13 +10,12 @@
 # implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import datetime
-import os
-import time
 
-from os_vm_expire.tests import utils
-from os_vm_expire.model import repositories
 from os_vm_expire.model import models
+
+from os_vm_expire.model import repositories
+from os_vm_expire.tests import utils
+
 
 class WhenTestingVmExcludesResource(utils.OsVMExpireAPIBaseTestCase):
 
@@ -38,7 +37,7 @@ class WhenTestingVmExcludesResource(utils.OsVMExpireAPIBaseTestCase):
         _get_resp = self.app.get('/12345project/vmexcludes/')
         self.assertEqual(200, _get_resp.status_int)
         self.assertIn('vmexcludes', _get_resp.json)
-        self.assertEqual(len(_get_resp.json['vmexcludes']),1)
+        self.assertEqual(len(_get_resp.json['vmexcludes']), 1)
         self.assertEqual(
             _get_resp.json['vmexcludes'][0]['exclude_id'],
             entity.exclude_id
@@ -59,7 +58,6 @@ class WhenTestingVmExcludesResource(utils.OsVMExpireAPIBaseTestCase):
         self.assertEqual(
             _get_resp.json['vmexclude']['exclude_id'],
             entity.exclude_id)
-
 
     def test_can_create_vmexclude(self):
         entity = create_vmexclude_model(exclude_type=1)
@@ -102,7 +100,8 @@ class WhenTestingVmExcludesResource(utils.OsVMExpireAPIBaseTestCase):
         _get_resp = self.app.get('/12345project/vmexcludes/')
         self.assertEqual(200, _get_resp.status_int)
         self.assertIn('vmexcludes', _get_resp.json)
-        self.assertEqual(len(_get_resp.json['vmexcludes']),0)
+        self.assertEqual(len(_get_resp.json['vmexcludes']), 0)
+
 
 def create_vmexclude_model(prefix=None, exclude_type=0):
     if not prefix:
@@ -110,7 +109,9 @@ def create_vmexclude_model(prefix=None, exclude_type=0):
     entity = models.VmExclude()
     entity.exclude_id = prefix
     entity.exclude_type = exclude_type
+
     return entity
+
 
 def create_vmexclude(entity):
     repo = repositories.get_vmexclude_repository()

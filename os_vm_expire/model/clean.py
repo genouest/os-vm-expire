@@ -32,6 +32,7 @@ LOG = log.getLogger(__name__)
 
 def cleanup_softdeletes(model, threshold_date=None):
     """Remove soft deletions from a table.
+
     :param model: table class to remove soft deletions
     :param threshold_date: soft deletions older than this date will be removed
     :returns: total number of entries removed from the database
@@ -51,6 +52,7 @@ def cleanup_softdeletes(model, threshold_date=None):
 
 def cleanup_all(threshold_date=None):
     """Clean up the main soft deletable resources.
+
     This function contains an order of calls to
     clean up the soft-deletable resources.
     :param threshold_date: soft deletions older than this date will be removed
@@ -68,6 +70,7 @@ def cleanup_all(threshold_date=None):
 
 def clean_command(sql_url, min_num_days, verbose, log_file):
     """Clean command to clean up the database.
+
     :param sql_url: sql connection string to connect to a database
     :param min_num_days: clean up soft deletions older than this date
     :param verbose: If True, log and print more information

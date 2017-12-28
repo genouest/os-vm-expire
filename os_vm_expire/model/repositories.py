@@ -101,6 +101,7 @@ def setup_database_engine_and_factory():
 
 def start():
     """Start for read-write requests placeholder
+
     Typically performed at the start of a request cycle, say for POST or PUT
     requests.
     """
@@ -109,6 +110,7 @@ def start():
 
 def start_read_only():
     """Start for read-only requests placeholder
+
     Typically performed at the start of a request cycle, say for GET or HEAD
     requests.
     """
@@ -117,6 +119,7 @@ def start_read_only():
 
 def commit():
     """Commit session state so far to the database.
+
     Typically performed at the end of a request cycle.
     """
     get_session().commit()
@@ -124,6 +127,7 @@ def commit():
 
 def rollback():
     """Rollback session state so far.
+
     Typically performed when the request cycle raises an Exception.
     """
     get_session().rollback()
@@ -131,6 +135,7 @@ def rollback():
 
 def clear():
     """Dispose of this session, releases db resources.
+
     Typically performed at the end of a request cycle, after a
     commit() or rollback().
     """
@@ -229,6 +234,7 @@ def wrap_db_error(f):
 
 def delete_all_project_resources(project_id):
     """Logic to cleanup all project resources.
+
     This cleanup uses same alchemy session to perform all db operations as a
     transaction and will commit only when all db operations are performed
     without error.
@@ -242,6 +248,7 @@ def delete_all_project_resources(project_id):
 
 class BaseRepo(object):
     """Base repository for the osvmexpire entities.
+
     This class provides template methods that allow sub-classes to hook
     specific functionality as needed. Clients access instances of this class
     via singletons, therefore implementations should be stateless aside from
@@ -395,12 +402,14 @@ class BaseRepo(object):
 
     def _do_convert_values(self, values):
         """Sub-class hook: convert text-based values to target types
+
         This is specifically for database values.
         """
         pass
 
     def _do_validate(self, values):
         """Sub-class hook: validate values.
+
         Validates the incoming data and raises an Invalid exception
         if anything is out of order.
         :param values: Mapping of entity metadata to check
@@ -414,6 +423,7 @@ class BaseRepo(object):
 
     def _build_get_project_entities_query(self, project_id, session):
         """Sub-class hook: build a query to retrieve entities for a project.
+
         :param project_id: id of osvmexpire project entity
         :param session: existing db session reference.
         :returns: A query object for getting all project related entities
@@ -427,6 +437,7 @@ class BaseRepo(object):
 
     def get_project_entities(self, project_id, session=None):
         """Gets entities associated with a given project.
+
         :param project_id: id of osvmexpire project entity
         :param session: existing db session reference. If None, gets session.
         :returns: list of matching entities found otherwise returns empty list
@@ -445,6 +456,7 @@ class BaseRepo(object):
 
     def get_entities(self, expiration_filter=None, session=None):
         """Get all entities
+
         :param session: existing db session reference. If None, gets session.
         :param expiration_filter: timestamp to compare expiration date with
         :returns: list of matching entities found otherwise returns empty list
@@ -463,6 +475,7 @@ class BaseRepo(object):
 
     def get_count(self, project_id, session=None):
         """Gets count of entities associated with a given project
+
         :param project_id: id of osvmexpire project entity
         :param session: existing db session reference. If None, gets session.
         :return: an number 0 or greater
@@ -481,6 +494,7 @@ class BaseRepo(object):
                                 suppress_exception=False,
                                 session=None):
         """Deletes entities for a given project.
+
         :param project_id: id of osvmexpire project entity
         :param suppress_exception: Pass True if want to suppress exception
         :param session: existing db session reference. If None, gets session.
@@ -506,7 +520,6 @@ class BaseRepo(object):
                                 project_id)
 
 
-
 class VmExpireRepo(BaseRepo):
     """Repository for the expire entity."""
 
@@ -526,6 +539,7 @@ class VmExpireRepo(BaseRepo):
 
     def _build_get_project_entities_query(self, project_id, session):
         """Builds query for retrieving orders related to given project.
+
         :param project_id: id of osvmexpire project entity
         :param session: existing db session reference.
         """
@@ -534,12 +548,13 @@ class VmExpireRepo(BaseRepo):
 
     def delete_all_entities(self, suppress_exception=False, session=None):
         """Deletes all entities.
+
         :param suppress_exception: Pass True if want to suppress exception
         :param session: existing db session reference. If None, gets session.
         """
         session = self.get_session(session)
         try:
-            nb_del = session.query(models.VmExpire).delete()
+            session.query(models.VmExpire).delete()
         except sqlalchemy.exc.SQLAlchemyError:
             LOG.exception('Problem deleting entities')
             if not suppress_exception:
@@ -565,6 +580,7 @@ class VmExcludeRepo(BaseRepo):
 
     def get_exclude_by_id(self, exclude_id, session=None):
         """Builds query for retrieving exclude related to given entity id.
+
         :param entity_id: id of entity (user, project, domain)
         :param session: existing db session reference.
         """
@@ -574,6 +590,7 @@ class VmExcludeRepo(BaseRepo):
 
     def get_type_entities(self, exclude_type=None, session=None):
         """Builds query for retrieving excludes related to given type.
+
         :param exclude_type: id of osvmexclude type entity
         :param session: existing db session reference.
         """
@@ -586,6 +603,7 @@ class VmExcludeRepo(BaseRepo):
 
     def get_exclude_type(self, exclude_name):
         """Get numeric value matching the exclude type (domain,project,user).
+
         :param exclude_name: domain or project or user
         :return: matching numeric value for database
         """
@@ -600,6 +618,7 @@ class VmExcludeRepo(BaseRepo):
 
     def create_exclude_entity(self, entity_id, entity_type):
         """Get a VmExclude model
+
         :param entity_id: domain/project/user id
         :param entity_type: numeric value of type, see get_exclude_type()
         :return: `os_vm_expire.model.models.VmExclude`
@@ -611,6 +630,7 @@ class VmExcludeRepo(BaseRepo):
 
     def create_exclude(self, entity, session=None):
         """Record a new Exclude model in database.
+
         Checks that entity id does not already exists
         :return: `os_vm_expire.model.models.VmExclude`
         """
@@ -619,22 +639,23 @@ class VmExcludeRepo(BaseRepo):
         if ent_in_db:
             raise Exception(u._('Error creating exclude entity '
                                 'entity for '
-                                'entity_id=%s,'
-                                'entity_type=%d'
-                                ' already exists'),
-                            entity.exclude_id, entity.exclude_type)
+                                'entity_id=%(id)s,'
+                                'entity_type=%(type)d'
+                                ' already exists') %
+                            {'id': entity.exclude_id, 'type': entity.exclude_type})
         else:
             self.create_from(entity, session)
             return entity
 
     def delete_all_entities(self, suppress_exception=False, session=None):
         """Deletes all entities.
+
         :param suppress_exception: Pass True if want to suppress exception
         :param session: existing db session reference. If None, gets session.
         """
         session = self.get_session(session)
         try:
-            nb_del = session.query(models.VmExclude).delete()
+            session.query(models.VmExclude).delete()
         except sqlalchemy.exc.SQLAlchemyError:
             LOG.exception('Problem deleting entities')
             if not suppress_exception:
@@ -651,6 +672,7 @@ def get_vmexclude_repository():
     """Returns a singleton repository instance."""
     global _VMEXPIRE_REPOSITORY
     return _get_repository(_VMEXPIRE_REPOSITORY, VmExcludeRepo)
+
 
 def _get_repository(global_ref, repo_class):
     if not global_ref:

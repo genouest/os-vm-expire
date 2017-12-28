@@ -24,6 +24,7 @@ CONF = config.CONF
 
 class RequestContext(oslo_context.context.RequestContext):
     """User security context object
+
     Stores information about the security context under which the user
     accesses the system, as well as additional request information.
     """

@@ -15,7 +15,7 @@
 from contextlib import contextmanager
 import datetime
 import functools
-import os
+# import os
 from os import path
 import time
 import types
@@ -33,9 +33,9 @@ import webtest
 # from OpenSSL import crypto
 
 from os_vm_expire.api import app
-from os_vm_expire.common import config
+# from os_vm_expire.common import config
 import os_vm_expire.context
-from os_vm_expire.model import repositories
+# from os_vm_expire.model import repositories
 
 from os_vm_expire.tests import database_utils
 
@@ -94,6 +94,7 @@ class OsVMExpireAPIBaseTestCase(oslotest.BaseTestCase):
 
 class MockModelRepositoryMixin(object):
     """Class for setting up the repo factory mocks
+
     This class has the purpose of setting up the mocks for the model repository
     factory functions. This is because they are intended to be singletons, and
     thus called inside the code-base, and not really passed around as
@@ -106,6 +107,7 @@ class MockModelRepositoryMixin(object):
 
     def setup_vmexpire_repository_mock(self, mock_vmexpire_repo=mock.MagicMock(), ):
         """Mocks the expire repository factory function
+
         :param mock_expire_repo: The pre-configured mock repo to be
                                  returned.
         """
@@ -116,6 +118,7 @@ class MockModelRepositoryMixin(object):
 
     def setup_vmexclude_repository_mock(self, mock_vmexclude_repo=mock.MagicMock(), ):
         """Mocks the exclude repository factory function
+
         :param mock_exclude_repo: The pre-configured mock  repo to be
                                  returned.
         """
@@ -135,6 +138,7 @@ class MockModelRepositoryMixin(object):
 
 def construct_new_test_function(original_func, name, build_params):
     """Builds a new test function based on parameterized data.
+
     :param original_func: The original test function that is used as a template
     :param name: The fullname of the new test function
     :param build_params: A dictionary or list containing args or kwargs
@@ -188,6 +192,7 @@ def process_parameterized_function(name, func_obj, build_data):
 
 def parameterized_test_case(cls):
     """Class decorator to process parameterized tests
+
     This allows for parameterization to be used for potentially any
     unittest compatible runner; including testr and py.test.
     """
@@ -235,6 +240,7 @@ def setup_oslo_config_conf(testcase, content, conf_instance=None):
 def create_timestamp_w_tz_and_offset(timezone=None, days=0, hours=0, minutes=0,
                                      seconds=0):
     """Creates a timestamp with a timezone and offset in days
+
     :param timezone: Timezone used in creation of timestamp
     :param days: The offset in days
     :param hours: The offset in hours
@@ -293,6 +299,7 @@ def generate_test_uuid(tail_value=0):
     """Returns a blank uuid with the given value added to the end segment."""
     return '00000000-0000-0000-0000-{value:0>{pad}}'.format(value=tail_value,
                                                             pad=12)
+
 
 def generate_test_valid_uuid():
     """Returns a valid uuid value, similar to uuid generated in barbican"""

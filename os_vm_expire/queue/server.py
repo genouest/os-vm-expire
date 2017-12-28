@@ -18,18 +18,19 @@
 Server-side (i.e. worker side) classes and logic.
 """
 import datetime
-import time
 import functools
 import json
 import requests
+import time
 
-from oslo_service import service
 import oslo_messaging
 
+from oslo_service import service
+
+from os_vm_expire.common import config
 from os_vm_expire.common import utils
 from os_vm_expire.model import models
 from os_vm_expire.model import repositories
-from os_vm_expire.common import config
 
 CONF = config.CONF
 
@@ -91,6 +92,7 @@ def get_project_domain(project_id):
     domain_id = project['project']['domain_id']
     return domain_id
 
+
 def find_function_name(func, if_no_name=None):
     """Returns pretty-formatted function name."""
     return getattr(func, '__name__', if_no_name)
@@ -132,6 +134,7 @@ def monitored(fn):  # pragma: no cover
 
 class Tasks(object):
     """Tasks that can be invoked asynchronously.
+
     Only place task methods and implementations on this class, as they can be
     called directly from the client side for non-asynchronous standalone
     single-node operation.
@@ -179,7 +182,7 @@ class Tasks(object):
             project_domain = None
             try:
                 project_domain = get_project_domain(entity.project_id)
-            except Exception as e:
+            except Exception:
                 LOG.exception('Failed to get domain for project')
 
             exclude_repo = repositories.get_vmexclude_repository()
@@ -224,6 +227,7 @@ class Tasks(object):
 
 class TaskServer(Tasks, service.Service):
     """Server to process asynchronous tasking from API nodes.
+
     This server is an Oslo service that exposes task methods that can
     be invoked from the Barbican API nodes. It delegates to an Oslo
     RPC messaging server to invoke methods asynchronously on this class.
