@@ -109,7 +109,7 @@ def transactional(fn):
         try:
             fn(*args, **kwargs)
             repositories.commit()
-            LOG.info("Completed worker task (post-commit): '%s'", fn_name)
+            LOG.debug("Completed worker task (post-commit): '%s'", fn_name)
         except Exception:
             """NOTE: Wrapped functions must process with care!
             Exceptions that reach here will revert the entire transaction,
@@ -149,7 +149,7 @@ class Tasks(object):
     @transactional
     def info(self, ctxt, publisher_id, event_type, payload, metadata):
         if event_type == 'instance.create.end':
-            LOG.info(event_type + ':' + payload['nova_object.data']['uuid'])
+            LOG.debug(event_type + ':' + payload['nova_object.data']['uuid'])
             repo = repositories.get_vmexpire_repository()
             instance = None
             instance_uuid = str(payload['nova_object.data']['uuid'])
@@ -204,7 +204,7 @@ class Tasks(object):
             LOG.debug("NewInstanceExpiration:" + instance_uuid)
         elif event_type == 'instance.delete.end':
             instance_uuid = str(payload['nova_object.data']['uuid'])
-            LOG.info(event_type + ':' + instance_uuid)
+            LOG.debug(event_type + ':' + instance_uuid)
             repo = repositories.get_vmexpire_repository()
             try:
                 instance = repo.get_by_instance(instance_uuid)
