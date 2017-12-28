@@ -84,7 +84,7 @@ def get_project_domain(project_id):
         'X-Auth-Token': token,
         'Content-Type': 'application/json'
     }
-    r = requests.post(ks_uri + '/projects/' + str(project_id), headers=headers)
+    r = requests.get(ks_uri + '/projects/' + str(project_id), headers=headers)
     if not r.status_code == 200:
         LOG.error('Failed to get domain_id for project ' + str(project_id))
         return None
@@ -189,15 +189,15 @@ class Tasks(object):
             if project_domain:
                 exclude_id = exclude_repo.get_exclude_by_id(project_domain)
                 if exclude_id:
-                    LOG.debug('domain %s is excluded, skipping' % (exclude_id))
+                    LOG.debug('domain %s is excluded, skipping' % (project_domain))
                     return
             exclude_id = exclude_repo.get_exclude_by_id(entity.project_id)
             if exclude_id:
-                LOG.debug('project %s is excluded, skipping' % (exclude_id))
+                LOG.debug('project %s is excluded, skipping' % (entity.project_id))
                 return
             exclude_id = exclude_repo.get_exclude_by_id(entity.user_id)
             if exclude_id:
-                LOG.debug('user %s is excluded, skipping' % (exclude_id))
+                LOG.debug('user %s is excluded, skipping' % (entity.user_id))
                 return
 
             instance = repo.create_from(entity)
