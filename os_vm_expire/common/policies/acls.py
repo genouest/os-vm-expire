@@ -20,6 +20,12 @@ rules = [
                        'rule:admin_or_user'),
     policy.RuleDefault('vmexpire:delete',
                        'rule:admin'),
+    policy.RuleDefault('vmexclude:get',
+                       'rule:admin'),
+    policy.RuleDefault('vmexclude:create',
+                       'rule:admin'),
+    policy.RuleDefault('vmexclude:delete',
+                       'rule:admin'),
 ]
 
 

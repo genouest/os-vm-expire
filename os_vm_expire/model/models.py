@@ -225,3 +225,28 @@ class VmExpire(BASE, ModelBase):
             'user_id': self.user_id,
             'instance_name': self.instance_name
         }
+
+
+class VmExclude(BASE, ModelBase):
+    """Represents a VM."""
+
+    __tablename__ = 'vmexclude'
+
+    exclude_id = sa.Column(
+        sa.String(255), index=False,
+        nullable=False)
+    exclude_type = sa.Column(
+        sa.Integer, index=False,
+        nullable=False)
+
+    def __init__(self, parsed_request=None):
+        """Creates secret from a dict."""
+        super(VmExclude, self).__init__()
+
+    def _do_extra_dict_fields(self):
+        """Sub-class hook method: return dict of fields."""
+        return {
+            'id': self.id,
+            'exclude_id': self.exclude_id,
+            'exclude_type': self.exclude_type
+        }

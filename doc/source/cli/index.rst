@@ -14,6 +14,9 @@ Manage expirations
   osvmexpire-manage vm list
   osvmexpire-manage vm extend -h
   osvmexpire-manage vm remove -h
+  osvmexpire-manage exclude list
+  osvmexpire-manage exclude add -h
+  osvmexpire-manage exclude delete -h
 
 osvmexpire-db-manage
 ====================

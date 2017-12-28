@@ -1,0 +1,13 @@
+---
+features:
+  - |
+    Add exclude management to exclude a VM expiration for a domain, project or
+    user. Needs a db upgrade. Available via API (see doc) or osvmexpire-manage.
+upgrade:
+  - |
+    Need to run osvmexpire-db-manage upgrade for exclude feature.
+    Add to osvmexpire.conf new section [worker] with keystone parameters.
+    Need to add to policy.json (admin only) vmexclude:xx config (see etc/oslo-config-generator/policy.json.sample)
+fixes:
+  - |
+    Fix some docs typo and logging level.

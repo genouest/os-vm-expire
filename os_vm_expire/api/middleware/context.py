@@ -58,7 +58,6 @@ class ContextMiddleware(BaseContextMiddleware):
                                             anonymous access is disallowed
         """
         super(ContextMiddleware, self).process_request(req)
-
         if req.headers.get('X-Identity-Status') == 'Confirmed':
             req.context = self._get_authenticated_context(req)
         elif CONF.allow_anonymous_access:
@@ -85,7 +84,6 @@ class ContextMiddleware(BaseContextMiddleware):
         # it into a list to be useful
         roles_header = req.headers.get('X-Roles', '')
         roles = [r.strip().lower() for r in roles_header.split(',')]
-
         kwargs = {
             'auth_token': req.headers.get('X-Auth-Token'),
             'user': req.headers.get('X-User-Id'),
@@ -129,7 +127,6 @@ class UnauthenticatedContextMiddleware(BaseContextMiddleware):
         # If a role wasn't specified we default to admin
         if not roles:
             roles = [config_admin_role]
-
         kwargs = {
             'user': req.headers.get('X-User-Id'),
             'domain': req.headers.get('X-Domain-Id'),

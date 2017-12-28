@@ -23,6 +23,7 @@ from os_vm_expire.common import config
 # from os_vm_expire.model.migration import commands
 from os_vm_expire.model import repositories
 import os_vm_expire.version
+from os_vm_expire.model.models import VmExclude
 
 import argparse
 import datetime
@@ -49,12 +50,126 @@ def args(*args, **kwargs):
     return _decorator
 
 
+class VmExcludeCommands(object):
+    """Class for managing VM excludes"""
+
+    EXCLUSION_TYPES = {
+        'domain': 0,
+        'project': 1,
+        'user': 2
+    }
+
+    EXCLUSION_MAP = {
+        0: 'domain',
+        1: 'project',
+        2: 'pser'
+    }
+
+    description = "Subcommands for managing VM excludes"
+
+    list_description = "List exclusions"
+
+    @args('--type', metavar='<exclude-type>', dest='excludeType',
+          default=None,
+          help='Type of exclusion (domain, project, user)')
+    def list(self, excludeType=None):
+        repositories.setup_database_engine_and_factory()
+        repo = repositories.get_vmexclude_repository()
+        exclude_type = None
+        if excludeType is not None:
+            print("Filter by exclude type %s" % (excludeType))
+        if excludeType == 'domain':
+            exclude_type = 0
+        elif excludeType == 'project':
+            exclude_type = 1
+        elif excludeType == 'user':
+            exclude_type = 2
+        excludes = repo.get_type_entities(exclude_type=exclude_type)
+        headers = [
+            'id',
+            'type',
+            'exclude_id'
+        ]
+        pt = prettytable.PrettyTable(headers)
+
+        for instance in excludes:
+            pt.add_row(
+                [
+                    instance.id,
+                    VmExcludeCommands.EXCLUSION_MAP[instance.exclude_type],
+                    instance.exclude_id
+                ]
+            )
+        if six.PY3:
+            print(encodeutils.safe_encode(pt.get_string()).decode())
+        else:
+            print(encodeutils.safe_encode(pt.get_string()))
+
+    add_description = "Add exclusion"
+
+    @args('--type', metavar='<exclude-type>', dest='excludeType',
+          default=None,
+          help='Type of exclusion (domain, project, user)')
+    @args('--id', metavar='<exclude-id>', dest='excludeId',
+          default=None,
+          help='id of entity to exclude (domain, project, user)')
+    def add(self, excludeType=None, excludeId=None):
+        if excludeId is None:
+            print("id option is mandatory")
+            return
+        if excludeType not in VmExcludeCommands.EXCLUSION_TYPES:
+            print("type is not valid")
+            return
+        repositories.setup_database_engine_and_factory()
+        repo = repositories.get_vmexclude_repository()
+        entity = VmExclude()
+        entity.exclude_type = VmExcludeCommands.EXCLUSION_TYPES[excludeType]
+        entity.exclude_id = excludeId
+        try:
+            entity = repo.create_exclude(entity)
+        except Exception as e:
+            print(str(e))
+            return
+        repositories.commit()
+        headers = [
+            'id',
+            'type',
+            'exclude_id'
+        ]
+        pt = prettytable.PrettyTable(headers)
+        pt.add_row(
+            [
+                entity.id,
+                VmExcludeCommands.EXCLUSION_MAP[entity.exclude_type],
+                entity.exclude_id
+            ]
+        )
+        if six.PY3:
+            print(encodeutils.safe_encode(pt.get_string()).decode())
+        else:
+            print(encodeutils.safe_encode(pt.get_string()))
+
+    delete_description = "Delete exclusion"
+
+    @args('--id', metavar='<exclude-id>', dest='excludeId',
+          default=None,
+          help='id of exclude')
+    def delete(self, excludeId=None):
+        if excludeId is None:
+            print("Missing mandatory id parameter")
+            return
+        repositories.setup_database_engine_and_factory()
+        repo = repositories.get_vmexclude_repository()
+        repo.delete_entity_by_id(excludeId)
+        repositories.commit()
+        print("Exclude deleted")
+
 class VmExpireCommands(object):
     """Class for managing VM expiration"""
 
     description = "Subcommands for managing VM expiration"
 
-    list_description = "Extend a VM duration"
+    list_description = "List VM expirations"
 
     @args('--instance', metavar='<instance-id>', dest='instanceid',
           default=None,
@@ -94,6 +209,9 @@ class VmExpireCommands(object):
     @args('--id', metavar='<id>', dest='expirationid',
           help='Expiration id')
     def extend(self, expirationid):
+        if not expirationid:
+            print("Missing id paramerer")
+            return
         repositories.setup_database_engine_and_factory()
         repo = repositories.get_vmexpire_repository()
         repo.extend_vm(entity_id=expirationid)
@@ -105,6 +223,9 @@ class VmExpireCommands(object):
     @args('--id', metavar='<expiration-id>', dest='expirationid',
           help='Expiration id')
     def remove(self, expirationid):
+        if not expirationid:
+            print("Missing id paramerer")
+            return
         repositories.setup_database_engine_and_factory()
         repo = repositories.get_vmexpire_repository()
         repo.delete_entity_by_id(entity_id=expirationid)
@@ -114,6 +235,7 @@ class VmExpireCommands(object):
 
 CATEGORIES = {
     'vm': VmExpireCommands,
+    'exclude': VmExcludeCommands
 }
 
 

@@ -508,7 +508,7 @@ class BaseRepo(object):
 
 
 class VmExpireRepo(BaseRepo):
-    """Repository for the Order entity."""
+    """Repository for the expire entity."""
 
     def _do_entity_name(self):
         """Sub-class hook: return entity name, such as for debugging."""
@@ -546,11 +546,111 @@ class VmExpireRepo(BaseRepo):
                 raise Exception(u._('Error deleting entities '))
 
 
+class VmExcludeRepo(BaseRepo):
+    """Repository for the exclude entity."""
+
+    def _do_entity_name(self):
+        """Sub-class hook: return entity name, such as for debugging."""
+        return "VMExclude"
+
+    def _do_build_get_query(self, entity_id, session):
+        """Sub-class hook: build a retrieve query."""
+        query = session.query(models.VmExclude)
+        query = query.filter_by(id=entity_id)
+        return query
+
+    def _do_validate(self, values):
+        """Sub-class hook: validate values."""
+        pass
+
+    def get_exclude_by_id(self, exclude_id, session=None):
+        """Builds query for retrieving exclude related to given entity id.
+        :param entity_id: id of entity (user, project, domain)
+        :param session: existing db session reference.
+        """
+        session = self.get_session(session)
+        return session.query(models.VmExclude).filter_by(
+            exclude_id=exclude_id).one_or_none()
+
+    def get_type_entities(self, exclude_type=None, session=None):
+        """Builds query for retrieving excludes related to given type.
+        :param exclude_type: id of osvmexclude type entity
+        :param session: existing db session reference.
+        """
+        session = self.get_session(session)
+        if exclude_type is None:
+            return session.query(models.VmExclude).all()
+        else:
+            return session.query(models.VmExclude).filter_by(
+                exclude_type=exclude_type).all()
+
+    def get_exclude_type(self, exclude_name):
+        """Get numeric value matching the exclude type (domain,project,user).
+        :param exclude_name: domain or project or user
+        :return: matching numeric value for database
+        """
+        if exclude_name == 'domain':
+            return 0
+        elif exclude_name == 'project':
+            return 1
+        elif exclude_name == 'user':
+            return 2
+        else:
+            return -1
+
+    def create_exclude_entity(self, entity_id, entity_type):
+        """Get a VmExclude model
+        :param entity_id: domain/project/user id
+        :param entity_type: numeric value of type, see get_exclude_type()
+        :return: `os_vm_expire.model.models.VmExclude`
+        """
+        entity = models.VmExclude()
+        entity.exclude_id = entity_id
+        entity.exclude_type = entity_type
+        return entity
+
+    def create_exclude(self, entity, session=None):
+        """Record a new Exclude model in database.
+        Checks that entity id does not already exists
+        :return: `os_vm_expire.model.models.VmExclude`
+        """
+
+        ent_in_db = self.get_exclude_by_id(entity.exclude_id, session)
+        if ent_in_db:
+            raise Exception(u._('Error creating exclude entity '
+                                'entity for '
+                                'entity_id=%s,'
+                                'entity_type=%d'
+                                ' already exists'),
+                            entity.exclude_id, entity.exclude_type)
+        else:
+            self.create_from(entity, session)
+            return entity
+
+    def delete_all_entities(self, suppress_exception=False, session=None):
+        """Deletes all entities.
+        :param suppress_exception: Pass True if want to suppress exception
+        :param session: existing db session reference. If None, gets session.
+        """
+        session = self.get_session(session)
+        try:
+            nb_del = session.query(models.VmExclude).delete()
+        except sqlalchemy.exc.SQLAlchemyError:
+            LOG.exception('Problem deleting entities')
+            if not suppress_exception:
+                raise Exception(u._('Error deleting entities '))
+
+
 def get_vmexpire_repository():
     """Returns a singleton repository instance."""
     global _VMEXPIRE_REPOSITORY
     return _get_repository(_VMEXPIRE_REPOSITORY, VmExpireRepo)
 
+
+def get_vmexclude_repository():
+    """Returns a singleton repository instance."""
+    global _VMEXPIRE_REPOSITORY
+    return _get_repository(_VMEXPIRE_REPOSITORY, VmExcludeRepo)
 
 def _get_repository(global_ref, repo_class):
     if not global_ref:

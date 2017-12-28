@@ -1,5 +1,6 @@
 import datetime
 import logging
+import mock
 import os
 import sqlalchemy.orm as sa_orm
 import time
@@ -9,6 +10,31 @@ from os_vm_expire.tests import utils
 from os_vm_expire.model import repositories
 from os_vm_expire.model import models
 
+
+class MockResponse:
+    def __init__(self, json_data, status_code):
+        self.json_data = json_data
+        self.status_code = status_code
+        self.headers = {
+            'X-Subject-Token': 'XXX'
+        }
+
+    def json(self):
+        return self.json_data
+
+def mocked_requests_get(*args, **kwargs):
+    #print("args: "+str(*args))
+    #print("kwargs: "+str(**kwargs))
+    return MockResponse(None, 404)
+
+
+def mocked_requests_post(*args, **kwargs):
+    #print("args: "+str(*args))
+    #print("kwargs: "+str(**kwargs))
+    return MockResponse(None, 404)
+
+def mocked_get_project_domain(project_id):
+    return '12345domain'
 
 class WhenTestingVmExpiresResource(utils.OsVMExpireAPIBaseTestCase):
 
@@ -21,8 +47,14 @@ class WhenTestingVmExpiresResource(utils.OsVMExpireAPIBaseTestCase):
         repo = repositories.get_vmexpire_repository()
         repo.delete_all_entities()
         repositories.commit()
+        exclude_repo = repositories.get_vmexclude_repository()
+        exclude_repo.delete_all_entities()
+        repositories.commit()
 
-    def test_vm_create(self):
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    @mock.patch('requests.post', side_effect=mocked_requests_post)
+    @mock.patch('os_vm_expire.queue.server.get_project_domain', side_effect=mocked_get_project_domain)
+    def test_vm_create(self, mock_get, mock_post, mock_get_project_domain):
         create_msg = {
             'nova_object.data': {
                 'uuid': '1-2-3-4-5',
@@ -61,6 +93,91 @@ class WhenTestingVmExpiresResource(utils.OsVMExpireAPIBaseTestCase):
         self.assertFalse(found)
 
 
+class WhenTestingVmExcludesResource(utils.OsVMExpireAPIBaseTestCase):
+
+    def setUp(self):
+        super(WhenTestingVmExcludesResource, self).setUp()
+        self.task = Tasks()
+
+    def tearDown(self):
+        super(WhenTestingVmExcludesResource, self).tearDown()
+        repo = repositories.get_vmexpire_repository()
+        repo.delete_all_entities()
+        repositories.commit()
+        exclude_repo = repositories.get_vmexclude_repository()
+        exclude_repo.delete_all_entities()
+        repositories.commit()
+
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    @mock.patch('requests.post', side_effect=mocked_requests_post)
+    @mock.patch('os_vm_expire.queue.server.get_project_domain', side_effect=mocked_get_project_domain)
+    def test_vm_exclude_domain(self, mock_get, mock_post, mock_get_project_domain):
+        create_msg = {
+            'nova_object.data': {
+                'uuid': '1-2-3-4-5',
+                'display_name': '12345',
+                'tenant_id': '12345project',
+                'user_id': '12345user'
+            }
+        }
+        entity = create_vmexclude_model('12345domain', 0)
+        create_vmexclude(entity)
+        self.task.info(None, 'mock', 'instance.create.end', create_msg, None)
+        repo = repositories.get_vmexpire_repository()
+        try:
+            expire = repo.get_by_instance(create_msg['nova_object.data']['uuid'])
+        except Exception as e:
+            logging.info('instance not found: ' + str(e))
+        else:
+            self.self.fail('domain is excluded, should not have been created')
+
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    @mock.patch('requests.post', side_effect=mocked_requests_post)
+    @mock.patch('os_vm_expire.queue.server.get_project_domain', side_effect=mocked_get_project_domain)
+    def test_vm_exclude_project(self, mock_get, mock_post, mock_get_project_domain):
+        create_msg = {
+            'nova_object.data': {
+                'uuid': '1-2-3-4-5',
+                'display_name': '12345',
+                'tenant_id': '12345project',
+                'user_id': '12345user'
+            }
+        }
+        entity = create_vmexclude_model('12345project', 1)
+        create_vmexclude(entity)
+        self.task.info(None, 'mock', 'instance.create.end', create_msg, None)
+        repo = repositories.get_vmexpire_repository()
+        try:
+            expire = repo.get_by_instance(create_msg['nova_object.data']['uuid'])
+        except Exception as e:
+            logging.info('instance not found: ' + str(e))
+        else:
+            self.self.fail('domain is excluded, should not have been created')
+
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    @mock.patch('requests.post', side_effect=mocked_requests_post)
+    @mock.patch('os_vm_expire.queue.server.get_project_domain', side_effect=mocked_get_project_domain)
+    def test_vm_exclude_user(self, mock_get, mock_post, mock_get_project_domain):
+        create_msg = {
+            'nova_object.data': {
+                'uuid': '1-2-3-4-5',
+                'display_name': '12345',
+                'tenant_id': '12345project',
+                'user_id': '12345user'
+            }
+        }
+        entity = create_vmexclude_model('12345user', 2)
+        create_vmexclude(entity)
+        self.task.info(None, 'mock', 'instance.create.end', create_msg, None)
+        repo = repositories.get_vmexpire_repository()
+        try:
+            expire = repo.get_by_instance(create_msg['nova_object.data']['uuid'])
+        except Exception as e:
+            logging.info('instance not found: ' + str(e))
+        else:
+            self.self.fail('domain is excluded, should not have been created')
+
+
 def create_vmexpire_model(prefix=None):
     if not prefix:
         prefix = '12345'
@@ -77,5 +194,18 @@ def create_vmexpire_model(prefix=None):
 def create_vmexpire(entity):
     repo = repositories.get_vmexpire_repository()
     instance = repo.create_from(entity)
+    repositories.commit()
+    return instance
+
+
+def create_vmexclude_model(exclude_id, exclude_type):
+    entity = models.VmExclude()
+    entity.exclude_id = exclude_id
+    entity.exclude_type = exclude_type
+    return entity
+
+def create_vmexclude(entity):
+    repo = repositories.get_vmexclude_repository()
+    instance = repo.create_exclude(entity)
     repositories.commit()
     return instance

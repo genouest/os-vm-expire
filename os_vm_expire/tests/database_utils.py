@@ -41,6 +41,15 @@ def create_vmexpire(instance=None, session=None):
     container_repo.create_from(expire, session=session)
     return container
 
+def create_vmexclude(exclude_id=None, exclude_type=0, session=None):
+    exclude = models.VmExclude()
+    exclude.exclude_id = exclude_id
+    exclude.exclude_type = exclude_type
+    container_repo = repositories.get_vmexclude_repository()
+    container_repo.create_exclude(exclude, session=session)
+    return container
+
+
 def setup_in_memory_db():
     # Ensure we are using in-memory SQLite database, and creating tables.
     options.set_defaults(repositories.CONF, connection='sqlite:///test.db')

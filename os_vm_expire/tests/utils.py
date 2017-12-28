@@ -104,15 +104,25 @@ class MockModelRepositoryMixin(object):
     added to the tear-down of the respective classes.
     """
 
-    def setup_vmexpire_repository_mock(self, mock_vmexpire_repo=mock.MagicMock()):
-        """Mocks the secret repository factory function
-        :param mock_secret_repo: The pre-configured mock secret repo to be
+    def setup_vmexpire_repository_mock(self, mock_vmexpire_repo=mock.MagicMock(), ):
+        """Mocks the expire repository factory function
+        :param mock_expire_repo: The pre-configured mock repo to be
                                  returned.
         """
         self.mock_vmexpire_repo_patcher = None
         self._setup_repository_mock(repo_factory='get_vmexpire_repository',
                                     mock_repo_obj=mock_vmexpire_repo,
                                     patcher_obj=self.mock_vmexpire_repo_patcher)
+
+    def setup_vmexclude_repository_mock(self, mock_vmexclude_repo=mock.MagicMock(), ):
+        """Mocks the exclude repository factory function
+        :param mock_exclude_repo: The pre-configured mock  repo to be
+                                 returned.
+        """
+        self.mock_vmexclude_repo_patcher = None
+        self._setup_repository_mock(repo_factory='get_vmexclude_repository',
+                                    mock_repo_obj=mock_vmexclude_repo,
+                                    patcher_obj=self.mock_vmexclude_repo_patcher)
 
     def _setup_repository_mock(self, repo_factory, mock_repo_obj, patcher_obj):
         patcher_obj = mock.patch(

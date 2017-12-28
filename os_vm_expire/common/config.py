@@ -97,6 +97,29 @@ cleaner_opts = [
 ]
 
 
+worker_opt_group = cfg.OptGroup(name='worker',
+                                 title='Worker Application Options')
+
+worker_opts = [
+    cfg.StrOpt('auth_uri',
+               default='http://controller:5000/v3.0',
+               help=u._("Openstack identity url")),
+    cfg.StrOpt('admin_service',
+               default='service',
+               help=u._("service project name")),
+    cfg.StrOpt('admin_user',
+               default='os_vm_expire',
+               help=u._("os-vm-expire service user id")),
+    cfg.StrOpt('admin_password',
+               help=u._("os-vm-expire service user password")),
+    cfg.StrOpt('admin_user_domain_name',
+               default='default',
+               help=u._("os-vm-expire user domain name")),
+    cfg.StrOpt('admin_project_domain_name',
+               default='default',
+               help=u._("os-vm-expire service project domain name")),
+]
+
 queue_opt_group = cfg.OptGroup(name='queue',
                                title='Queue Application Options')
 
@@ -198,6 +221,7 @@ def list_opts():
     yield queue_opt_group, queue_opts
     yield ks_queue_opt_group, ks_queue_opts
     yield cleaner_opt_group, cleaner_opts
+    yield worker_opt_group, worker_opts
     yield mail_opt_group, mail_opts
 
 
@@ -263,6 +287,7 @@ def new_config():
     conf.register_group(ks_queue_opt_group)
     conf.register_opts(ks_queue_opts, group=ks_queue_opt_group)
     conf.register_opts(cleaner_opts, group=cleaner_opt_group)
+    conf.register_opts(worker_opts, group=worker_opt_group)
     conf.register_opts(mail_opts, group=mail_opt_group)
 
     # Update default values from libraries that carry their own oslo.config

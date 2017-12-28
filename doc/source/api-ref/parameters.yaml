@@ -39,7 +39,26 @@ id:
   description: |
     id of the object.
 
+
 # variables in body
+exclude_id:
+  in: body
+  required: true
+  type: string
+  description: |
+    id of the exclude
+exclude_object_id:
+  in: body
+  required: true
+  type: string
+  description: |
+    id of the domain/project/user to exclude
+exclude_type:
+  in: body
+  required: true
+  type: string
+  description: |
+    type of exclusion, one of [domain, project, user]
 expiration_id:
   in: body
   required: true
@@ -70,6 +89,18 @@ user_id:
   type: string
   description: |
     ID of the user owning the VM.
+vmexclude:
+  in: body
+  required: true
+  type: object
+  description: |
+    exclusion object.
+vmexcludes:
+  description: |
+    A list of ``vmexclude`` objects.
+  in: body
+  required: true
+  type: array
 vmexpire:
   in: body
   required: true

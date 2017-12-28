@@ -4,5 +4,8 @@
     "default": "rule:admin_or_owner",
     "vmexpire:get": "rule:admin_or_owner",
     "vmexpire:extend": "rule:admin_or_owner",
-    "vmexpire:delete": "rule:context_is_admin"
+    "vmexpire:delete": "rule:context_is_admin",
+    "vmexclude:get": "rule:admin",
+    "vmexclude:create": "rule:admin",
+    "vmexclude:delete": "rule:admin"
 }

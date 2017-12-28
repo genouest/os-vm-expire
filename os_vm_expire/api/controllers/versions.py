@@ -15,6 +15,7 @@ from six.moves.urllib import parse
 
 from os_vm_expire.api import controllers
 from os_vm_expire.api.controllers import vmexpire
+from os_vm_expire.api.controllers import vmexclude
 from os_vm_expire.common import utils
 from os_vm_expire import i18n as u
 from os_vm_expire import version
@@ -93,7 +94,12 @@ class V1Controller(BaseVersionController):
     def _lookup(self, project_id, *remainder):
         if not project_id:
             return self.on_get()
-        return vmexpire.VmExpireController(project_id), remainder
+        if remainder and remainder[0] == 'vmexpires':
+            return vmexpire.VmExpireController(project_id), remainder
+        elif remainder and remainder[0] == 'vmexcludes':
+            return vmexclude.VmExcludeController(project_id), remainder
+        else:
+            return self.on_get()
 
     @index.when(method='GET', template='json')
     @utils.allow_certain_content_types(MIME_TYPE_JSON, MIME_TYPE_JSON_HOME)

@@ -12,3 +12,6 @@ User can extend the life of a VM at any time, but its expiration will only be ex
 To extend VM expiration, one can use the Horizon dashboard or the API of os-vm-expire.
 For more details on API, see `OpenStack VMExpiration Management API
 <../api-ref/index.html>`_
+
+
+Some domain/project/user ids can be ignored via exclusion. Only administrator can create an exclusion.

@@ -66,6 +66,25 @@
         # enabled if possible. (boolean value)
         service_token_roles_required = true
 
+        [worker]
+        # Openstack identity url (string value)
+        #auth_uri = http://controller:5000/v3.0
+
+        # service project name (string value)
+        #admin_service = service
+
+        # os-vm-expire service user id (string value)
+        #admin_user = os_vm_expire
+
+        # os-vm-expire service user password (string value)
+        #admin_password = <None>
+
+        # os-vm-expire user domain name (string value)
+        #admin_user_domain_name = default
+
+        # os-vm-expire service project domain name (string value)
+        #admin_project_domain_name = default
+
         [cleaner]
         # Openstack identity url (string value)
         auth_uri = http://127.0.0.1/identity/v3
