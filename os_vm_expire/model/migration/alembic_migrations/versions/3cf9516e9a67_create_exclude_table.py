@@ -20,13 +20,12 @@ Revises: newton
 Create Date: 2017-12-27 17:23:22.288802
 
 """
+from alembic import op
+import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '3cf9516e9a67'
 down_revision = 'newton'
-
-from alembic import op
-import sqlalchemy as sa
 
 
 def upgrade():

@@ -1,0 +1,25 @@
+language: python
+sudo: false
+python:
+- '2.7'
+- '3.4'
+- '3.5'
+- '3.6'
+branches:
+  except:
+  - "/^feature.*$/"
+install:
+  - pip install flake8
+  - pip install -r requirements.txt
+  - python setup.py -q install
+script:
+  - nosetests
+  - flake8 --ignore E501,E123,E128 os_vm_expire
+deploy:
+  provider: pypi
+  user: osallou
+  password:
+    secure: G97XodwxO7BPdKJeL6NkATGxnH7fNzIcek9HsPzCJs94DkATLD8CmI7ZrbqLU+Fp4EVEBm10BkA+SSWn3qo+9qvCy3tcNSmAX4mK0NNmoiZ4AqJjJrL0yf0LuMLCRZppXJBpGCiY48i+0CFLsQzwVl04xcvYAv2YTY9kFa+L2bu8IF53dB2otSJRYSI/k0T8FJCirsnycBh7zxXtClZF5qc3tw+PNGQucKyhoxzZs6O7wGHW/0xVTmSVc/Ds/tDBK9HYCCFBocEM2HdinsjQOnbtWJx+9WO9PiM8iO4T+0YcrDCDoME4n+dqIqcVE0ASHmiEYXLzaj3UDTIs2TROHmKxrYQMVIc/uccAJp2NjbFPxzcnIt28B4X0tdrqRrYD0AN1p3wTgkrisJX4KGH2ioYoIof5WRe+lEHq4S9wkryaqeLVF6HZ/ObuXE2UarGbwf0IQLRTXTd3dCC1GM8OjfdzmuWt/JFCb6PU4zMVjn+IRbi9jIbOrx6ZngzkTaHx+CBbQfn62nzo7Ep20cEj7UywpY5El8PsSc4hJaL+b1ewGRbl0/PI/WlntpjS80pAU4wZ3psXzBn0+rGjxMU2oSrJPQHzqao4mAOx0vU1AoJu56IYWZCm7+zdLpzXqKtuDvjwFK5QKcqTTQuLPKqLcrEOG7VV4qoFJMA7RkKo3Us=
+  distributions: sdist bdist_wheel
+  on:
+    tags: true
