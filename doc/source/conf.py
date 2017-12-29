@@ -57,14 +57,14 @@ add_module_names = True
 pygments_style = 'sphinx'
 
 # -- Options for HTML output --------------------------------------------------
-def setup(app):
-    app.add_stylesheet("api-site.css")
 # The theme to use for HTML and HTML Help pages.  Major themes that come with
 # Sphinx are currently 'default' and 'sphinxdoc'.
 # html_theme_path = ["."]
 # html_theme = '_theme'
 # html_static_path = ['static']
-html_static_path = []
+#def setup(app):
+#  app.add_stylesheet('api-site.css')
+
 html_theme = 'openstackdocs'
 
 # Must set this variable to include year, month, day, hours, and minutes.
