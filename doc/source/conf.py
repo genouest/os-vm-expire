@@ -63,6 +63,7 @@ pygments_style = 'sphinx'
 # html_theme_path = ["."]
 # html_theme = '_theme'
 # html_static_path = ['static']
+html_static_path = []
 html_theme = 'openstackdocs'
 
 # Must set this variable to include year, month, day, hours, and minutes.
