@@ -8,9 +8,13 @@ python:
 branches:
   except:
   - "/^feature.*$/"
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install sqlite3
 install:
   - pip install flake8
   - pip install -r requirements.txt
+  - pip install -r test-requirements.txt
   - python setup.py -q install
 script:
   - nosetests
