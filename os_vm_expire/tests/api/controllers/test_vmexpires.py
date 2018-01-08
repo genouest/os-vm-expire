@@ -14,7 +14,7 @@ import datetime
 import mock
 import time
 
-from os_vm_expire import context
+# from os_vm_expire import context
 from os_vm_expire.model import models
 from os_vm_expire.model import repositories
 from os_vm_expire.tests import utils
@@ -53,14 +53,7 @@ class WhenTestingVmExpiresResource(utils.OsVMExpireAPIBaseTestCase):
         req = mock.MagicMock()
         req.get_param.return_value = None
 
-        kwargs = {
-            'user': entity_user.user_id,
-            'project': entity_user.project_id,
-            'roles': ['XXXX'],
-            'policy_enforcer': None,
-            'is_admin': False
-        }
-        _get_resp = self.app.get('/' + entity.project_id + '/vmexpires/?all_tenants=1', status=403)
+        self.app.get('/' + entity.project_id + '/vmexpires/?all_tenants=1', status=403)
 
     def test_admin_can_get_own_vmexpires(self):
         entity_user = create_vmexpire_model()
