@@ -31,7 +31,7 @@ Requirements
 
 Nova notifications need to be enabled to get VM start and end messages.
 
-Software has been tested on **Pike** and **Otaca, and in single and multi domain configuration. It *should* work from **Newton**.
+Software has been tested on **Pike** and **Otaca**, and in single and multi domain configuration. It *should* work from **Newton**.
 
 Features
 --------
