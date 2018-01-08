@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    Add all_tenants option to API to get vmexpires results for all projects
+    if user is admin.

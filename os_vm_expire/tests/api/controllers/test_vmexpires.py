@@ -11,8 +11,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import datetime
+import mock
 import time
 
+from os_vm_expire import context
 from os_vm_expire.model import models
 from os_vm_expire.model import repositories
 from os_vm_expire.tests import utils
@@ -42,6 +44,53 @@ class WhenTestingVmExpiresResource(utils.OsVMExpireAPIBaseTestCase):
             _get_resp.json['vmexpires'][0]['instance_id'],
             entity.instance_id
             )
+
+    def test_user_fails_all_tenants_vmexpires(self):
+        entity_user = create_vmexpire_model()
+        create_vmexpire(entity_user)
+        entity = create_vmexpire_model(prefix='admin')
+        create_vmexpire(entity)
+        req = mock.MagicMock()
+        req.get_param.return_value = None
+
+        kwargs = {
+            'user': entity_user.user_id,
+            'project': entity_user.project_id,
+            'roles': ['XXXX'],
+            'policy_enforcer': None,
+            'is_admin': False
+        }
+        _get_resp = self.app.get('/' + entity.project_id + '/vmexpires/?all_tenants=1', status=403)
+
+    def test_admin_can_get_own_vmexpires(self):
+        entity_user = create_vmexpire_model()
+        create_vmexpire(entity_user)
+        entity = create_vmexpire_model(prefix='admin')
+        create_vmexpire(entity)
+        self.app.extra_environ = {
+            'os_vm_expire.context': self._build_context(self.project_id, is_admin=True)
+        }
+        _get_resp = self.app.get('/' + entity.project_id + '/vmexpires/')
+        self.assertEqual(200, _get_resp.status_int)
+        self.assertIn('vmexpires', _get_resp.json)
+        self.assertEqual(len(_get_resp.json['vmexpires']), 1)
+        self.assertEqual(
+            _get_resp.json['vmexpires'][0]['instance_id'],
+            entity.instance_id
+            )
+
+    def test_admin_can_get_all_vmexpires(self):
+        entity_user = create_vmexpire_model()
+        create_vmexpire(entity_user)
+        entity = create_vmexpire_model(prefix='admin')
+        create_vmexpire(entity)
+        self.app.extra_environ = {
+            'os_vm_expire.context': self._build_context(self.project_id, is_admin=True)
+        }
+        _get_resp = self.app.get('/' + entity.project_id + '/vmexpires/?all_tenants=1')
+        self.assertEqual(200, _get_resp.status_int)
+        self.assertIn('vmexpires', _get_resp.json)
+        self.assertEqual(len(_get_resp.json['vmexpires']), 2)
 
     def test_can_get_vmexpire(self):
         entity = create_vmexpire_model()

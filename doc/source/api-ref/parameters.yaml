@@ -32,13 +32,18 @@ x-openstack-request-id_resp:
   type: string
 
 # variables in path
+all_tenants:
+    in: path
+    required: false
+    type: int
+    description: |
+      get results for all tenants/projects, restricted to admin users
 id:
   in: path
   required: true
   type: string
   description: |
     id of the object.
-
 
 # variables in body
 exclude_id:

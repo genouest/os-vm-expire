@@ -57,7 +57,7 @@ class OsVMExpireAPIBaseTestCase(oslotest.BaseTestCase):
     """Base TestCase for all tests needing to interact with a os-vm-expire app."""
     root_controller = None
 
-    def _build_context(self, project_id, roles=None, user=None, is_admin=True,
+    def _build_context(self, project_id, roles=None, user=None, is_admin=False,
                        policy_enforcer=None):
         context = os_vm_expire.context.RequestContext(
             roles=roles,

@@ -36,6 +36,10 @@ forbidden(403)
 Request
 -------
 
+.. rest_parameters:: parameters.yaml
+
+  - all_tenants: all_tenants
+
 
 Response
 --------

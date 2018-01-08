@@ -58,7 +58,16 @@ class VmExpireController(controllers.ACLMixin):
         vm_repo = self.vmexpire_repo
         instances = []
         if instance_id is None:
-            instances = vm_repo.get_project_entities(str(self.project_id))
+            all_tenants = pecan.request.GET.get('all_tenants')
+            if all_tenants is not None:
+                ctxt = controllers._get_vmexpire_context(pecan.request)
+                if ctxt.is_admin:
+                    instances = vm_repo.get_entities()
+                else:
+                    pecan.response.status = 403
+                    return "all_tenants is restricted to admin users"
+            else:
+                instances = vm_repo.get_project_entities(str(self.project_id))
         else:
             instance = vm_repo.get(entity_id=str(instance_id))
             # url = hrefs.convert_vmexpire_to_href(instance.id)
