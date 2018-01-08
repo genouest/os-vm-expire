@@ -131,7 +131,7 @@ def get_project_name(project_id, token):
     ks_uri = config.CONF.cleaner.auth_uri
     try:
         r = requests.get(ks_uri + '/projects/' + project_id, headers=headers)
-    except Exception as e:
+    except Exception:
         LOG.exception('Failed to get project name for id ' + str(project_id))
         return None
     if r.status_code != 200:
@@ -140,6 +140,7 @@ def get_project_name(project_id, token):
     if 'project' in project:
         return project['project']['name']
     return None
+
 
 def send_email(instance, token, delete=False):
     LOG.debug("Send expiration notification mail")
@@ -170,7 +171,7 @@ def send_email(instance, token, delete=False):
     if project_name is None:
         project_name = instance.project_id
 
-    subject = 'VM %s [project: %s] expiration'  % (
+    subject = 'VM %s [project: %s] expiration' % (
         str(instance.instance_name),
         project_name
     )
