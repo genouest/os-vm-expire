@@ -120,6 +120,27 @@ def get_identity_token():
     return token
 
 
+def get_project_name(project_id, token):
+    LOG.debug("Get project name")
+    # fetch user from identity to get user email
+    headers = {
+        'X-Auth-Token': token,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    }
+    ks_uri = config.CONF.cleaner.auth_uri
+    try:
+        r = requests.get(ks_uri + '/projects/' + project_id, headers=headers)
+    except Exception as e:
+        LOG.exception('Failed to get project name for id ' + str(project_id))
+        return None
+    if r.status_code != 200:
+        return None
+    project = r.json()
+    if 'project' in project:
+        return project['project']['name']
+    return None
+
 def send_email(instance, token, delete=False):
     LOG.debug("Send expiration notification mail")
     # fetch user from identity to get user email
@@ -144,7 +165,15 @@ def send_email(instance, token, delete=False):
     if delete and config.CONF.smtp.email_smtp_copy_delete_notif_to is not None:
         to = [email, config.CONF.smtp.email_smtp_copy_delete_notif_to]
 
-    subject = 'VM ' + str(instance.instance_name) + ' expiration'
+    project_name = get_project_name(instance.project_id, token)
+
+    if project_name is None:
+        project_name = instance.project_id
+
+    subject = 'VM %s [project: %s] expiration'  % (
+        str(instance.instance_name),
+        project_name
+    )
 
     message = ('VM %s (id: %s, project: %s) will expire at %s,' +
                'connect to dashboard to extend its duration else ' +
