@@ -1,0 +1,5 @@
+---
+fixes:
+  - |
+    Fix cleaner VM query where only expired VMs were selected resulting in
+    "too late" email notifications.
