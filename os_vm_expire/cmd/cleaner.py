@@ -80,7 +80,7 @@ def delete_vm(instance_id, project_id, token):
         LOG.error('Failed to delete instance ' + str(instance_id))
         return False
     else:
-        LOG.info('DELETE:' + str(instance_id) + ':' +str(project_id))
+        LOG.info('DELETE:' + str(instance_id) + ':' + str(project_id))
         return True
 
 
