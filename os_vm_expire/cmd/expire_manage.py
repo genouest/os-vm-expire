@@ -62,7 +62,7 @@ class VmExcludeCommands(object):
     EXCLUSION_MAP = {
         0: 'domain',
         1: 'project',
-        2: 'pser'
+        2: 'user'
     }
 
     description = "Subcommands for managing VM excludes"
