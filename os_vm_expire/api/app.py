@@ -46,7 +46,7 @@ def build_wsgi_app(controller=None, transactional=False):
     # Create WSGI app
     wsgi_app = pecan.Pecan(
         controller or versions.AVAILABLE_VERSIONS[versions.DEFAULT_VERSION](),
-         hooks=request_hooks,
+        hooks=request_hooks,
         force_canonical=False
     )
 
