@@ -1,0 +1,6 @@
+---
+fixes:
+  - |
+    Add transaction hook to API to clear transactions, else at some time SQL
+    transaction pool is full and service needs to be restarted
+    (even for get only requests).

@@ -26,6 +26,7 @@ import pecan
 from oslo_log import log
 
 from os_vm_expire.api.controllers import versions
+from os_vm_expire.api import hooks
 from os_vm_expire.common import config
 from os_vm_expire.model import repositories
 
@@ -38,12 +39,17 @@ def build_wsgi_app(controller=None, transactional=False):
     :param controller: Overrides default application controller
     :param transactional: Adds transaction hook for all requests
     """
+    request_hooks = [hooks.JSONErrorHook()]
+    if transactional:
+        request_hooks.append(hooks.OSVmExpireTransactionHook())
 
     # Create WSGI app
     wsgi_app = pecan.Pecan(
         controller or versions.AVAILABLE_VERSIONS[versions.DEFAULT_VERSION](),
+         hooks=request_hooks,
         force_canonical=False
     )
+
     # clear the session created in controller initialization     60
     repositories.clear()
     return wsgi_app
