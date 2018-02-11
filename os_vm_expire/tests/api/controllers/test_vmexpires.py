@@ -36,13 +36,14 @@ class WhenTestingVmExpiresResource(utils.OsVMExpireAPIBaseTestCase):
     def test_can_get_vmexpires(self):
         entity = create_vmexpire_model()
         create_vmexpire(entity)
+        instance_id = entity.instance_id
         _get_resp = self.app.get('/' + entity.project_id + '/vmexpires/')
         self.assertEqual(200, _get_resp.status_int)
         self.assertIn('vmexpires', _get_resp.json)
         self.assertEqual(len(_get_resp.json['vmexpires']), 1)
         self.assertEqual(
             _get_resp.json['vmexpires'][0]['instance_id'],
-            entity.instance_id
+            instance_id
             )
 
     def test_user_fails_all_tenants_vmexpires(self):
@@ -60,6 +61,7 @@ class WhenTestingVmExpiresResource(utils.OsVMExpireAPIBaseTestCase):
         create_vmexpire(entity_user)
         entity = create_vmexpire_model(prefix='admin')
         create_vmexpire(entity)
+        instance_id = entity.instance_id
         self.app.extra_environ = {
             'os_vm_expire.context': self._build_context(self.project_id, is_admin=True)
         }
@@ -69,7 +71,7 @@ class WhenTestingVmExpiresResource(utils.OsVMExpireAPIBaseTestCase):
         self.assertEqual(len(_get_resp.json['vmexpires']), 1)
         self.assertEqual(
             _get_resp.json['vmexpires'][0]['instance_id'],
-            entity.instance_id
+            instance_id
             )
 
     def test_admin_can_get_all_vmexpires(self):

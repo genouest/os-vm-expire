@@ -31,6 +31,7 @@ class JSONErrorHook(pecan.hooks.PecanHook):
             state.response.content_type = "application/json"
             return exc.body
 
+
 class OSVmExpireTransactionHook(pecan.hooks.TransactionHook):
     """Custom hook for Barbican transactions."""
     def __init__(self):

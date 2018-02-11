@@ -34,17 +34,19 @@ class WhenTestingVmExcludesResource(utils.OsVMExpireAPIBaseTestCase):
     def test_can_get_vmexcludes(self):
         entity = create_vmexclude_model(exclude_type=0)
         create_vmexclude(entity)
+        exclude_id = entity.exclude_id
+        exclude_type = entity.exclude_type
         _get_resp = self.app.get('/12345project/vmexcludes/')
         self.assertEqual(200, _get_resp.status_int)
         self.assertIn('vmexcludes', _get_resp.json)
         self.assertEqual(len(_get_resp.json['vmexcludes']), 1)
         self.assertEqual(
             _get_resp.json['vmexcludes'][0]['exclude_id'],
-            entity.exclude_id
+            exclude_id
             )
         self.assertEqual(
             _get_resp.json['vmexcludes'][0]['exclude_type'],
-            entity.exclude_type
+            exclude_type
             )
 
     def test_can_get_vmexclude(self):
