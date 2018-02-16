@@ -30,6 +30,7 @@ import datetime
 import prettytable
 import six
 import sys
+import time
 
 from oslo_config import cfg
 from oslo_db import options
@@ -175,7 +176,10 @@ class VmExpireCommands(object):
     @args('--instance', metavar='<instance-id>', dest='instanceid',
           default=None,
           help='Instance id')
-    def list(self, instanceid=None):
+    @args('--days', metavar='<expire-in>', dest='days',
+          default=None,
+          help='Filter VM expiring in X days')
+    def list(self, instanceid=None, days=None):
         repositories.setup_database_engine_and_factory()
         repo = repositories.get_vmexpire_repository()
         res = repo.get_all_by(instance_id=instanceid, project_id=None)
@@ -187,8 +191,19 @@ class VmExpireCommands(object):
             'project.id',
             'user.id'
         ]
+        limit = None
+        if days:
+            try:
+                dt = datetime.datetime.now() + datetime.timedelta(days=int(days))
+                limit = time.mktime(dt.timetuple())
+            except Exception as e:
+                print(str(e))
+                return
         pt = prettytable.PrettyTable(headers)
         for instance in res:
+            if limit and instance.expire > limit:
+                continue
+
             pt.add_row(
                 [
                     instance.id,
