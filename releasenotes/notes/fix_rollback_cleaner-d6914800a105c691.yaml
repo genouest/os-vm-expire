@@ -1,0 +1,4 @@
+---
+fixes:
+  - |
+    In case of cleaner db update issue, rollback session transaction.

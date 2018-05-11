@@ -241,23 +241,35 @@ def check(started_at):
             res = send_email(entity, token, delete=False)
             if res:
                 entity.notified = True
-                entity.save()
-                repositories.commit()
+                try:
+                    entity.save()
+                    repositories.commit()
+                except Exception as e:
+                    LOG.exception("expiration save error: " + str(e))
+                    repositories.rollback()
         elif entity.expire < last_check_time and not entity.notified_last:
             # notify_last
             LOG.debug("Last expiration notification %s" % (entity.id))
             res = send_email(entity, token, delete=False)
             if res:
                 entity.notified_last = True
-                entity.save()
-                repositories.commit()
+                try:
+                    entity.save()
+                    repositories.commit()
+                except Exception as e:
+                    LOG.exception("expiration save error: " + str(e))
+                    repositories.rollback()
         elif entity.expire < now:
             # delete
             LOG.debug("Delete VM %s" % (entity.id))
             res = delete_vm(entity.instance_id, entity.project_id, token)
             if res:
-                repo.delete_entity_by_id(entity_id=entity.id)
-                repositories.commit()
+                try:
+                    repo.delete_entity_by_id(entity_id=entity.id)
+                    repositories.commit()
+                except Exception as e:
+                    LOG.exception("expiration deletion error: " + str(e))
+                    repositories.rollback()
             send_email(entity, token, delete=True)
 
 
