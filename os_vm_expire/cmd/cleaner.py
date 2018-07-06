@@ -276,7 +276,7 @@ def check(started_at):
 class CleanerServer(service.Service):
 
     def __init__(self):
-        super(CleanerServer, self).__init__(config.CONF)
+        super(CleanerServer, self).__init__()
         repositories.setup_database_engine_and_factory()
         started_at = time.time()
         callables = [(check, (started_at,), {})]

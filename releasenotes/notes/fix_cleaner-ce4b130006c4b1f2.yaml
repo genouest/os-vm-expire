@@ -1,0 +1,4 @@
+---
+fixes:
+  - |
+    Fixes cleaner constructor
