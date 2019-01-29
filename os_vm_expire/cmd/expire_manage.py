@@ -189,7 +189,9 @@ class VmExpireCommands(object):
             'instance.name',
             'instance.id',
             'project.id',
-            'user.id'
+            'user.id',
+            'notif',
+            'notif.last'
         ]
         limit = None
         if days:
@@ -211,7 +213,9 @@ class VmExpireCommands(object):
                     instance.instance_name,
                     instance.instance_id,
                     instance.project_id,
-                    instance.user_id
+                    instance.user_id,
+                    instance.notified,
+                    instance.notified_last
                 ]
             )
         if six.PY3:

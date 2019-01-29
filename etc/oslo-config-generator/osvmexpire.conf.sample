@@ -1633,6 +1633,10 @@
 # SMTP From mail origin (string value)
 #email_smtp_from = <None>
 
-# Email where deletion notifications should be sent, leave empty if no
+# Email where deletion notifications (is expired) should be sent, leave empty if no
 # copy is needed (string value)
 #email_smtp_copy_delete_notif_to = <None>
+
+# Email where expiration notifications (will expire) should be sent, leave empty if no
+# copy is needed (string value)
+#email_smtp_copy_expire_notif_to = <None>

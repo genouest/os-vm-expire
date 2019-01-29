@@ -164,6 +164,8 @@ def send_email(instance, token, delete=False):
         return False
     # send email
     to = [email]
+    if (not delete) and config.CONF.smtp.email_smtp_copy_expire_notif_to is not None:
+        to = [email, config.CONF.smtp.email_smtp_copy_delete_notif_to]
     if delete and config.CONF.smtp.email_smtp_copy_delete_notif_to is not None:
         to = [email, config.CONF.smtp.email_smtp_copy_delete_notif_to]
 
