@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    Add osvmexpire.conf option to send user notifications copy to admin email
+    Show notifications status on manage tool
