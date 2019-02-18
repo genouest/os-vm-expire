@@ -62,6 +62,11 @@ mail_opts = [
                default=None,
                help=u._('Email where deletion notifications should be sent,'
                         ' leave empty if no copy is needed')),
+    cfg.StrOpt('email_smtp_copy_expire_notif_to',
+               default=None,
+               help=u._('Email where expiration notifications should be sent,'
+                        ' leave empty if no copy is needed')),
+
 ]
 
 cleaner_opt_group = cfg.OptGroup(name='cleaner',

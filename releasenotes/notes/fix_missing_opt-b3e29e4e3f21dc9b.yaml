@@ -1,0 +1,4 @@
+---
+fixes:
+  - |
+    Fix missing declaration of option email_smtp_copy_expire_notif_to
