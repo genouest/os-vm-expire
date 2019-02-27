@@ -174,7 +174,7 @@ def send_email(instance, token, delete=False):
     if project_name is None:
         project_name = instance.project_id
 
-    subject = 'VM %s [project: %s] expiration' % (
+    subject = '[openstack] VM %s [project: %s] expiration' % (
         str(instance.instance_name),
         project_name
     )
