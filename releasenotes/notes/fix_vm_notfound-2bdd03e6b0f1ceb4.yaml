@@ -1,0 +1,5 @@
+---
+fixes:
+  - |
+    Fix case where VM is not found, email was sent anyway
+    If VM does not exists anymore (error case), consider deletion as ok

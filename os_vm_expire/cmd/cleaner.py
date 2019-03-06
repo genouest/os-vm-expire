@@ -76,11 +76,14 @@ def delete_vm(instance_id, project_id, token):
         'Accept': 'application/json'
     }
     r = requests.delete(nova_url + '/servers/' + instance_id, headers=headers)
+    if r.status_code == 404:
+        LOG.info('DELETE:VmNotFound:' + str(instance_id) + ':' + str(project_id))
+        return True
     if r.status_code != 204:
-        LOG.error('Failed to delete instance ' + str(instance_id))
+        LOG.error('DELETE:Error:Failed to delete instance ' + str(instance_id))
         return False
     else:
-        LOG.info('DELETE:' + str(instance_id) + ':' + str(project_id))
+        LOG.info('DELETE:deleted:' + str(instance_id) + ':' + str(project_id))
         return True
 
 
@@ -272,7 +275,7 @@ def check(started_at):
                 except Exception as e:
                     LOG.exception("expiration deletion error: " + str(e))
                     repositories.rollback()
-            send_email(entity, token, delete=True)
+                send_email(entity, token, delete=True)
 
 
 class CleanerServer(service.Service):
