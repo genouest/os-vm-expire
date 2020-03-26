@@ -45,7 +45,7 @@ BuildRequires:  python-stestr
 BuildRequires:  python-testtools
 #BuildRequires:  python-openstackdocstheme
 #BuildRequires:  python-os-api-ref
-BuildRequires:  python-reno
+BuildRequires:  python2-reno
 BuildRequires:  sudo
 BuildRequires:  systemd
 
@@ -100,6 +100,7 @@ User cannot extend it more than configured duration.
 
 %build
 PBR_VERSION=%{version} python setup.py build
+reno report > CHANGELOG
 
 %install
 PBR_VERSION=%{version} python setup.py install --single-version-externally-managed -O1 --root=$RPM_BUILD_ROOT --record=INSTALLED_FILES
