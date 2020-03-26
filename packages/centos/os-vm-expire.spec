@@ -100,7 +100,8 @@ User cannot extend it more than configured duration.
 
 %build
 PBR_VERSION=%{version} python setup.py build
-reno report > CHANGELOG
+touch CHANGELOG
+reno report --output CHANGELOG || true
 
 %install
 PBR_VERSION=%{version} python setup.py install --single-version-externally-managed -O1 --root=$RPM_BUILD_ROOT --record=INSTALLED_FILES
