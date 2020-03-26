@@ -1,8 +1,8 @@
 %global debug_package %{nil}
-%global openstack_release pike
+%global openstack_release stein
 %global uname root
 
-Name:    python-osvmexpire
+Name:    os-vm-expire
 Version: 0.9.3
 Release: 1%{?dist}
 Summary: Openstack project for VM auto expiration
@@ -80,7 +80,8 @@ Requires(preun): systemd
 %description
 
 Manage VM expiration and auto-deletion in an Openstack cloud.
-This project is an unofficial Openstack project, but follows Openstack projects architecture, with a Horizon plugin and associated services.
+This project is an unofficial Openstack project, but follows Openstack
+projects architecture, with a Horizon plugin and associated services.
 
 * Free software: Apache license
 * Documentation: http://os-vm-expire.readthedocs.io/
@@ -90,11 +91,12 @@ This project is an unofficial Openstack project, but follows Openstack projects 
 The Openstack VmExpiration Management service adds an expiration to VMs.
 After expiration, VM is deleted.
 User can extend the VM lifetime via API or Horizon.
-Expiration extend is not limited, user can always extend a VM, but it will be extended only for a configured duration.
+Expiration extend is not limited, user can always extend a VM, but it will be
+extended only for a configured duration.
 User cannot extend it more than configured duration.
 
 %prep
-%setup -n os-vm-expire-%{version}
+%setup -n %{name}-%{version}
 
 %build
 PBR_VERSION=%{version} python setup.py build
