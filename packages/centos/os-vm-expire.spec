@@ -15,7 +15,7 @@ Vendor: Olivier Sallou <olivier.sallou@irisa.fr>
 Url: https://github.com/genouest/os-vm-expire
 
 Source0: os-vm-expire-%{version}.tar.gz
-BuildRequires:  openstack-macros
+#BuildRequires:  openstack-macros
 BuildRequires:  python-pbr
 BuildRequires:  python-paste
 BuildRequires:  python-paste-deploy >= 1.5.0
@@ -43,7 +43,7 @@ BuildRequires:  python-sphinx
 BuildRequires:  python-oslotest
 BuildRequires:  python-stestr
 BuildRequires:  python-testtools
-BuildRequires:  python-openstackdocstheme
+#BuildRequires:  python-openstackdocstheme
 #BuildRequires:  python-os-api-ref
 BuildRequires:  python-reno
 BuildRequires:  sudo
