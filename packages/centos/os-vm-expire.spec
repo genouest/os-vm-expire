@@ -113,7 +113,7 @@ install -p -D -m 640 etc/oslo-config-generator/osvmexpire.conf.sample $RPM_BUILD
 install -p -D -m 644 etc/systemd/system/osvmexpire-cleaner.service %{buildroot}%{_unitdir}/osvmexpire-cleaner.service
 install -p -D -m 644 etc/systemd/system/osvmexpire-worker.service %{buildroot}%{_unitdir}/osvmexpire-worker.service
 install -p -D -m 644 etc/systemd/system/osvmexpire-api.service %{buildroot}%{_unitdir}/osvmexpire-api.service
-install -p -D -m 644 etc/logrotate.d/osvmexpire-api %{buildroot}%{_sysconfdir}/logrotate.d/osvmexpire-api.logrotate
+install -p -D -m 644 etc/logrotate.d/os-vm-expire %{buildroot}%{_sysconfdir}/logrotate.d/os-vm-expire.logrotate
 
 %clean
 rm -rf $RPM_BUILD_ROOT
