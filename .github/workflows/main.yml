@@ -1,0 +1,16 @@
+on: [push]
+
+jobs:
+  rpm_build:
+    runs-on: ubuntu-latest
+    name: check rpm build
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: rpm package build
+      id: rpm
+      uses: osallou/rpmchecker-action@master
+      with:
+        path-to-rpm: 'packages/centos'
+    - name: show rpmversion
+      run: echo "Rpm package version ${{steps.rpm.outputs.rpmversion}}"
