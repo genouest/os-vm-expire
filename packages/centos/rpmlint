@@ -1,6 +1,3 @@
 
 # ignore non-readable, used for root only config files
 addFilter(r'non-readable')
-
-# cmd files are console scripts and callable
-addFilter(r'non-executable-script')
