@@ -100,8 +100,8 @@ User cannot extend it more than configured duration.
 
 %build
 PBR_VERSION=%{version} python setup.py build
-touch CHANGELOG
-reno report --output CHANGELOG || true
+#echo "Version: %{version}" > CHANGELOG
+#reno report --output CHANGELOG || true
 
 %install
 PBR_VERSION=%{version} python setup.py install --single-version-externally-managed -O1 --root=$RPM_BUILD_ROOT --record=INSTALLED_FILES
@@ -130,7 +130,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_unitdir}/osvmexpire-cleaner.service
 %{_unitdir}/osvmexpire-worker.service
 %{_unitdir}/osvmexpire-api.service
-%doc CHANGELOG
+#%doc CHANGELOG
 
 %post
 %systemd_post osvmexpire-cleaner.service
@@ -150,3 +150,6 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Mar 26 2020 Olivier Sallou <olivier.sallou@irisa.fr> 0.9.3-1
+- Fix rpm packaging file
+
