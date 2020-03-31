@@ -183,7 +183,7 @@ def send_email(instance, token, delete=False):
     )
 
     message = ('VM %s (id: %s, project: %s) will expire at %s,' +
-               'connect to dashboard to extend its duration else ' +
+               'connect to openstack dashboard in vmexpires section to extend its duration else ' +
                ' it will be deleted.') % (
         instance.instance_name,
         instance.instance_id,
