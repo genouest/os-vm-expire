@@ -198,7 +198,7 @@ def send_email(instance, token, delete=False):
             instance.project_id,
             str(datetime.datetime.fromtimestamp(instance.expire))
             )
-    LOG.info('NOTIF:' + instance.id + ':' + str(message))
+    LOG.info('NOTIF %s: %s' % (instance.id, message))
     # Create a text/plain message
     msg = MIMEText(message)
 
