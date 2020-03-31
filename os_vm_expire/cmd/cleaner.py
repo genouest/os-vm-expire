@@ -200,7 +200,7 @@ def send_email(instance, token, delete=False):
             )
     LOG.info('NOTIF %s: %s' % (instance.id, message))
     # Create a text/plain message
-    msg = MIMEText(message)
+    msg = MIMEText(message, 'plain', 'utf-8')
 
     msg['Subject'] = subject
     msg['From'] = config.CONF.smtp.email_smtp_from
