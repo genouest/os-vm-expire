@@ -23,6 +23,8 @@ import json
 import requests
 import time
 
+from sqlalchemy.sql.base import PARSE_AUTOCOMMIT
+
 import oslo_messaging
 
 from oslo_service import service
@@ -148,11 +150,28 @@ class Tasks(object):
     @monitored
     @transactional
     def info(self, ctxt, publisher_id, event_type, payload, metadata):
-        if event_type == 'instance.create.end':
-            LOG.debug(event_type + ':' + payload['nova_object.data']['uuid'])
+        if event_type == 'instance.create.end' or event_type == 'compute.instance.create.end':
+            uuid = None
+            display_name = None
+            tenant_id = None
+            user_id = None
+            if 'nova_object.data' in payload:
+                uuid = payload['nova_object.data']['uuid']
+                display_name = payload['nova_object.data']['display_name']
+                tenant_id = payload['nova_object.data']['tenant_id']
+                user_id = payload['nova_object.data']['user_id']
+            else:
+                uuid = payload['instance_id']
+                display_name = payload['display_name']
+                tenant_id = payload['tenant_id']
+                user_id = payload['user_id']
+            if not display_name:
+                display_name = str(uuid)
+
+            LOG.debug(event_type + ':' + uuid)
             repo = repositories.get_vmexpire_repository()
             instance = None
-            instance_uuid = str(payload['nova_object.data']['uuid'])
+            instance_uuid = str(uuid)
             try:
                 instance = repo.get_by_instance(instance_uuid)
             except Exception:
@@ -165,13 +184,10 @@ class Tasks(object):
                 repo.delete_entity_by_id(entity_id=instance.id)
             entity = models.VmExpire()
             entity.instance_id = instance_uuid
-            if payload['nova_object.data']['display_name']:
-                display_name = payload['nova_object.data']['display_name']
-                entity.instance_name = display_name
-            else:
-                entity.instance_name = instance_uuid
-            entity.project_id = payload['nova_object.data']['tenant_id']
-            entity.user_id = payload['nova_object.data']['user_id']
+            entity.instance_name = display_name
+    
+            entity.project_id = tenant_id
+            entity.user_id = user_id
             entity.expire = int(
                 time.mktime(datetime.datetime.now().timetuple()) +
                 (CONF.max_vm_duration * 3600 * 24)
@@ -202,8 +218,13 @@ class Tasks(object):
 
             instance = repo.create_from(entity)
             LOG.debug("NewInstanceExpiration:" + instance_uuid)
-        elif event_type == 'instance.delete.end':
-            instance_uuid = str(payload['nova_object.data']['uuid'])
+        elif event_type == 'instance.delete.end' or event_type == 'compute.instance.delete.end':
+            uuid = None
+            if 'nova_object.data' in payload:
+                uuid = payload['nova_object.data']['uuid']
+            else:
+                uuid = payload['instance_id']
+            instance_uuid = str(uuid)
             LOG.debug(event_type + ':' + instance_uuid)
             repo = repositories.get_vmexpire_repository()
             try:
