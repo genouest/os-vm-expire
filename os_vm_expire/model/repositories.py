@@ -40,6 +40,7 @@ from os_vm_expire.common import utils
 from os_vm_expire import i18n as u
 from os_vm_expire.model.migration import commands
 from os_vm_expire.model import models
+from os_vm_expire.queue import get_instance, get_project_domain
 
 LOG = utils.getLogger(__name__)
 
@@ -303,6 +304,66 @@ class BaseRepo(object):
             _raise_entity_not_found(self._do_entity_name(), entity_id)
 
         return entity
+
+    def add_vm(self, instance_uuid, session=None):
+        session = self.get_session(session)
+
+        repo = get_vmexpire_repository()
+        instance = None
+        try:
+            instance = repo.get_by_instance(instance_uuid)
+        except Exception:
+            LOG.debug("Fine, instance does not already exists")
+        if instance:
+            LOG.warn("InstanceAlreadyExists:" +
+                     instance_uuid +
+                     ", deleting first"
+                     )
+            repo.delete_entity_by_id(entity_id=instance.id)
+
+        instance_data = get_instance(instance_uuid)
+        if not instance_data:
+            LOG.debug("Not found for %s", instance_uuid)
+            entity = None
+            _raise_entity_not_found(self._do_entity_name(), instance_uuid)
+
+        entity = models.VmExpire()
+        entity.instance_id = instance_uuid
+        entity.instance_name = instance_data["display_name"]
+
+        entity.project_id = instance_data["tenant_id"]
+        entity.user_id = instance_data["user_id"]
+        entity.expire = int(
+            time.mktime(datetime.datetime.now().timetuple()) +
+            (CONF.max_vm_duration * 3600 * 24)
+            )
+        entity.notified = False
+        entity.notified_last = False
+
+        project_domain = None
+        try:
+            project_domain = get_project_domain(entity.project_id)
+        except Exception:
+            LOG.exception('Failed to get domain for project')
+
+        exclude_repo = get_vmexclude_repository()
+        if project_domain:
+            exclude_id = exclude_repo.get_exclude_by_id(project_domain)
+            if exclude_id:
+                LOG.debug('domain %s is excluded, skipping' % (project_domain))
+                return
+        exclude_id = exclude_repo.get_exclude_by_id(entity.project_id)
+        if exclude_id:
+            LOG.debug('project %s is excluded, skipping' % (entity.project_id))
+            return
+        exclude_id = exclude_repo.get_exclude_by_id(entity.user_id)
+        if exclude_id:
+            LOG.debug('user %s is excluded, skipping' % (entity.user_id))
+            return
+
+        instance = repo.create_from(entity)
+        LOG.debug("NewInstanceExpiration:" + instance_uuid)
+        return instance
 
     def extend_vm(self, entity_id, session=None):
         session = self.get_session(session)

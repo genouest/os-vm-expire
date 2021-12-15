@@ -16,6 +16,8 @@ from oslo_policy import policy
 rules = [
     policy.RuleDefault('vmexpire:get',
                        'rule:admin_or_user'),
+    policy.RuleDefault('vmexpire:add',
+                       'rule:admin'),
     policy.RuleDefault('vmexpire:extend',
                        'rule:admin_or_user'),
     policy.RuleDefault('vmexpire:delete',

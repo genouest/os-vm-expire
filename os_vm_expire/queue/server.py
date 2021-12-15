@@ -95,6 +95,31 @@ def get_project_domain(project_id):
     return domain_id
 
 
+def get_instance(instance_id):
+    token = get_identity_token()
+    if not token:
+        return None
+    conf_worker = config.CONF.worker
+    nv_uri = conf_worker.nova_url
+    headers = {
+        'X-Auth-Token': token,
+        'Content-Type': 'application/json'
+    }
+    r = requests.get(nv_uri + '/servers/' + str(instance_id), headers=headers)
+    if not r.status_code == 200:
+        LOG.error('Failed to get information for instance ' + str(instance_id))
+        return None
+    res = r.json()
+
+    data = {
+        "display_name": res['server']['name'],
+        "tenant_id": res['server']['tenant_id'],
+        "user_id": res['server']['user_id'],
+    }
+
+    return data
+
+
 def find_function_name(func, if_no_name=None):
     """Returns pretty-formatted function name."""
     return getattr(func, '__name__', if_no_name)
@@ -185,7 +210,7 @@ class Tasks(object):
             entity = models.VmExpire()
             entity.instance_id = instance_uuid
             entity.instance_name = display_name
-    
+
             entity.project_id = tenant_id
             entity.user_id = user_id
             entity.expire = int(

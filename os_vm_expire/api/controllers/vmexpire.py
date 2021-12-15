@@ -91,6 +91,24 @@ class VmExpireController(controllers.ACLMixin):
         repo.commit()
         return instances_resp_overall
 
+    @index.when(method='POST', template='json')
+    @controllers.handle_exceptions(u._('VmExpire add'))
+    @controllers.enforce_rbac('vmexpire:add')
+    @controllers.enforce_content_types(['application/json'])
+    def on_post(self, meta, instance_id):
+        instance = None
+        try:
+            instance = self.vmexpire_repo.add_vm(entity_id=instance_id)
+        except Exception as e:
+            pecan.response.status = 403
+            return str(e)
+        # url = hrefs.convert_vmexpire_to_href(instance.id)
+        repo.commit()
+        pecan.response.status = 202
+        return {
+            'vmexpire': hrefs.convert_to_hrefs(instance.to_dict_fields())
+        }
+
     @index.when(method='PUT', template='json')
     @controllers.handle_exceptions(u._('VmExpire extend'))
     @controllers.enforce_rbac('vmexpire:extend')
