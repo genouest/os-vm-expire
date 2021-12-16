@@ -40,7 +40,8 @@ from os_vm_expire.common import utils
 from os_vm_expire import i18n as u
 from os_vm_expire.model.migration import commands
 from os_vm_expire.model import models
-from os_vm_expire.queue import get_instance, get_project_domain
+from os_vm_expire.queue.server import get_instance
+from os_vm_expire.queue.server import get_project_domain
 
 LOG = utils.getLogger(__name__)
 

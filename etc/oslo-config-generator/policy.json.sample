@@ -3,6 +3,7 @@
     "admin_or_owner":  "rule:context_is_admin or is_admin:True or project_id:%(project_id)s",
     "default": "rule:admin_or_owner",
     "vmexpire:get": "rule:admin_or_owner",
+    "vmexpire:add": "rule:context_is_admin",
     "vmexpire:extend": "rule:admin_or_owner",
     "vmexpire:delete": "rule:context_is_admin",
     "vmexclude:get": "rule:admin",
