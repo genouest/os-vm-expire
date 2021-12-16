@@ -309,10 +309,9 @@ class BaseRepo(object):
     def add_vm(self, instance_uuid, session=None):
         session = self.get_session(session)
 
-        repo = get_vmexpire_repository()
         instance = None
         try:
-            instance = repo.get_by_instance(instance_uuid)
+            instance = self.get_by_instance(instance_uuid)
         except Exception:
             LOG.debug("Fine, instance does not already exists")
         if instance:
@@ -320,7 +319,7 @@ class BaseRepo(object):
                      instance_uuid +
                      ", deleting first"
                      )
-            repo.delete_entity_by_id(entity_id=instance.id)
+            self.delete_entity_by_id(entity_id=instance.id)
 
         instance_data = get_instance(instance_uuid)
         if not instance_data:
@@ -362,7 +361,7 @@ class BaseRepo(object):
             LOG.debug('user %s is excluded, skipping' % (entity.user_id))
             return
 
-        instance = repo.create_from(entity)
+        instance = self.create_from(entity, session)
         LOG.debug("NewInstanceExpiration:" + instance_uuid)
         return instance
 
