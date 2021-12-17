@@ -127,6 +127,37 @@ Response
   - project_id: project_id
   - user_id: user_id
 
+  Add expiration
+  =================
+
+  .. rest_method:: POST /vmexpires/{id}
+
+  Add an openstack instance to the vmexpire database.
+
+  Normal response codes: 202
+
+  Error response codes: badRequest(400), unauthorized(401),
+  forbidden(403)
+
+  Request
+  -------
+
+  .. rest_parameters::parameters.yaml
+
+    - id: openstack instance id
+
+  Response
+  --------
+
+  .. rest_parameters:: parameters.yaml
+
+    - vmexpire: vmexpire
+    - id: expiration_id
+    - instance_id: instance_id
+    - intance_name: instance_name
+    - project_id: project_id
+    - user_id: user_id
+
 Delete expiration
 =================
 

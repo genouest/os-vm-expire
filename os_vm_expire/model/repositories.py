@@ -325,7 +325,7 @@ class BaseRepo(object):
         if not instance_data:
             LOG.debug("Not found for %s", instance_uuid)
             entity = None
-            _raise_entity_not_found(self._do_entity_name(), instance_uuid)
+            _raise_entity_not_found("Openstack instance", instance_uuid)
 
         entity = models.VmExpire()
         entity.instance_id = instance_uuid
