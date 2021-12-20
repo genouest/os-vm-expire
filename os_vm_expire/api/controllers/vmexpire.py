@@ -98,7 +98,7 @@ class VmExpireController(controllers.ACLMixin):
     def on_post(self, meta, instance_id):
         instance = None
         try:
-            instance = self.vmexpire_repo.add_vm(entity_id=instance_id)
+            instance = self.vmexpire_repo.add_vm(instance_id)
         except Exception as e:
             pecan.response.status = 403
             return str(e)
