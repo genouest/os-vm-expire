@@ -20,10 +20,7 @@ Server-side (i.e. worker side) classes and logic.
 import datetime
 import functools
 import json
-import requests
 import time
-
-from sqlalchemy.sql.base import PARSE_AUTOCOMMIT
 
 import oslo_messaging
 
@@ -37,87 +34,6 @@ from os_vm_expire.model import repositories
 CONF = config.CONF
 
 LOG = utils.getLogger(__name__)
-
-
-def get_identity_token():
-    conf_worker = config.CONF.worker
-    ks_uri = conf_worker.auth_uri
-
-    auth = {
-        'auth': {
-            'scope':
-                {'project': {
-                    'name': conf_worker.admin_service,
-                    'domain':
-                        {
-                            'name': conf_worker.admin_project_domain_name
-                        }
-                    }
-                 },
-            'identity': {
-                    'password': {
-                        'user': {
-                            'domain': {
-                                'name': conf_worker.admin_user_domain_name
-                            },
-                            'password': conf_worker.admin_password,
-                            'name': conf_worker.admin_user
-                        }
-                    },
-                    'methods': ['password']
-                }
-        }
-    }
-    r = requests.post(ks_uri + '/auth/tokens', json=auth)
-    if 'X-Subject-Token' not in r.headers:
-        LOG.error('Could not get authorization')
-        return None
-    token = r.headers['X-Subject-Token']
-    return token
-
-
-def get_project_domain(project_id):
-    token = get_identity_token()
-    if not token:
-        return None
-    conf_worker = config.CONF.worker
-    ks_uri = conf_worker.auth_uri
-    headers = {
-        'X-Auth-Token': token,
-        'Content-Type': 'application/json'
-    }
-    r = requests.get(ks_uri + '/projects/' + str(project_id), headers=headers)
-    if not r.status_code == 200:
-        LOG.error('Failed to get domain_id for project ' + str(project_id))
-        return None
-    project = r.json()
-    domain_id = project['project']['domain_id']
-    return domain_id
-
-
-def get_instance(instance_id):
-    token = get_identity_token()
-    if not token:
-        return None
-    conf_worker = config.CONF.worker
-    nv_uri = conf_worker.nova_url
-    headers = {
-        'X-Auth-Token': token,
-        'Content-Type': 'application/json'
-    }
-    r = requests.get(nv_uri + '/servers/' + str(instance_id), headers=headers)
-    if not r.status_code == 200:
-        LOG.error('Failed to get information for instance ' + str(instance_id))
-        return None
-    res = r.json()
-
-    data = {
-        "display_name": res['server']['name'],
-        "tenant_id": res['server']['tenant_id'],
-        "user_id": res['server']['user_id'],
-    }
-
-    return data
 
 
 def find_function_name(func, if_no_name=None):
@@ -222,7 +138,7 @@ class Tasks(object):
 
             project_domain = None
             try:
-                project_domain = get_project_domain(entity.project_id)
+                project_domain = repositories.get_project_domain(entity.project_id)
             except Exception:
                 LOG.exception('Failed to get domain for project')
 

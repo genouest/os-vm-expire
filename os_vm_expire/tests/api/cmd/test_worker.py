@@ -63,7 +63,7 @@ class WhenTestingVmExpiresResource(utils.OsVMExpireAPIBaseTestCase):
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     @mock.patch('requests.post', side_effect=mocked_requests_post)
-    @mock.patch('os_vm_expire.queue.server.get_project_domain', side_effect=mocked_get_project_domain)
+    @mock.patch('os_vm_expire.model.repositories.get_project_domain', side_effect=mocked_get_project_domain)
     def test_vm_create(self, mock_get, mock_post, mock_get_project_domain):
         create_msg = {
             'nova_object.data': {
@@ -119,7 +119,7 @@ class WhenTestingVmExcludesResource(utils.OsVMExpireAPIBaseTestCase):
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     @mock.patch('requests.post', side_effect=mocked_requests_post)
-    @mock.patch('os_vm_expire.queue.server.get_project_domain', side_effect=mocked_get_project_domain)
+    @mock.patch('os_vm_expire.model.repositories.get_project_domain', side_effect=mocked_get_project_domain)
     def test_vm_exclude_domain(self, mock_get, mock_post, mock_get_project_domain):
         create_msg = {
             'nova_object.data': {
@@ -142,7 +142,7 @@ class WhenTestingVmExcludesResource(utils.OsVMExpireAPIBaseTestCase):
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     @mock.patch('requests.post', side_effect=mocked_requests_post)
-    @mock.patch('os_vm_expire.queue.server.get_project_domain', side_effect=mocked_get_project_domain)
+    @mock.patch('os_vm_expire.model.repositories.get_project_domain', side_effect=mocked_get_project_domain)
     def test_vm_exclude_project(self, mock_get, mock_post, mock_get_project_domain):
         create_msg = {
             'nova_object.data': {
@@ -165,7 +165,7 @@ class WhenTestingVmExcludesResource(utils.OsVMExpireAPIBaseTestCase):
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     @mock.patch('requests.post', side_effect=mocked_requests_post)
-    @mock.patch('os_vm_expire.queue.server.get_project_domain', side_effect=mocked_get_project_domain)
+    @mock.patch('os_vm_expire.model.repositories.get_project_domain', side_effect=mocked_get_project_domain)
     def test_vm_exclude_user(self, mock_get, mock_post, mock_get_project_domain):
         create_msg = {
             'nova_object.data': {

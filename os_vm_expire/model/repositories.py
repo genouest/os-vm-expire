@@ -30,6 +30,7 @@ from oslo_db import exception as db_exc
 from oslo_db.sqlalchemy import session
 from oslo_utils import timeutils
 # from oslo_utils import uuidutils
+import requests
 import sqlalchemy
 # from sqlalchemy import func as sa_func
 # from sqlalchemy import or_
@@ -40,8 +41,6 @@ from os_vm_expire.common import utils
 from os_vm_expire import i18n as u
 from os_vm_expire.model.migration import commands
 from os_vm_expire.model import models
-from os_vm_expire.queue.server import get_instance
-from os_vm_expire.queue.server import get_project_domain
 
 LOG = utils.getLogger(__name__)
 
@@ -246,6 +245,87 @@ def delete_all_project_resources(project_id):
     container_repo = get_vmexpire_repository()
     container_repo.delete_project_entities(
         project_id, suppress_exception=False, session=session)
+
+
+def get_identity_token():
+    conf_worker = config.CONF.worker
+    ks_uri = conf_worker.auth_uri
+
+    auth = {
+        'auth': {
+            'scope':
+                {'project': {
+                    'name': conf_worker.admin_service,
+                    'domain':
+                        {
+                            'name': conf_worker.admin_project_domain_name
+                        }
+                    }
+                 },
+            'identity': {
+                    'password': {
+                        'user': {
+                            'domain': {
+                                'name': conf_worker.admin_user_domain_name
+                            },
+                            'password': conf_worker.admin_password,
+                            'name': conf_worker.admin_user
+                        }
+                    },
+                    'methods': ['password']
+                }
+        }
+    }
+    r = requests.post(ks_uri + '/auth/tokens', json=auth)
+    if 'X-Subject-Token' not in r.headers:
+        LOG.error('Could not get authorization')
+        return None
+    token = r.headers['X-Subject-Token']
+    return token
+
+
+def get_project_domain(project_id):
+    token = get_identity_token()
+    if not token:
+        return None
+    conf_worker = config.CONF.worker
+    ks_uri = conf_worker.auth_uri
+    headers = {
+        'X-Auth-Token': token,
+        'Content-Type': 'application/json'
+    }
+    r = requests.get(ks_uri + '/projects/' + str(project_id), headers=headers)
+    if not r.status_code == 200:
+        LOG.error('Failed to get domain_id for project ' + str(project_id))
+        return None
+    project = r.json()
+    domain_id = project['project']['domain_id']
+    return domain_id
+
+
+def get_instance(instance_id):
+    token = get_identity_token()
+    if not token:
+        return None
+    conf_worker = config.CONF.worker
+    nv_uri = conf_worker.nova_url
+    headers = {
+        'X-Auth-Token': token,
+        'Content-Type': 'application/json'
+    }
+    r = requests.get(nv_uri + '/servers/' + str(instance_id), headers=headers)
+    if not r.status_code == 200:
+        LOG.error('Failed to get information for instance ' + str(instance_id))
+        return None
+    res = r.json()
+
+    data = {
+        "display_name": res['server']['name'],
+        "tenant_id": res['server']['tenant_id'],
+        "user_id": res['server']['user_id'],
+    }
+
+    return data
 
 
 class BaseRepo(object):
