@@ -30,6 +30,7 @@ from oslo_db import exception as db_exc
 from oslo_db.sqlalchemy import session
 from oslo_utils import timeutils
 # from oslo_utils import uuidutils
+import requests
 import sqlalchemy
 # from sqlalchemy import func as sa_func
 # from sqlalchemy import or_
@@ -246,6 +247,87 @@ def delete_all_project_resources(project_id):
         project_id, suppress_exception=False, session=session)
 
 
+def get_identity_token():
+    conf_worker = config.CONF.worker
+    ks_uri = conf_worker.auth_uri
+
+    auth = {
+        'auth': {
+            'scope':
+                {'project': {
+                    'name': conf_worker.admin_service,
+                    'domain':
+                        {
+                            'name': conf_worker.admin_project_domain_name
+                        }
+                    }
+                 },
+            'identity': {
+                    'password': {
+                        'user': {
+                            'domain': {
+                                'name': conf_worker.admin_user_domain_name
+                            },
+                            'password': conf_worker.admin_password,
+                            'name': conf_worker.admin_user
+                        }
+                    },
+                    'methods': ['password']
+                }
+        }
+    }
+    r = requests.post(ks_uri + '/auth/tokens', json=auth)
+    if 'X-Subject-Token' not in r.headers:
+        LOG.error('Could not get authorization')
+        return None
+    token = r.headers['X-Subject-Token']
+    return token
+
+
+def get_project_domain(project_id):
+    token = get_identity_token()
+    if not token:
+        return None
+    conf_worker = config.CONF.worker
+    ks_uri = conf_worker.auth_uri
+    headers = {
+        'X-Auth-Token': token,
+        'Content-Type': 'application/json'
+    }
+    r = requests.get(ks_uri + '/projects/' + str(project_id), headers=headers)
+    if not r.status_code == 200:
+        LOG.error('Failed to get domain_id for project ' + str(project_id))
+        return None
+    project = r.json()
+    domain_id = project['project']['domain_id']
+    return domain_id
+
+
+def get_instance(instance_id):
+    token = get_identity_token()
+    if not token:
+        return None
+    conf_worker = config.CONF.worker
+    nv_uri = conf_worker.nova_url
+    headers = {
+        'X-Auth-Token': token,
+        'Content-Type': 'application/json'
+    }
+    r = requests.get(nv_uri + '/servers/' + str(instance_id), headers=headers)
+    if not r.status_code == 200:
+        LOG.error('Failed to get information for instance ' + str(instance_id))
+        return None
+    res = r.json()
+
+    data = {
+        "display_name": res['server']['name'],
+        "tenant_id": res['server']['tenant_id'],
+        "user_id": res['server']['user_id'],
+    }
+
+    return data
+
+
 class BaseRepo(object):
     """Base repository for the osvmexpire entities.
 
@@ -303,6 +385,65 @@ class BaseRepo(object):
             _raise_entity_not_found(self._do_entity_name(), entity_id)
 
         return entity
+
+    def add_vm(self, instance_uuid, session=None):
+        session = self.get_session(session)
+
+        instance = None
+        try:
+            instance = self.get_by_instance(instance_uuid)
+        except Exception:
+            LOG.debug("Fine, instance does not already exists")
+        if instance:
+            LOG.warn("InstanceAlreadyExists:" +
+                     instance_uuid +
+                     ", deleting first"
+                     )
+            self.delete_entity_by_id(entity_id=instance.id)
+
+        instance_data = get_instance(instance_uuid)
+        if not instance_data:
+            LOG.debug("Not found for %s", instance_uuid)
+            entity = None
+            _raise_entity_not_found("Openstack instance", instance_uuid)
+
+        entity = models.VmExpire()
+        entity.instance_id = instance_uuid
+        entity.instance_name = instance_data["display_name"]
+
+        entity.project_id = instance_data["tenant_id"]
+        entity.user_id = instance_data["user_id"]
+        entity.expire = int(
+            time.mktime(datetime.datetime.now().timetuple()) +
+            (CONF.max_vm_duration * 3600 * 24)
+            )
+        entity.notified = False
+        entity.notified_last = False
+
+        project_domain = None
+        try:
+            project_domain = get_project_domain(entity.project_id)
+        except Exception:
+            LOG.exception('Failed to get domain for project')
+
+        exclude_repo = get_vmexclude_repository()
+        if project_domain:
+            exclude_id = exclude_repo.get_exclude_by_id(project_domain)
+            if exclude_id:
+                LOG.debug('domain %s is excluded, skipping' % (project_domain))
+                return
+        exclude_id = exclude_repo.get_exclude_by_id(entity.project_id)
+        if exclude_id:
+            LOG.debug('project %s is excluded, skipping' % (entity.project_id))
+            return
+        exclude_id = exclude_repo.get_exclude_by_id(entity.user_id)
+        if exclude_id:
+            LOG.debug('user %s is excluded, skipping' % (entity.user_id))
+            return
+
+        instance = self.create_from(entity, session)
+        LOG.debug("NewInstanceExpiration:" + instance_uuid)
+        return instance
 
     def extend_vm(self, entity_id, session=None):
         session = self.get_session(session)

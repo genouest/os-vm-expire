@@ -227,7 +227,7 @@ class VmExpireCommands(object):
           help='Expiration id')
     def extend(self, expirationid):
         if not expirationid:
-            print("Missing id paramerer")
+            print("Missing id parameter")
             return
         repositories.setup_database_engine_and_factory()
         repo = repositories.get_vmexpire_repository()
@@ -246,6 +246,24 @@ class VmExpireCommands(object):
         repositories.setup_database_engine_and_factory()
         repo = repositories.get_vmexpire_repository()
         repo.delete_entity_by_id(entity_id=expirationid)
+        repositories.commit()
+        print("VM expiration successfully removed!")
+
+    add_description = "Add a VM to the expiration database"
+
+    @args('--id', metavar='<instance-id>', dest='instanceid',
+          help='Instance id')
+    def add(self, instanceid):
+        if not instanceid:
+            print("Missing id parameter")
+            return
+        repositories.setup_database_engine_and_factory()
+        repo = repositories.get_vmexpire_repository()
+        instance = repo.add_vm(instanceid)
+        if not instance:
+            print("Failure to add VM expiration, check logs")
+            return
+
         repositories.commit()
         print("VM expiration successfully generated!")
 

@@ -97,7 +97,7 @@ class BaseTestCase(utils.OsVMExpireAPIBaseTestCase, utils.MockModelRepositoryMix
             'user': user_id,
             'project': project_id,
             'roles': roles or [],
-            'policy_enforcer': self.policy_enforcer,
+            'policy_enforcer': self.policy_enforcer
         }
         req.environ = {}
         req.environ['os_vm_expire.context'] = context.RequestContext(**kwargs)
@@ -278,6 +278,20 @@ class WhenTestingVmExpireResource(BaseTestCase):
             project_id=self.project_id)
         self.assertRaises(webob.exc.HTTPForbidden, self._invoke_on_delete, '12345')
 
+    def test_should_pass_add_vmexpire(self):
+        self.req = self._generate_req(roles=['admin'],
+            content_type='application/json')
+        res = self._invoke_on_post('12345expire')
+        self.assertIsNotNone(res)
+
+    def test_should_fail_add_vmexpires(self):
+        self.req = self._generate_req(roles=['bogus'])
+        self.assertRaises(webob.exc.HTTPForbidden, self._invoke_on_post, '12345')
+
+    def test_should_fail_user_add_vmexpire(self):
+        self.req = self._generate_req(roles=['member'])
+        self.assertRaises(webob.exc.HTTPForbidden, self._invoke_on_post, '12345')
+
     def _invoke_on_put(self, instance_id=None):
         return self.resource.on_put(self.req, self.resp, 'vmexpires', instance_id)
 
@@ -286,3 +300,6 @@ class WhenTestingVmExpireResource(BaseTestCase):
 
     def _invoke_on_get(self, instance_id=None):
         return self.resource.on_get(self.req, self.resp, 'vmexpires', instance_id)
+
+    def _invoke_on_post(self, instance_id=None):
+        return self.resource.on_post(self.req, self.resp, 'vmexpires', instance_id)

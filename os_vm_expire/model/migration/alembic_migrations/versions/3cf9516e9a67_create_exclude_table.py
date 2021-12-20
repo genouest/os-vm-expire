@@ -31,7 +31,7 @@ down_revision = 'newton'
 def upgrade():
     ctx = op.get_context()
     con = op.get_bind()
-    table_exists = ctx.dialect.has_table(con.engine, 'vmexclude')
+    table_exists = ctx.dialect.has_table(con, 'vmexclude')
     if not table_exists:
         op.create_table(
             'vmexclude',
