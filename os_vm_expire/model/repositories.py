@@ -431,15 +431,16 @@ class BaseRepo(object):
             exclude_id = exclude_repo.get_exclude_by_id(project_domain)
             if exclude_id:
                 LOG.debug('domain %s is excluded, skipping' % (project_domain))
-                return
+                _raise_entity_invalid(instance_uuid, "domain is excluded")
+
         exclude_id = exclude_repo.get_exclude_by_id(entity.project_id)
         if exclude_id:
             LOG.debug('project %s is excluded, skipping' % (entity.project_id))
-            return
+            _raise_entity_invalid(instance_uuid, "project is excluded")
         exclude_id = exclude_repo.get_exclude_by_id(entity.user_id)
         if exclude_id:
             LOG.debug('user %s is excluded, skipping' % (entity.user_id))
-            return
+            _raise_entity_invalid(instance_uuid, "user is excluded")
 
         instance = self.create_from(entity, session)
         LOG.debug("NewInstanceExpiration:" + instance_uuid)
@@ -830,6 +831,12 @@ def _raise_entity_not_found(entity_name, entity_id):
     raise Exception(u._("No {entity} found with ID {id}").format(
         entity=entity_name,
         id=entity_id))
+
+
+def _raise_entity_invalid(entity_id, msg):
+    raise Exception(u._("Instance {id} cannot be added to the expiration table: {msg}").format(
+        id=entity_id,
+        msg=msg))
 
 
 def _raise_entity_id_not_found(entity_id):
