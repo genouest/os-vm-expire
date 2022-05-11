@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-git --help 1>/dev/null  && pip -h 1>/dev/null  && virtualenv -h 1>/dev/null
+git --help 1>/dev/null  && pip -h 1>/dev/null  && python3 -V 1>/dev/null
 
 # the temp directory used, within $DIR
 # omit the -p parameter to create a temporal directory in the default location
@@ -39,7 +39,7 @@ else
 fi
 git checkout tags/${version}
 
-virtualenv venv
+python3 -mvenv venv
 . venv/bin/activate
 pip install reno
 reno report > CHANGELOG

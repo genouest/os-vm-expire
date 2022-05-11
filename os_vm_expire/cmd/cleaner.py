@@ -246,6 +246,7 @@ def check(started_at):
             res = send_email(entity, token, delete=False)
             if res:
                 entity.notified = True
+                entity.notified_time = now
                 try:
                     entity.save()
                     repositories.commit()
@@ -264,7 +265,20 @@ def check(started_at):
                 except Exception as e:
                     LOG.exception("expiration save error: " + str(e))
                     repositories.rollback()
-        elif entity.expire < now:
+        elif entity.expire < now and entity.notified_last:  # expired and last notification send at least notify_before_days days before
+            mintime = (conf_cleaner.notify_before_days * 3600 * 24)
+            if not entity.notified_time and entity.notified:
+                # backward compat, if notif time not set and notif already sent, set to now()
+                entity.notified_time = now
+                try:
+                    entity.save()
+                    repositories.commit()
+                except Exception as e:
+                    LOG.exception("expiration save error: " + str(e))
+                    repositories.rollback()
+            if (now - entity.notified_time) < mintime:
+                LOG.debug("Last expiration notification %s sent before %d days" % (entity.id, mintime))
+                continue
             # delete
             LOG.debug("Delete VM %s" % (entity.id))
             res = delete_vm(entity.instance_id, entity.project_id, token)

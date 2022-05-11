@@ -202,6 +202,10 @@ class VmExpire(BASE, ModelBase):
     notified_last = sa.Column(
         sa.Boolean, index=False,
         nullable=False)
+    notified_time = sa.Column(
+        sa.Integer, index=False,
+        nullable=True
+    )
     instance_name = sa.Column(
         sa.String(255), index=False,
         nullable=True)
@@ -222,6 +226,7 @@ class VmExpire(BASE, ModelBase):
             'expire': self.expire,
             'notified': self.notified,
             'notified_last': self.notified_last,
+            'notified_time': self.notified_time,
             'user_id': self.user_id,
             'instance_name': self.instance_name
         }

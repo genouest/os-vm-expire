@@ -12,7 +12,7 @@ jobs:
       uses: osallou/rpmchecker-action@master
       env:
         EXTRA_1: epel-release
-        EXTRA_2: centos-release-openstack-stein
+        EXTRA_2: centos-release-openstack-ussuri
       with:
         path-to-rpm: 'packages/centos'
     - name: show rpmversion
